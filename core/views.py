@@ -23,18 +23,17 @@ def contact(request):
                 subject=subject,
                 message=message
             )
-            try:
-                send_mail(
-                    subject=f"NGS Contact: {subject}",
-                    message=f"From: {name} ({email})\nPhone: {phone}\n\n{message}",
-                    from_email=settings.EMAIL_HOST_USER or 'noreply@narasimhaglobal.com',
-                    recipient_list=[settings.CONTACT_EMAIL],
-                    fail_silently=True,
-                )
-            except Exception:
-                pass
-            messages.success(request, 'Thank you! Your message has been received. We will contact you shortly.')
+
+            messages.success(
+                request,
+                'Thank you! Your message has been received. We will contact you shortly.'
+            )
         else:
-            messages.error(request, 'Please fill in all required fields.')
+            messages.error(
+                request,
+                'Please fill in all required fields.'
+            )
+
         return redirect('home')
+
     return redirect('home')

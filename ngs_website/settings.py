@@ -7,7 +7,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-change-this-in-produc
 
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['narasimhaglobal.com', 'www.narasimhaglobal.com', '*.up.railway.app']
+ALLOWED_HOSTS = ['narasimhaglobal.com', 'www.narasimhaglobal.com', '*.up.railway.app', '*']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
