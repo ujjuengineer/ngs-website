@@ -49,4 +49,4 @@ class CompanyCertificate(models.Model):
     def __str__(self):
         return f"{self.certificate_number} - {self.recipient_name}"
     
-# hellow workd
+# removed hello world
