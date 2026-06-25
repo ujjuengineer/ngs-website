@@ -57,9 +57,13 @@
 
     /* ── NAV ── */
     nav {
-        background: rgba(44, 57, 71, 0.97);
-        backdrop-filter: blur(12px);
-        border-bottom: 2px solid var(--sand);
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(44, 57, 71, 0.97);
+      backdrop-filter: blur(12px);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5%;
+      height: 72px;
+      border-bottom: 2px solid var(--sand);
     }
     .nav-brand {
       display: flex; align-items: center; gap: 12px;
