@@ -1,0 +1,786 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Narasimha Global Service & Solution Pvt. Ltd. | NGS Patna</title>
+  <meta name="description" content="Narasimha Global empowers government and businesses with skilled manpower and IT solutions. Specializing in document digitization and digital transformation — Patna, Bihar." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --maroon:    #6B1A1A;
+      --maroon-dk: #4A0F0F;
+      --maroon-lt: #8B2828;
+      --gold:      #C9960C;
+      --gold-lt:   #E8B523;
+      --gold-pale: #F5D98A;
+      --cream:     #FBF5E8;
+      --white:     #FFFFFF;
+      --text-body: #2C1A0E;
+      --text-muted:#6B4F3A;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--cream);
+      color: var(--text-body);
+      line-height: 1.6;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(75, 15, 15, 0.97);
+      backdrop-filter: blur(12px);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5%;
+      height: 72px;
+      border-bottom: 2px solid var(--gold);
+    }
+    .nav-brand {
+      display: flex; align-items: center; gap: 12px;
+      text-decoration: none;
+    }
+    .nav-logo {
+      width: 46px; height: 46px; border-radius: 50%;
+      border: 2px solid var(--gold);
+      object-fit: cover;
+    }
+    .nav-name {
+      font-family: 'Cinzel', serif;
+      color: var(--gold-lt);
+      font-size: 0.95rem;
+      letter-spacing: 0.04em;
+      line-height: 1.2;
+    }
+    .nav-name span { display: block; font-size: 0.65rem; color: var(--gold-pale); font-weight: 400; }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a {
+      color: var(--gold-pale);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--gold-lt); }
+    .nav-cta {
+      background: var(--gold);
+      color: var(--maroon-dk) !important;
+      padding: 8px 20px;
+      border-radius: 4px;
+      font-weight: 600 !important;
+    }
+    .nav-cta:hover { background: var(--gold-lt) !important; color: var(--maroon-dk) !important; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      background:
+        linear-gradient(160deg, rgba(75,15,15,0.93) 0%, rgba(107,26,26,0.85) 50%, rgba(75,15,15,0.96) 100%),
+        url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C9960C' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      display: flex; align-items: center; justify-content: center;
+      padding: 100px 5% 60px;
+      text-align: center;
+    }
+    .hero-inner { max-width: 860px; }
+    .hero-logo-wrap {
+      position: relative; display: inline-block; margin-bottom: 36px;
+    }
+    .hero-logo {
+      width: 160px; height: 160px;
+      border-radius: 50%;
+      border: 4px solid var(--gold);
+      object-fit: cover;
+      box-shadow: 0 0 0 8px rgba(201,150,12,0.15), 0 0 60px rgba(201,150,12,0.3);
+    }
+    .hero-badge {
+      position: absolute; bottom: 4px; right: -8px;
+      background: var(--gold);
+      color: var(--maroon-dk);
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      padding: 4px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+    }
+    .hero h1 {
+      font-family: 'Cinzel', serif;
+      color: var(--white);
+      font-size: clamp(2rem, 5vw, 3.6rem);
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: 0.02em;
+      margin-bottom: 8px;
+    }
+    .hero h1 em {
+      font-style: normal;
+      color: var(--gold-lt);
+    }
+    .hero-subtitle {
+      font-family: 'Cinzel', serif;
+      color: var(--gold-pale);
+      font-size: 0.85rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+    .hero-desc {
+      color: rgba(251,245,232,0.82);
+      font-size: 1.1rem;
+      max-width: 620px;
+      margin: 0 auto 40px;
+      line-height: 1.75;
+    }
+    .hero-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .btn-primary {
+      background: var(--gold);
+      color: var(--maroon-dk);
+      padding: 14px 36px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-decoration: none;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: all 0.2s;
+      border: 2px solid var(--gold);
+    }
+    .btn-primary:hover { background: var(--gold-lt); border-color: var(--gold-lt); }
+    .btn-outline {
+      color: var(--gold-pale);
+      padding: 14px 36px;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-decoration: none;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: all 0.2s;
+      border: 2px solid rgba(201,150,12,0.5);
+    }
+    .btn-outline:hover { border-color: var(--gold-lt); color: var(--gold-lt); }
+
+    /* ── DIVIDER ── */
+    .divider {
+      display: flex; align-items: center; gap: 16px;
+      max-width: 200px; margin: 0 auto;
+      padding: 48px 0 0;
+    }
+    .divider-line { flex: 1; height: 1px; background: rgba(201,150,12,0.4); }
+    .divider-icon { color: var(--gold); font-size: 1.2rem; }
+
+    /* ── SECTION ── */
+    section { padding: 80px 5%; }
+    .section-label {
+      font-family: 'Cinzel', serif;
+      color: var(--gold);
+      font-size: 0.72rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .section-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 700;
+      color: var(--maroon-dk);
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+    .section-intro {
+      color: var(--text-muted);
+      font-size: 1rem;
+      max-width: 560px;
+      line-height: 1.75;
+    }
+    .section-header { margin-bottom: 56px; }
+
+    /* ── ABOUT ── */
+    .about { background: var(--white); }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .about-visual {
+      background: var(--maroon-dk);
+      border-radius: 8px;
+      padding: 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .about-visual::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(
+        45deg,
+        rgba(201,150,12,0.04) 0px,
+        rgba(201,150,12,0.04) 1px,
+        transparent 1px,
+        transparent 14px
+      );
+    }
+    .about-visual img {
+      width: 180px; height: 180px;
+      border-radius: 50%;
+      border: 3px solid var(--gold);
+      position: relative;
+    }
+    .about-visual p {
+      color: var(--gold-pale);
+      font-family: 'Cinzel', serif;
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      margin-top: 20px;
+      position: relative;
+    }
+    .stat-row {
+      display: flex; gap: 32px; margin-top: 40px;
+    }
+    .stat { text-align: center; }
+    .stat-num {
+      font-family: 'Cinzel', serif;
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: var(--gold);
+      line-height: 1;
+    }
+    .stat-lbl {
+      font-size: 0.75rem;
+      color: var(--gold-pale);
+      letter-spacing: 0.08em;
+      margin-top: 4px;
+    }
+
+    /* ── SERVICES ── */
+    .services { background: var(--cream); }
+    .services-inner { max-width: 1100px; margin: 0 auto; }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 28px;
+    }
+    .card {
+      background: var(--white);
+      border-radius: 8px;
+      padding: 36px 30px;
+      border: 1px solid rgba(201,150,12,0.2);
+      transition: all 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--maroon), var(--gold));
+    }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(107,26,26,0.12); }
+    .card-icon {
+      width: 52px; height: 52px;
+      background: linear-gradient(135deg, var(--maroon), var(--maroon-lt));
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+    }
+    .card h3 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.05rem;
+      color: var(--maroon-dk);
+      margin-bottom: 10px;
+    }
+    .card p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.7; }
+
+    /* ── HOW IT WORKS ── */
+    .how { background: var(--maroon-dk); padding: 80px 5%; }
+    .how .section-title { color: var(--white); }
+    .how .section-label { color: var(--gold-pale); }
+    .how .section-intro { color: rgba(251,245,232,0.7); }
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0;
+      max-width: 1000px;
+      margin: 0 auto;
+      position: relative;
+    }
+    .steps::before {
+      content: '';
+      position: absolute;
+      top: 36px; left: 10%; right: 10%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+    .step { text-align: center; padding: 24px 20px; position: relative; }
+    .step-num {
+      width: 72px; height: 72px;
+      background: var(--maroon-lt);
+      border: 2px solid var(--gold);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Cinzel', serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--gold);
+      margin: 0 auto 20px;
+      position: relative; z-index: 1;
+    }
+    .step h4 {
+      font-family: 'Cinzel', serif;
+      color: var(--gold-pale);
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+    }
+    .step p { font-size: 0.8rem; color: rgba(251,245,232,0.6); line-height: 1.6; }
+
+    /* ── CONTACT ── */
+    .contact { background: var(--white); }
+    .contact-inner {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 64px;
+      max-width: 1000px;
+      margin: 0 auto;
+      align-items: start;
+    }
+    .contact-info h3 {
+      font-family: 'Cinzel', serif;
+      color: var(--maroon-dk);
+      font-size: 1.4rem;
+      margin-bottom: 24px;
+    }
+    .contact-item {
+      display: flex; gap: 16px; align-items: flex-start;
+      margin-bottom: 24px;
+    }
+    .contact-ico {
+      width: 42px; height: 42px; min-width: 42px;
+      background: linear-gradient(135deg, var(--maroon), var(--maroon-lt));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+    }
+    .contact-txt strong { display: block; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gold); margin-bottom: 3px; }
+    .contact-txt span { font-size: 0.9rem; color: var(--text-muted); }
+
+    /* form */
+    .contact-form { background: var(--cream); border-radius: 12px; padding: 40px; border: 1px solid rgba(201,150,12,0.2); }
+    .contact-form h3 {
+      font-family: 'Cinzel', serif;
+      color: var(--maroon-dk);
+      font-size: 1.2rem;
+      margin-bottom: 28px;
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-group { margin-bottom: 18px; }
+    .form-group label { display: block; font-size: 0.78rem; font-weight: 600; color: var(--maroon); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1.5px solid rgba(107,26,26,0.2);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-family: 'Inter', sans-serif;
+      background: var(--white);
+      color: var(--text-body);
+      transition: border-color 0.2s;
+      outline: none;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,150,12,0.1); }
+    .form-group textarea { resize: vertical; min-height: 120px; }
+    .form-submit {
+      width: 100%;
+      background: linear-gradient(135deg, var(--maroon), var(--maroon-lt));
+      color: var(--gold-pale);
+      border: none;
+      padding: 14px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+    .form-submit:hover { background: linear-gradient(135deg, var(--maroon-lt), var(--maroon)); transform: translateY(-1px); }
+
+    /* ── MESSAGES ── */
+    .messages-bar { background: var(--maroon-dk); padding: 12px 5%; margin-top: 72px; }
+    .msg-success {
+      background: rgba(40,120,40,0.9); color: white;
+      padding: 14px 20px; border-radius: 6px;
+      font-size: 0.9rem; display: flex; align-items: center; gap: 10px;
+    }
+    .msg-error {
+      background: rgba(180,30,30,0.9); color: white;
+      padding: 14px 20px; border-radius: 6px;
+      font-size: 0.9rem; display: flex; align-items: center; gap: 10px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--maroon-dk);
+      border-top: 2px solid var(--gold);
+      padding: 48px 5% 24px;
+    }
+    .footer-top {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 40px;
+    }
+    .footer-brand img {
+      width: 80px; height: 80px;
+      border-radius: 50%; border: 2px solid var(--gold);
+      margin-bottom: 16px;
+    }
+    .footer-brand p {
+      color: rgba(251,245,232,0.6);
+      font-size: 0.85rem;
+      line-height: 1.7;
+      max-width: 260px;
+    }
+    .footer-col h4 {
+      font-family: 'Cinzel', serif;
+      color: var(--gold);
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 10px; }
+    .footer-col ul li a, .footer-col ul li span {
+      color: rgba(251,245,232,0.6);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.2s;
+    }
+    .footer-col ul li a:hover { color: var(--gold-pale); }
+    .footer-bottom {
+      border-top: 1px solid rgba(201,150,12,0.2);
+      padding-top: 24px;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .footer-bottom p { color: rgba(251,245,232,0.4); font-size: 0.8rem; }
+    .cin { color: rgba(251,245,232,0.35); font-size: 0.75rem; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .about-grid, .contact-inner { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr; }
+      .steps::before { display: none; }
+      .form-row { grid-template-columns: 1fr; }
+      .stat-row { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-brand">
+    <img src="{% static 'core/images/logo.jpeg' %}" alt="NGS Logo" class="nav-logo" />
+    <span class="nav-name">
+      Narasimha Global
+      <span>Service &amp; Solution Pvt. Ltd.</span>
+    </span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#contact" class="nav-cta">Contact Us</a></li>
+  </ul>
+</nav>
+
+<!-- DJANGO MESSAGES -->
+{% if messages %}
+<div class="messages-bar">
+  {% for message in messages %}
+    <div class="{% if message.tags == 'success' %}msg-success{% else %}msg-error{% endif %}">
+      {% if message.tags == 'success' %}✅{% else %}⚠️{% endif %}
+      {{ message }}
+    </div>
+  {% endfor %}
+</div>
+{% else %}
+<div style="height:72px"></div>
+{% endif %}
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-inner">
+    <div class="hero-logo-wrap">
+      <img src="{% static 'core/images/logo.jpeg' %}" alt="Narasimha Global Logo" class="hero-logo" />
+      <span class="hero-badge">Est. Patna</span>
+    </div>
+    <p class="hero-subtitle">Narasimha Global Service &amp; Solution Private Limited</p>
+    <h1>Empowering <em>Government</em><br/>and Business</h1>
+    <p class="hero-desc">
+      We bridge the gap between traditional record-keeping and the digital future —
+      delivering skilled manpower and end-to-end IT solutions that transform how
+      governments and businesses operate across Bihar and beyond.
+    </p>
+    <div class="hero-btns">
+      <a href="#services" class="btn-primary">Explore Our Services</a>
+      <a href="#contact" class="btn-outline">Get In Touch</a>
+    </div>
+    <div class="divider">
+      <div class="divider-line"></div>
+      <span class="divider-icon">✦</span>
+      <div class="divider-line"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="about-grid">
+    <div class="about-visual">
+      <img src="{% static 'core/images/logo.jpeg' %}" alt="NGS Logo" />
+      <p>NGS · Patna, Bihar · India</p>
+      <div class="stat-row">
+        <div class="stat">
+          <div class="stat-num">100+</div>
+          <div class="stat-lbl">Projects</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">50+</div>
+          <div class="stat-lbl">Clients</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">10+</div>
+          <div class="stat-lbl">Districts</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <p class="section-label">Who We Are</p>
+      <h2 class="section-title">Bihar's Trusted Partner in Digital Transformation</h2>
+      <p class="section-intro">
+        Narasimha Global Service &amp; Solution Pvt. Ltd. (NGS) was founded with a clear mission: to digitize,
+        streamline, and modernize the way government offices and businesses manage their critical records.
+      </p>
+      <p style="color:var(--text-muted);font-size:0.9rem;margin-top:20px;line-height:1.8">
+        Based in Patna, Bihar, our team of trained professionals handles every step of the document
+        digitization lifecycle — from physical scanning and PDF creation to metadata extraction and
+        secure upload to official government portals. We also provide skilled manpower solutions to
+        ensure offices are staffed with qualified personnel.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="services" id="services">
+  <div class="services-inner">
+    <div class="section-header">
+      <p class="section-label">What We Offer</p>
+      <h2 class="section-title">Our Core Services</h2>
+      <p class="section-intro">From document scanning to government portal integration, we handle the full digital workflow so you don't have to.</p>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <div class="card-icon">🗂️</div>
+        <h3>Document Digitization</h3>
+        <p>High-resolution scanning of legacy government records, registers, land documents, and archival papers with quality verification at every step.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📄</div>
+        <h3>PDF Creation &amp; Archiving</h3>
+        <p>Conversion of scanned images into searchable, indexed PDF files with proper naming conventions, folder structures, and long-term archiving standards.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔍</div>
+        <h3>Metadata Extraction</h3>
+        <p>Accurate extraction of critical data fields — dates, names, survey numbers, registration details — structured for easy retrieval and government compliance.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🌐</div>
+        <h3>Government Portal Upload</h3>
+        <p>Seamless upload and integration of digitized documents onto official state and central government portals following prescribed data formats.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">👥</div>
+        <h3>Skilled Manpower Supply</h3>
+        <p>Deployment of trained data entry operators, scanning technicians, and IT professionals to government offices and private businesses across Bihar.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">💻</div>
+        <h3>IT Solutions &amp; Support</h3>
+        <p>Custom software support, hardware setup, network configuration, and ongoing technical assistance tailored to institutional requirements.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div style="max-width:1000px;margin:0 auto">
+    <div class="section-header">
+      <p class="section-label">Our Process</p>
+      <h2 class="section-title">From Paper to Portal in 5 Steps</h2>
+      <p class="section-intro">A proven, auditable workflow that ensures every document is handled with precision and care.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h4>Document Collection</h4>
+        <p>Physical records collected and catalogued at the source location.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h4>Scanning</h4>
+        <p>High-resolution scanning with quality checks ensuring zero data loss.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h4>PDF Creation</h4>
+        <p>Searchable PDFs generated with consistent naming and indexing.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <h4>Metadata Extraction</h4>
+        <p>Key data fields extracted and structured in the required format.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <h4>Portal Upload</h4>
+        <p>Verified digital files uploaded to the designated government platform.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div style="max-width:1000px;margin:0 auto">
+    <div class="section-header" style="margin-bottom:48px">
+      <p class="section-label">Reach Out</p>
+      <h2 class="section-title">Let's Work Together</h2>
+      <p class="section-intro">Whether you're a government department, a private enterprise, or a startup — get in touch and we'll find the right solution for you.</p>
+    </div>
+    <div class="contact-inner">
+      <div class="contact-info">
+        <h3>Contact Information</h3>
+        <div class="contact-item">
+          <div class="contact-ico">📍</div>
+          <div class="contact-txt">
+            <strong>Address</strong>
+            <span>Patna, Bihar, India</span>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-ico">📧</div>
+          <div class="contact-txt">
+            <strong>Email</strong>
+            <span>info@narasimhaglobal.com</span>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-ico">📞</div>
+          <div class="contact-txt">
+            <strong>Phone</strong>
+            <span>+91 &mdash; 9341554887</span>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-ico">🕐</div>
+          <div class="contact-txt">
+            <strong>Working Hours</strong>
+            <span>Mon – Sat: 9:00 AM – 6:00 PM</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="contact-form">
+        <h3>Send Us a Message</h3>
+        <form method="POST" action="{% url 'contact' %}">
+          {% csrf_token %}
+          <div class="form-row">
+            <div class="form-group">
+              <label for="name">Full Name *</label>
+              <input type="text" id="name" name="name" placeholder="Your full name" required />
+            </div>
+            <div class="form-group">
+              <label for="email">Email Address *</label>
+              <input type="email" id="email" name="email" placeholder="your@email.com" required />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="phone">Phone Number</label>
+              <input type="tel" id="phone" name="phone" placeholder="+91 XXXXX XXXXX" />
+            </div>
+            <div class="form-group">
+              <label for="subject">Subject *</label>
+              <input type="text" id="subject" name="subject" placeholder="How can we help?" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="message">Message *</label>
+            <textarea id="message" name="message" placeholder="Tell us about your project or requirement..." required></textarea>
+          </div>
+          <button type="submit" class="form-submit">Send Message →</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <img src="{% static 'core/images/logo.jpeg' %}" alt="NGS Logo" />
+      <p>Narasimha Global Service &amp; Solution Pvt. Ltd. — empowering government offices and businesses with skilled manpower and modern IT solutions from Patna, Bihar.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="#about">About Us</a></li>
+        <li><a href="#services">Our Services</a></li>
+        <li><a href="#how">How It Works</a></li>
+        <li><a href="#contact">Contact Us</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Services</h4>
+      <ul>
+        <li><span>Document Digitization</span></li>
+        <li><span>PDF Creation &amp; Archiving</span></li>
+        <li><span>Metadata Extraction</span></li>
+        <li><span>Government Portal Upload</span></li>
+        <li><span>Manpower Solutions</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 Narasimha Global Service &amp; Solution Pvt. Ltd. All rights reserved.</p>
+    <p class="cin">Patna, Bihar, India &nbsp;|&nbsp; NGS</p>
+  </div>
+</footer>
+
+</body>
+</html>
