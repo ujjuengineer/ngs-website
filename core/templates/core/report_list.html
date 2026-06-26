@@ -17,12 +17,23 @@
             <div class="card-body bg-white border-bottom p-4">
                 
                 <form method="GET" class="row g-3 align-items-end">
-                    <div class="col-md-3">
-                        <label class="form-label fw-semibold">Filter by Date</label>
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold">Specific Date</label>
                         <input type="date" name="date" class="form-control" value="{{ selected_date }}">
                     </div>
-                    <div class="col-md-3">
-                        <label class="form-label fw-semibold">Filter by Location</label>
+                    
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold">By Month</label>
+                        <select name="month" class="form-select">
+                            <option value="">-- All Months --</option>
+                            {% for m in available_months %}
+                                <option value="{{ m.value }}" {% if selected_month == m.value %}selected{% endif %}>{{ m.display }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold">Location</label>
                         <select name="location" class="form-select">
                             <option value="">-- All Locations --</option>
                             {% for loc_code, loc_name in locations %}
@@ -30,13 +41,15 @@
                             {% endfor %}
                         </select>
                     </div>
+                    
                     <div class="col-md-3">
-                        <label class="form-label fw-semibold">Search Employee Name</label>
+                        <label class="form-label fw-semibold">Employee Name</label>
                         <input type="text" name="name" class="form-control" placeholder="Search name..." value="{{ selected_name }}">
                     </div>
+                    
                     <div class="col-md-3 d-flex gap-2">
                         <button type="submit" class="btn btn-primary flex-grow-1">
-                            <i class="bi bi-filter me-1"></i> Apply Filters
+                            <i class="bi bi-filter me-1"></i> Apply
                         </button>
                         <a href="{% url 'report_list' %}" class="btn btn-outline-secondary" title="Clear Filters">
                             <i class="bi bi-arrow-clockwise"></i>

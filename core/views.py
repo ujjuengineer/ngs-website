@@ -104,62 +104,131 @@ def add_multiple_reports_view(request):
     else:
         formset = DailyReportFormSet(queryset=DailyReport.objects.none())
 
-    return render(request, 'reports/add_multiple_reports.html', {'formset': formset})
+    return render(request, 'core/add_multiple_reports.html', {'formset': formset})
+
 
 
 def report_list_view(request):
     queryset = DailyReport.objects.all()
 
+    # 1. Capture incoming filter data
     filter_date = request.GET.get('date', '').strip()
+    filter_month = request.GET.get('month', '').strip()  # Format expected: "YYYY-MM"
     filter_location = request.GET.get('location', '').strip()
     filter_name = request.GET.get('name', '').strip()
 
+    # 2. Apply filters independently
     if filter_date:
         queryset = queryset.filter(date=filter_date)
+        
+    if filter_month:
+        try:
+            # Split "2026-06" into year=2026 and month=6
+            year_part, month_part = map(int, filter_month.split('-'))
+            queryset = queryset.filter(date__year=year_part, date__month=month_part)
+        except ValueError:
+            pass # Handle invalid formats gracefully
+        
     if filter_location:
         queryset = queryset.filter(location=filter_location)
+        
     if filter_name:
         queryset = queryset.filter(name__icontains=filter_name)
 
+    # 3. Handle Excel Export (Preserves the new monthly filtering)
     if 'export_excel' in request.GET:
         wb = Workbook()
         ws = wb.active
-        ws.title = "Daily Reports"
-        headers = [
-            'Date', 'Location', 'Employee Name', 'Year', 'Volume No.',
-            'No. of Deeds', 'No. of Pages', 'PDF Complete', 'Indexing', 'Uploading', 'Metadata'
-        ]
+        ws.title = "Filtered Reports"
+        headers = ['Date', 'Location', 'Employee Name', 'Year', 'Volume No.', 'No. Deeds', 'No. Pages', 'PDF', 'Indexing', 'Uploading', 'Metadata']
         ws.append(headers)
         for report in queryset:
             ws.append([
                 report.date.strftime('%Y-%m-%d') if report.date else '',
-                report.get_location_display(),
-                report.name,
-                report.year,
-                report.volume_num,
-                report.num_of_deed,
-                report.num_of_page,
-                "Yes" if report.pdf_deed else "No",
-                "Yes" if report.indexing else "No",
-                "Yes" if report.uploading else "No",
-                "Yes" if report.metadata else "No",
+                report.get_location_display(), report.name, report.year, report.volume_num,
+                report.num_of_deed, report.num_of_page,
+                "Yes" if report.pdf_deed else "No", "Yes" if report.indexing else "No",
+                "Yes" if report.uploading else "No", "Yes" if report.metadata else "No",
             ])
-        response = HttpResponse(
-            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        )
-        response['Content-Disposition'] = f'attachment; filename=Daily_Reports_{datetime.date.today()}.xlsx'
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = f'attachment; filename=Reports_Export_{datetime.date.today()}.xlsx'
         wb.save(response)
         return response
 
-    locations = DailyReport.LOCATION_CHOICES
+    # 4. Generate dynamic list of months available in the database for the dropdown
+    # This grabs all unique dates, sorts them, and extracts unique YYYY-MM pairs
+    existing_dates = DailyReport.objects.dates('date', 'month', order='DESC')
+    available_months = []
+    for d in existing_dates:
+        available_months.append({
+            'value': d.strftime('%Y-%m'),      # Used in backend processing: "2026-06"
+            'display': d.strftime('%B %Y')     # Visible to users: "June 2026"
+        })
+
     context = {
         'reports': queryset,
-        'locations': locations,
+        'locations': DailyReport.LOCATION_CHOICES,
+        'available_months': available_months,
         'selected_date': filter_date,
+        'selected_month': filter_month,
         'selected_location': filter_location,
         'selected_name': filter_name,
     }
     return render(request, 'core/report_list.html', context)
+
+# def report_list_view(request):
+#     queryset = DailyReport.objects.all()
+
+#     filter_date = request.GET.get('date', '').strip()
+#     filter_location = request.GET.get('location', '').strip()
+#     filter_name = request.GET.get('name', '').strip()
+
+#     if filter_date:
+#         queryset = queryset.filter(date=filter_date)
+#     if filter_location:
+#         queryset = queryset.filter(location=filter_location)
+#     if filter_name:
+#         queryset = queryset.filter(name__icontains=filter_name)
+
+#     if 'export_excel' in request.GET:
+#         wb = Workbook()
+#         ws = wb.active
+#         ws.title = "Daily Reports"
+#         headers = [
+#             'Date', 'Location', 'Employee Name', 'Year', 'Volume No.',
+#             'No. of Deeds', 'No. of Pages', 'PDF Complete', 'Indexing', 'Uploading', 'Metadata'
+#         ]
+#         ws.append(headers)
+#         for report in queryset:
+#             ws.append([
+#                 report.date.strftime('%Y-%m-%d') if report.date else '',
+#                 report.get_location_display(),
+#                 report.name,
+#                 report.year,
+#                 report.volume_num,
+#                 report.num_of_deed,
+#                 report.num_of_page,
+#                 "Yes" if report.pdf_deed else "No",
+#                 "Yes" if report.indexing else "No",
+#                 "Yes" if report.uploading else "No",
+#                 "Yes" if report.metadata else "No",
+#             ])
+#         response = HttpResponse(
+#             content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+#         )
+#         response['Content-Disposition'] = f'attachment; filename=Daily_Reports_{datetime.date.today()}.xlsx'
+#         wb.save(response)
+#         return response
+
+#     locations = DailyReport.LOCATION_CHOICES
+#     context = {
+#         'reports': queryset,
+#         'locations': locations,
+#         'selected_date': filter_date,
+#         'selected_location': filter_location,
+#         'selected_name': filter_name,
+#     }
+#     return render(request, 'core/report_list.html', context)
 
 
 # ── UPDATE REPORT: Search by Year + Volume Number + Location ──
