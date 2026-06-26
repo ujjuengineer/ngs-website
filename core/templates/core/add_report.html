@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Submit Daily Report</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+
+    <div class="container mt-5 mb-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                            <strong>Success!</strong> {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <div class="card shadow border-0">
+                    <div class="card-header bg-dark text-white py-3">
+                        <h4 class="card-title mb-0">Employee Daily Work Log</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        
+                        <form method="POST" novalidate>
+                            {% csrf_token %}
+                            
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">{{ form.name.label }}</label>
+                                    {{ form.name }}
+                                    <div class="text-danger small">{{ form.name.errors }}</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">{{ form.location.label }}</label>
+                                    {{ form.location }}
+                                    <div class="text-danger small">{{ form.location.errors }}</div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">{{ form.year.label }}</label>
+                                    {{ form.year }}
+                                    <div class="text-danger small">{{ form.year.errors }}</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">{{ form.volume_num.label }}</label>
+                                    {{ form.volume_num }}
+                                    <div class="text-danger small">{{ form.volume_num.errors }}</div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">{{ form.num_of_deed.label }}</label>
+                                    {{ form.num_of_deed }}
+                                    <div class="text-danger small">{{ form.num_of_deed.errors }}</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">{{ form.num_of_page.label }}</label>
+                                    {{ form.num_of_page }}
+                                    <div class="text-danger small">{{ form.num_of_page.errors }}</div>
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
+
+                            <h5 class="mb-3 text-secondary">Work Processes Completed</h5>
+                            <div class="row row-cols-2 g-3 bg-light p-3 rounded border">
+                                <div class="col">
+                                    <div class="form-check form-switch">
+                                        {{ form.pdf_deed }}
+                                        <label class="form-check-label ms-2" for="{{ form.pdf_deed.id_for_label }}">{{ form.pdf_deed.label }}</label>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-check form-switch">
+                                        {{ form.indexing }}
+                                        <label class="form-check-label ms-2" for="{{ form.indexing.id_for_label }}">{{ form.indexing.label }}</label>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-check form-switch">
+                                        {{ form.uploading }}
+                                        <label class="form-check-label ms-2" for="{{ form.uploading.id_for_label }}">{{ form.uploading.label }}</label>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-check form-switch">
+                                        {{ form.metadata }}
+                                        <label class="form-check-label ms-2" for="{{ form.metadata.id_for_label }}">{{ form.metadata.label }}</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2 mt-4">
+                                <button type="submit" class="btn btn-primary btn-lg">Submit Report</button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Daily Work Logs</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+</head>
+<body class="bg-light">
+
+    <div class="container-fluid mt-5 px-4">
+        <div class="card shadow border-0 mb-4">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-3">
+                <h4 class="mb-0"><i class="bi bi-table me-2"></i>Employee Daily Reports</h4>
+                <a href="{% url 'add_daily_report' %}" class="btn btn-sm btn-success"><i class="bi bi-plus-circle me-1"></i> Add New Log</a>
+            </div>
+            <div class="card-body bg-white border-bottom p-4">
+                
+                <form method="GET" class="row g-3 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">Filter by Date</label>
+                        <input type="date" name="date" class="form-control" value="{{ selected_date }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">Filter by Location</label>
+                        <select name="location" class="form-select">
+                            <option value="">-- All Locations --</option>
+                            {% for loc_code, loc_name in locations %}
+                                <option value="{{ loc_code }}" {% if selected_location == loc_code %}selected{% endif %}>{{ loc_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">Search Employee Name</label>
+                        <input type="text" name="name" class="form-control" placeholder="Search name..." value="{{ selected_name }}">
+                    </div>
+                    <div class="col-md-3 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary flex-grow-1">
+                            <i class="bi bi-filter me-1"></i> Apply Filters
+                        </button>
+                        <a href="{% url 'report_list' %}" class="btn btn-outline-secondary" title="Clear Filters">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </a>
+                        <button type="submit" name="export_excel" value="1" class="btn btn-success" title="Export current view to Excel">
+                            <i class="bi bi-file-earmark-excel"></i> Excel
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover table-striped align-middle mb-0">
+                    <thead class="table-light border-bottom">
+                        <tr>
+                            <th>Date</th>
+                            <th>Location</th>
+                            <th>Employee Name</th>
+                            <th>Year</th>
+                            <th>Volume</th>
+                            <th>No. of Deeds</th>
+                            <th>No. of Pages</th>
+                            <th class="text-center">PDF</th>
+                            <th class="text-center">Indexing</th>
+                            <th class="text-center">Uploading</th>
+                            <th class="text-center">Metadata</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for report in reports %}
+                        <tr>
+                            <td class="fw-medium">{{ report.date|date:"Y-m-d" }}</td>
+                            <td><span class="badge bg-secondary-subtle text-secondary border px-2 py-1">{{ report.get_location_display }}</span></td>
+                            <td class="text-uppercase fw-semibold text-dark">{{ report.name }}</td>
+                            <td>{{ report.year }}</td>
+                            <td>{{ report.volume_num }}</td>
+                            <td>{{ report.num_of_deed }}</td>
+                            <td>{{ report.num_of_page }}</td>
+                            <td class="text-center">
+                                {% if report.pdf_deed %}<i class="bi bi-check-circle-fill text-success fs-5"></i>{% else %}<i class="bi bi-x-circle text-muted"></i>{% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if report.indexing %}<i class="bi bi-check-circle-fill text-success fs-5"></i>{% else %}<i class="bi bi-x-circle text-muted"></i>{% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if report.uploading %}<i class="bi bi-check-circle-fill text-success fs-5"></i>{% else %}<i class="bi bi-x-circle text-muted"></i>{% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if report.metadata %}<i class="bi bi-check-circle-fill text-success fs-5"></i>{% else %}<i class="bi bi-x-circle text-muted"></i>{% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="11" class="text-center py-5 text-muted">
+                                <i class="bi bi-file-earmark-break display-4 d-block mb-2"></i>
+                                No logs matched your selected filtering parameters.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

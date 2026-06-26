@@ -1,5 +1,7 @@
 from django.db import models
 import uuid
+from django.utils import timezone
+
 
 class ContactMessage(models.Model):
     name = models.CharField(max_length=200)
@@ -49,4 +51,54 @@ class CompanyCertificate(models.Model):
     def __str__(self):
         return f"{self.certificate_number} - {self.recipient_name}"
     
-# removed hello world
+
+class DailyReport(models.Model):
+    # Location choices
+    LOCATION_CHOICES = [
+        ('SHERGHATI', 'Sherghati'),
+        ('TEKARI', 'Tekari'),
+        ('AURANGABAD', 'Aurangabad'),
+        ('JAHANABAD', 'Jahanabad'),
+        ('NAWADA', 'Nawada'),
+    ]
+
+    # Date field - auto sets to current date
+    date = models.DateField(default=timezone.now, verbose_name="Report Date")
+    
+    # Location drop-down selection
+    location = models.CharField(
+        max_length=50, 
+        choices=LOCATION_CHOICES, 
+        verbose_name="Location"
+    )
+    
+    # Name - character field (will auto-capitalize on save)
+    name = models.CharField(max_length=255, verbose_name="Employee Name")
+    
+    # Year and Volume fields
+    year = models.CharField(max_length=9, verbose_name="Year")
+    volume_num = models.CharField(max_length=100, verbose_name="Volume Number")
+    
+    # Quantitative tracking fields
+    num_of_deed = models.IntegerField(verbose_name="Number of Deeds")
+    num_of_page = models.IntegerField(verbose_name="Number of Pages")
+    
+    # Status / Workflow progress boolean fields
+    pdf_deed = models.BooleanField(default=False, verbose_name="PDF (Deed)")
+    indexing = models.BooleanField(default=False, verbose_name="Indexing")
+    uploading = models.BooleanField(default=False, verbose_name="Uploading")
+    metadata = models.BooleanField(default=False, verbose_name="Meta Data")
+
+    class Meta:
+        verbose_name = "Daily Report"
+        verbose_name_plural = "Daily Reports"
+        ordering = ['-date', 'location']
+
+    def save(self, *args, **kwargs):
+        # Automatically capitalize the name field before writing to database
+        if self.name:
+            self.name = self.name.upper()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.date} - {self.name} ({self.location})"
