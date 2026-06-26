@@ -1,0 +1,174 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit Report | NGS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy-dk: #1F2935; --navy: #2C3947; --navy-lt: #3B4D61;
+      --blue: #547A95; --gold: #C2A56D; --gold-lt: #D2B985;
+      --gold-pale: #E5D6B7; --bg: #E8EDF2; --white: #fff;
+      --text: #2C3947; --muted: #5E6B77;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    nav {
+      background: var(--navy-dk); border-bottom: 2px solid var(--gold);
+      padding: 0 5%; height: 64px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-brand img { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; }
+    .nav-brand span { font-family: 'Cinzel', serif; color: var(--gold-lt); font-size: 0.9rem; }
+    .nav-back { color: var(--gold-pale); text-decoration: none; font-size: 0.82rem; letter-spacing: 0.06em; text-transform: uppercase; }
+    .nav-back:hover { color: var(--gold-lt); }
+
+    .page { max-width: 700px; margin: 48px auto; padding: 0 20px 60px; }
+    .page-label { font-family: 'Cinzel', serif; color: var(--gold); font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 8px; }
+    .page-title { font-family: 'Cinzel', serif; color: var(--navy-dk); font-size: 1.8rem; font-weight: 700; margin-bottom: 6px; }
+    .page-sub { color: var(--muted); font-size: 0.88rem; margin-bottom: 32px; }
+
+    .card { background: var(--white); border-radius: 12px; padding: 36px; border: 1px solid rgba(194,165,109,0.25); }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-group { margin-bottom: 18px; }
+    .form-group label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--navy); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+    .form-group input, .form-group select {
+      width: 100%; padding: 11px 14px; border: 1.5px solid rgba(44,57,71,0.2);
+      border-radius: 6px; font-size: 0.9rem; font-family: 'Inter', sans-serif;
+      background: var(--bg); color: var(--text); outline: none; transition: border-color 0.2s;
+    }
+    .form-group input:focus, .form-group select:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(194,165,109,0.15); }
+
+    /* Checkbox group */
+    .checkbox-section { margin-bottom: 24px; }
+    .checkbox-section h4 { font-family: 'Cinzel', serif; color: var(--navy-dk); font-size: 0.85rem; margin-bottom: 14px; letter-spacing: 0.06em; }
+    .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .checkbox-item {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--bg); padding: 12px 16px; border-radius: 8px;
+      border: 1.5px solid rgba(44,57,71,0.15); cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .checkbox-item:hover { border-color: var(--gold); }
+    .checkbox-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--navy); cursor: pointer; }
+    .checkbox-item label { font-size: 0.88rem; font-weight: 500; cursor: pointer; margin: 0; text-transform: none; letter-spacing: 0; color: var(--text); }
+
+    .form-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn-save {
+      flex: 1; background: linear-gradient(135deg, var(--navy-dk), var(--navy-lt));
+      color: var(--gold-pale); border: none; padding: 13px; border-radius: 6px;
+      font-size: 0.9rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+      cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s;
+    }
+    .btn-save:hover { background: linear-gradient(135deg, var(--navy-lt), var(--blue)); transform: translateY(-1px); }
+    .btn-discard {
+      padding: 13px 24px; border-radius: 6px; font-size: 0.88rem; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none;
+      border: 1.5px solid rgba(44,57,71,0.2); color: var(--muted); transition: all 0.2s;
+    }
+    .btn-discard:hover { border-color: var(--navy); color: var(--navy); }
+
+    .error-list { background: rgba(180,30,30,0.08); border: 1px solid rgba(180,30,30,0.2); border-radius: 6px; padding: 10px 14px; margin-top: 6px; }
+    .error-list li { color: #8b1a1a; font-size: 0.82rem; list-style: none; }
+
+    @media (max-width: 600px) {
+      .form-row, .checkbox-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-brand">
+    <img src="{% static 'core/images/logo.jpeg' %}" alt="NGS" />
+    <span>Narasimha Global</span>
+  </a>
+  <a href="{% url 'update_report_search' %}" class="nav-back">← Back to Search</a>
+</nav>
+
+<div class="page">
+  <p class="page-label">Staff Portal</p>
+  <h1 class="page-title">Edit Report</h1>
+  <p class="page-sub">Updating report for <strong>{{ object.name }}</strong> — {{ object.get_location_display }}, Year {{ object.year }}, Volume {{ object.volume_num }}</p>
+
+  <div class="card">
+    <form method="POST">
+      {% csrf_token %}
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Report Date</label>
+          {{ form.date }}
+          {% if form.date.errors %}<ul class="error-list">{% for e in form.date.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+        </div>
+        <div class="form-group">
+          <label>Location</label>
+          {{ form.location }}
+          {% if form.location.errors %}<ul class="error-list">{% for e in form.location.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Employee Name</label>
+        {{ form.name }}
+        {% if form.name.errors %}<ul class="error-list">{% for e in form.name.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Year</label>
+          {{ form.year }}
+          {% if form.year.errors %}<ul class="error-list">{% for e in form.year.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+        </div>
+        <div class="form-group">
+          <label>Volume Number</label>
+          {{ form.volume_num }}
+          {% if form.volume_num.errors %}<ul class="error-list">{% for e in form.volume_num.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Number of Deeds</label>
+          {{ form.num_of_deed }}
+          {% if form.num_of_deed.errors %}<ul class="error-list">{% for e in form.num_of_deed.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+        </div>
+        <div class="form-group">
+          <label>Number of Pages</label>
+          {{ form.num_of_page }}
+          {% if form.num_of_page.errors %}<ul class="error-list">{% for e in form.num_of_page.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+        </div>
+      </div>
+
+      <div class="checkbox-section">
+        <h4>Workflow Status</h4>
+        <div class="checkbox-grid">
+          <label class="checkbox-item">
+            {{ form.pdf_deed }} <span>PDF (Deed)</span>
+          </label>
+          <label class="checkbox-item">
+            {{ form.indexing }} <span>Indexing</span>
+          </label>
+          <label class="checkbox-item">
+            {{ form.uploading }} <span>Uploading</span>
+          </label>
+          <label class="checkbox-item">
+            {{ form.metadata }} <span>Metadata</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-save">Save Changes →</button>
+        <a href="{% url 'update_report_search' %}?year={{ object.year }}&volume_num={{ object.volume_num }}&location={{ object.location }}" class="btn-discard">Discard</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+</body>
+</html>

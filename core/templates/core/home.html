@@ -30,78 +30,43 @@
         --gold-pale:  var(--sand-pale);
         --cream:      var(--bg);
     }
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body { font-family: 'Inter', sans-serif; background: var(--cream); color: var(--text-body); line-height: 1.6; }
-
-    /* ── NAV ── */
     nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      background: rgba(31,41,53,0.97);
-      backdrop-filter: blur(12px);
+      background: rgba(31,41,53,0.97); backdrop-filter: blur(12px);
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 5%;
-      height: 72px;
-      border-bottom: 2px solid var(--sand);
+      padding: 0 5%; height: 72px; border-bottom: 2px solid var(--sand);
     }
     .nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
     .nav-logo { width: 46px; height: 46px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; }
     .nav-name { font-family: 'Cinzel', serif; color: var(--gold-lt); font-size: 0.95rem; letter-spacing: 0.04em; line-height: 1.2; }
     .nav-name span { display: block; font-size: 0.65rem; color: var(--gold-pale); font-weight: 400; }
-
-    /* Dropdown nav */
     .nav-links { display: flex; gap: 24px; list-style: none; align-items: center; }
     .nav-links > li { position: relative; }
-    .nav-links a {
-      color: var(--gold-pale); text-decoration: none; font-size: 0.85rem;
-      font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.2s;
-      display: flex; align-items: center; gap: 4px;
-    }
+    .nav-links a { color: var(--gold-pale); text-decoration: none; font-size: 0.85rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.2s; display: flex; align-items: center; gap: 4px; }
     .nav-links a:hover { color: var(--gold-lt); }
     .nav-cta { background: var(--gold); color: var(--navy-dk) !important; padding: 8px 20px; border-radius: 4px; font-weight: 600 !important; }
     .nav-cta:hover { background: var(--gold-lt) !important; }
-
-    /* Dropdown */
     .nav-dropdown { position: relative; }
     .nav-dropdown > a::after { content: '▾'; font-size: 0.7rem; margin-left: 2px; }
-    .dropdown-menu {
-      display: none; position: absolute; top: calc(100% + 12px); left: 0;
-      background: var(--navy-dk); border: 1px solid rgba(194,165,109,0.3);
-      border-radius: 8px; min-width: 200px; overflow: hidden;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-    }
+    .dropdown-menu { display: none; position: absolute; top: calc(100% + 12px); left: 0; background: var(--navy-dk); border: 1px solid rgba(194,165,109,0.3); border-radius: 8px; min-width: 210px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
     .nav-dropdown:hover .dropdown-menu { display: block; }
-    .dropdown-menu a {
-      display: block; padding: 12px 18px;
-      color: var(--gold-pale) !important; font-size: 0.82rem !important;
-      letter-spacing: 0.05em !important; border-bottom: 1px solid rgba(194,165,109,0.1);
-      text-transform: none !important;
-    }
+    .dropdown-menu a { display: block; padding: 12px 18px; color: var(--gold-pale) !important; font-size: 0.82rem !important; letter-spacing: 0.05em !important; border-bottom: 1px solid rgba(194,165,109,0.1); text-transform: none !important; }
     .dropdown-menu a:last-child { border-bottom: none; }
     .dropdown-menu a:hover { background: rgba(194,165,109,0.1); color: var(--gold-lt) !important; }
     .dropdown-menu .drop-icon { margin-right: 8px; }
-
-    /* ── HERO ── */
     .hero {
       min-height: 100vh;
-      background:
-          linear-gradient(160deg, rgba(31,41,53,0.95) 0%, rgba(84,122,149,0.85) 50%, rgba(31,41,53,0.95) 100%),
+      background: linear-gradient(160deg, rgba(31,41,53,0.95) 0%, rgba(84,122,149,0.85) 50%, rgba(31,41,53,0.95) 100%),
           url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C2A56D' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-      display: flex; align-items: center; justify-content: center;
-      padding: 100px 5% 60px; text-align: center;
+      display: flex; align-items: center; justify-content: center; padding: 100px 5% 60px; text-align: center;
     }
     .hero-inner { max-width: 860px; }
     .hero-logo-wrap { position: relative; display: inline-block; margin-bottom: 36px; }
-    .hero-logo {
-      width: 160px; height: 160px; border-radius: 50%; border: 4px solid var(--gold);
-      object-fit: cover; box-shadow: 0 0 0 8px rgba(194,165,109,0.15), 0 0 60px rgba(194,165,109,0.3);
-    }
-    .hero-badge {
-      position: absolute; bottom: 4px; right: -8px; background: var(--gold);
-      color: var(--navy-dk); font-size: 0.62rem; font-weight: 700;
-      letter-spacing: 0.1em; padding: 4px 10px; border-radius: 20px; text-transform: uppercase;
-    }
+    .hero-logo { width: 160px; height: 160px; border-radius: 50%; border: 4px solid var(--gold); object-fit: cover; box-shadow: 0 0 0 8px rgba(194,165,109,0.15), 0 0 60px rgba(194,165,109,0.3); }
+    .hero-badge { position: absolute; bottom: 4px; right: -8px; background: var(--gold); color: var(--navy-dk); font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; }
     .hero h1 { font-family: 'Cinzel', serif; color: var(--white); font-size: clamp(2rem, 5vw, 3.6rem); font-weight: 900; line-height: 1.1; letter-spacing: 0.02em; margin-bottom: 8px; }
     .hero h1 em { font-style: normal; color: var(--gold-lt); }
     .hero-subtitle { font-family: 'Cinzel', serif; color: var(--gold-pale); font-size: 0.85rem; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 24px; }
@@ -114,15 +79,11 @@
     .divider { display: flex; align-items: center; gap: 16px; max-width: 200px; margin: 0 auto; padding: 48px 0 0; }
     .divider-line { flex: 1; height: 1px; background: rgba(194,165,109,0.4); }
     .divider-icon { color: var(--gold); font-size: 1.2rem; }
-
-    /* ── SECTION ── */
     section { padding: 80px 5%; }
     .section-label { font-family: 'Cinzel', serif; color: var(--gold); font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase; margin-bottom: 10px; }
     .section-title { font-family: 'Cinzel', serif; font-size: clamp(1.6rem, 3vw, 2.4rem); font-weight: 700; color: var(--navy-dk); margin-bottom: 16px; line-height: 1.2; }
     .section-intro { color: var(--text-muted); font-size: 1rem; max-width: 560px; line-height: 1.75; }
     .section-header { margin-bottom: 56px; }
-
-    /* ── ABOUT ── */
     .about { background: var(--white); }
     .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; max-width: 1100px; margin: 0 auto; }
     .about-visual { background: var(--navy-dk); border-radius: 8px; padding: 40px; text-align: center; position: relative; overflow: hidden; }
@@ -133,8 +94,6 @@
     .stat { text-align: center; }
     .stat-num { font-family: 'Cinzel', serif; font-size: 2.2rem; font-weight: 900; color: var(--gold); line-height: 1; }
     .stat-lbl { font-size: 0.75rem; color: var(--gold-pale); letter-spacing: 0.08em; margin-top: 4px; }
-
-    /* ── SERVICES ── */
     .services { background: var(--cream); }
     .services-inner { max-width: 1100px; margin: 0 auto; }
     .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 28px; }
@@ -145,57 +104,31 @@
     .card h3 { font-family: 'Cinzel', serif; font-size: 1.05rem; color: var(--navy-dk); margin-bottom: 10px; }
     .card p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.7; }
 
-    /* ── PORTAL SECTION ── */
+    /* ── PORTAL ── */
     .portal { background: var(--white); }
     .portal-inner { max-width: 1100px; margin: 0 auto; }
-    .portal-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 28px; }
+    .portal-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 28px; }
     .portal-card {
-      border-radius: 12px; padding: 40px 36px;
-      display: flex; flex-direction: column; gap: 16px;
+      border-radius: 12px; padding: 36px 32px;
       position: relative; overflow: hidden;
-      transition: all 0.25s;
-      text-decoration: none;
+      transition: transform 0.25s, box-shadow 0.25s;
     }
-    .portal-card:hover { transform: translateY(-4px); }
-    .portal-card.primary {
-      background: linear-gradient(135deg, var(--navy-dk), var(--navy-lt));
-      border: 2px solid rgba(194,165,109,0.3);
-    }
-    .portal-card.secondary {
-      background: linear-gradient(135deg, var(--blue), var(--navy));
-      border: 2px solid rgba(194,165,109,0.2);
-    }
-    .portal-card::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0;
-      height: 3px; background: linear-gradient(90deg, var(--gold), var(--gold-lt));
-    }
-    .portal-card-icon { font-size: 2.4rem; }
-    .portal-card-badge {
-      display: inline-block; background: rgba(194,165,109,0.2);
-      color: var(--gold-lt); font-size: 0.68rem; font-weight: 700;
-      letter-spacing: 0.12em; text-transform: uppercase;
-      padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(194,165,109,0.3);
-      width: fit-content;
-    }
-    .portal-card h3 { font-family: 'Cinzel', serif; color: var(--white); font-size: 1.2rem; }
-    .portal-card p { color: rgba(229,214,183,0.75); font-size: 0.88rem; line-height: 1.7; flex: 1; }
-    .portal-card-btn {
+    .portal-card:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(0,0,0,0.2); }
+    .portal-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--gold), var(--gold-lt)); }
+    .portal-card-icon { font-size: 2.2rem; margin-bottom: 14px; }
+    .portal-card-badge { display: inline-block; background: rgba(194,165,109,0.2); color: var(--gold-lt); font-size: 0.66rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 4px 10px; border-radius: 20px; border: 1px solid rgba(194,165,109,0.3); margin-bottom: 12px; }
+    .portal-card h3 { font-family: 'Cinzel', serif; color: var(--white); font-size: 1.1rem; margin-bottom: 10px; }
+    .portal-card p { color: rgba(229,214,183,0.72); font-size: 0.86rem; line-height: 1.7; margin-bottom: 22px; }
+    .portal-btn {
       display: inline-flex; align-items: center; gap: 8px;
-      background: var(--gold); color: var(--navy-dk);
-      padding: 12px 24px; border-radius: 6px;
-      font-weight: 700; font-size: 0.85rem;
-      letter-spacing: 0.06em; text-transform: uppercase;
-      text-decoration: none; transition: all 0.2s;
-      width: fit-content; margin-top: 8px;
+      padding: 11px 22px; border-radius: 6px; font-weight: 700; font-size: 0.83rem;
+      letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; transition: all 0.2s;
     }
-    .portal-card-btn:hover { background: var(--gold-lt); }
-    .portal-card-btn.outline {
-      background: transparent; color: var(--gold-pale);
-      border: 2px solid rgba(194,165,109,0.5);
-    }
-    .portal-card-btn.outline:hover { background: rgba(194,165,109,0.1); border-color: var(--gold-lt); color: var(--gold-lt); }
+    .portal-btn.solid { background: var(--gold); color: var(--navy-dk); }
+    .portal-btn.solid:hover { background: var(--gold-lt); }
+    .portal-btn.outline { background: transparent; color: var(--gold-pale); border: 2px solid rgba(194,165,109,0.45); }
+    .portal-btn.outline:hover { background: rgba(194,165,109,0.1); border-color: var(--gold-lt); color: var(--gold-lt); }
 
-    /* ── HOW IT WORKS ── */
     .how { background: var(--navy-dk); padding: 80px 5%; }
     .how .section-title { color: var(--white); }
     .how .section-label { color: var(--gold-pale); }
@@ -206,8 +139,6 @@
     .step-num { width: 72px; height: 72px; background: var(--navy-lt); border: 2px solid var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Cinzel', serif; font-size: 1.4rem; font-weight: 700; color: var(--gold); margin: 0 auto 20px; position: relative; z-index: 1; }
     .step h4 { font-family: 'Cinzel', serif; color: var(--gold-pale); font-size: 0.9rem; margin-bottom: 8px; }
     .step p { font-size: 0.8rem; color: rgba(229,214,183,0.6); line-height: 1.6; }
-
-    /* ── CONTACT ── */
     .contact { background: var(--cream); }
     .contact-inner { display: grid; grid-template-columns: 1fr 1.4fr; gap: 64px; max-width: 1000px; margin: 0 auto; align-items: start; }
     .contact-info h3 { font-family: 'Cinzel', serif; color: var(--navy-dk); font-size: 1.4rem; margin-bottom: 24px; }
@@ -225,13 +156,9 @@
     .form-group textarea { resize: vertical; min-height: 120px; }
     .form-submit { width: 100%; background: linear-gradient(135deg, var(--navy-dk), var(--navy-lt)); color: var(--gold-pale); border: none; padding: 14px; border-radius: 6px; font-size: 0.9rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; font-family: 'Inter', sans-serif; }
     .form-submit:hover { background: linear-gradient(135deg, var(--navy-lt), var(--blue)); transform: translateY(-1px); }
-
-    /* ── MESSAGES ── */
     .messages-bar { background: var(--navy-dk); padding: 12px 5%; margin-top: 72px; }
     .msg-success { background: rgba(40,120,40,0.9); color: white; padding: 14px 20px; border-radius: 6px; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; }
     .msg-error { background: rgba(180,30,30,0.9); color: white; padding: 14px 20px; border-radius: 6px; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; }
-
-    /* ── FOOTER ── */
     footer { background: var(--navy-dk); border-top: 2px solid var(--gold); padding: 48px 5% 24px; }
     .footer-top { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 48px; margin-bottom: 40px; }
     .footer-brand img { width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--gold); margin-bottom: 16px; }
@@ -244,8 +171,6 @@
     .footer-bottom { border-top: 1px solid rgba(194,165,109,0.2); padding-top: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
     .footer-bottom p { color: rgba(229,214,183,0.4); font-size: 0.8rem; }
     .cin { color: rgba(229,214,183,0.35); font-size: 0.75rem; }
-
-    /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
       .nav-links { display: none; }
       .about-grid, .contact-inner { grid-template-columns: 1fr; }
@@ -259,14 +184,10 @@
 </head>
 <body>
 
-<!-- NAV -->
 <nav>
   <a href="#" class="nav-brand">
     <img src="{% static 'core/images/logo.jpeg' %}" alt="NGS Logo" class="nav-logo" />
-    <span class="nav-name">
-      Narasimha Global
-      <span>Service &amp; Solution Pvt. Ltd.</span>
-    </span>
+    <span class="nav-name">Narasimha Global<span>Service &amp; Solution Pvt. Ltd.</span></span>
   </a>
   <ul class="nav-links">
     <li><a href="#about">About</a></li>
@@ -277,14 +198,13 @@
       <div class="dropdown-menu">
         <a href="{% url 'add_daily_report' %}"><span class="drop-icon">📝</span> Add Daily Report</a>
         <a href="{% url 'add_daily_report_bulk' %}"><span class="drop-icon">📋</span> Bulk Report Entry</a>
-        <a href="{% url 'report_list' %}"><span class="drop-icon">📊</span> View All Reports</a>
+        <a href="{% url 'update_report_search' %}"><span class="drop-icon">✏️</span> Update Report</a>
       </div>
     </li>
     <li><a href="#contact" class="nav-cta">Contact Us</a></li>
   </ul>
 </nav>
 
-<!-- DJANGO MESSAGES -->
 {% if messages %}
 <div class="messages-bar">
   {% for message in messages %}
@@ -298,7 +218,6 @@
 <div style="height:72px"></div>
 {% endif %}
 
-<!-- HERO -->
 <section class="hero" id="home">
   <div class="hero-inner">
     <div class="hero-logo-wrap">
@@ -307,24 +226,15 @@
     </div>
     <p class="hero-subtitle">Narasimha Global Service &amp; Solution Private Limited</p>
     <h1>Empowering <em>Government</em><br/>and Business</h1>
-    <p class="hero-desc">
-      We bridge the gap between traditional record-keeping and the digital future —
-      delivering skilled manpower and end-to-end IT solutions that transform how
-      governments and businesses operate across Bihar and beyond.
-    </p>
+    <p class="hero-desc">We bridge the gap between traditional record-keeping and the digital future — delivering skilled manpower and end-to-end IT solutions that transform how governments and businesses operate across Bihar and beyond.</p>
     <div class="hero-btns">
       <a href="#services" class="btn-primary">Explore Our Services</a>
       <a href="#contact" class="btn-outline">Get In Touch</a>
     </div>
-    <div class="divider">
-      <div class="divider-line"></div>
-      <span class="divider-icon">✦</span>
-      <div class="divider-line"></div>
-    </div>
+    <div class="divider"><div class="divider-line"></div><span class="divider-icon">✦</span><div class="divider-line"></div></div>
   </div>
 </section>
 
-<!-- ABOUT -->
 <section class="about" id="about">
   <div class="about-grid">
     <div class="about-visual">
@@ -339,21 +249,12 @@
     <div>
       <p class="section-label">Who We Are</p>
       <h2 class="section-title">Bihar's Trusted Partner in Digital Transformation</h2>
-      <p class="section-intro">
-        Narasimha Global Service &amp; Solution Pvt. Ltd. (NGS) was founded with a clear mission: to digitize,
-        streamline, and modernize the way government offices and businesses manage their critical records.
-      </p>
-      <p style="color:var(--text-muted);font-size:0.9rem;margin-top:20px;line-height:1.8">
-        Based in Patna, Bihar, our team of trained professionals handles every step of the document
-        digitization lifecycle — from physical scanning and PDF creation to metadata extraction and
-        secure upload to official government portals. We also provide skilled manpower solutions to
-        ensure offices are staffed with qualified personnel.
-      </p>
+      <p class="section-intro">Narasimha Global Service &amp; Solution Pvt. Ltd. (NGS) was founded with a clear mission: to digitize, streamline, and modernize the way government offices and businesses manage their critical records.</p>
+      <p style="color:var(--text-muted);font-size:0.9rem;margin-top:20px;line-height:1.8">Based in Patna, Bihar, our team of trained professionals handles every step of the document digitization lifecycle — from physical scanning and PDF creation to metadata extraction and secure upload to official government portals. We also provide skilled manpower solutions to ensure offices are staffed with qualified personnel.</p>
     </div>
   </div>
 </section>
 
-<!-- SERVICES -->
 <section class="services" id="services">
   <div class="services-inner">
     <div class="section-header">
@@ -381,37 +282,38 @@
       <p class="section-intro">Quick access for NGS team members to submit and manage daily work reports.</p>
     </div>
     <div class="portal-cards">
-      <div style="background: linear-gradient(135deg, var(--navy-dk), var(--navy-lt)); border: 2px solid rgba(194,165,109,0.3); border-radius: 12px; padding: 40px 36px; position: relative; overflow: hidden; transition: all 0.25s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
-        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--gold-lt))"></div>
-        <div style="font-size:2.4rem;margin-bottom:16px">📝</div>
-        <span style="display:inline-block;background:rgba(194,165,109,0.2);color:var(--gold-lt);font-size:0.68rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:4px 10px;border-radius:20px;border:1px solid rgba(194,165,109,0.3);margin-bottom:14px">Single Entry</span>
-        <h3 style="font-family:'Cinzel',serif;color:var(--white);font-size:1.2rem;margin-bottom:10px">Add Daily Report</h3>
-        <p style="color:rgba(229,214,183,0.75);font-size:0.88rem;line-height:1.7;margin-bottom:24px">Submit your daily work report — document count, pages scanned, location, and task details for a single entry.</p>
-        <a href="{% url 'add_daily_report' %}" style="display:inline-flex;align-items:center;gap:8px;background:var(--gold);color:var(--navy-dk);padding:12px 24px;border-radius:6px;font-weight:700;font-size:0.85rem;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;transition:all 0.2s;">Submit Report →</a>
+
+      <!-- Add Daily Report -->
+      <div class="portal-card" style="background: linear-gradient(135deg, var(--navy-dk), var(--navy-lt)); border: 2px solid rgba(194,165,109,0.3);">
+        <div class="portal-card-icon">📝</div>
+        <span class="portal-card-badge">Single Entry</span>
+        <h3>Add Daily Report</h3>
+        <p>Submit your daily work report — document count, pages scanned, location, and task details for a single entry.</p>
+        <a href="{% url 'add_daily_report' %}" class="portal-btn solid">Submit Report →</a>
       </div>
 
-      <div style="background: linear-gradient(135deg, var(--blue), var(--navy)); border: 2px solid rgba(194,165,109,0.2); border-radius: 12px; padding: 40px 36px; position: relative; overflow: hidden; transition: all 0.25s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
-        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--gold-lt))"></div>
-        <div style="font-size:2.4rem;margin-bottom:16px">📋</div>
-        <span style="display:inline-block;background:rgba(194,165,109,0.2);color:var(--gold-lt);font-size:0.68rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:4px 10px;border-radius:20px;border:1px solid rgba(194,165,109,0.3);margin-bottom:14px">Bulk Entry</span>
-        <h3 style="font-family:'Cinzel',serif;color:var(--white);font-size:1.2rem;margin-bottom:10px">Bulk Report Entry</h3>
-        <p style="color:rgba(229,214,183,0.75);font-size:0.88rem;line-height:1.7;margin-bottom:24px">Submit multiple daily reports at once — ideal for supervisors entering data for an entire team or multiple days.</p>
-        <a href="{% url 'add_daily_report_bulk' %}" style="display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--gold-pale);padding:12px 24px;border-radius:6px;font-weight:700;font-size:0.85rem;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;transition:all 0.2s;border:2px solid rgba(194,165,109,0.5);">Bulk Submit →</a>
+      <!-- Bulk Report Entry -->
+      <div class="portal-card" style="background: linear-gradient(135deg, var(--blue), var(--navy)); border: 2px solid rgba(194,165,109,0.2);">
+        <div class="portal-card-icon">📋</div>
+        <span class="portal-card-badge">Bulk Entry</span>
+        <h3>Bulk Report Entry</h3>
+        <p>Submit multiple daily reports at once — ideal for supervisors entering data for an entire team or multiple days.</p>
+        <a href="{% url 'add_daily_report_bulk' %}" class="portal-btn outline">Bulk Submit →</a>
       </div>
 
-      <!-- <div style="background: linear-gradient(135deg, #1a3a4a, #2a4a5a); border: 2px solid rgba(194,165,109,0.2); border-radius: 12px; padding: 40px 36px; position: relative; overflow: hidden; transition: all 0.25s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
-        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--gold-lt))"></div>
-        <div style="font-size:2.4rem;margin-bottom:16px">📊</div>
-        <span style="display:inline-block;background:rgba(194,165,109,0.2);color:var(--gold-lt);font-size:0.68rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:4px 10px;border-radius:20px;border:1px solid rgba(194,165,109,0.3);margin-bottom:14px">View Records</span>
-        <h3 style="font-family:'Cinzel',serif;color:var(--white);font-size:1.2rem;margin-bottom:10px">All Reports</h3>
-        <p style="color:rgba(229,214,183,0.75);font-size:0.88rem;line-height:1.7;margin-bottom:24px">View and filter all submitted daily reports. Track team progress, review submissions, and monitor overall project status.</p>
-        <a href="{% url 'report_list' %}" style="display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--gold-pale);padding:12px 24px;border-radius:6px;font-weight:700;font-size:0.85rem;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;transition:all 0.2s;border:2px solid rgba(194,165,109,0.5);">View Reports →</a>
-      </div> -->
+      <!-- Update Report -->
+      <div class="portal-card" style="background: linear-gradient(135deg, #1a3a4a, #2a4a5a); border: 2px solid rgba(194,165,109,0.2);">
+        <div class="portal-card-icon">✏️</div>
+        <span class="portal-card-badge">Edit Record</span>
+        <h3>Update Report</h3>
+        <p>Search for an existing report by Year, Volume Number and Location — then update its details or workflow status.</p>
+        <a href="{% url 'update_report_search' %}" class="portal-btn outline">Update Report →</a>
+      </div>
+
     </div>
   </div>
 </section>
 
-<!-- HOW IT WORKS -->
 <section class="how" id="how">
   <div style="max-width:1000px;margin:0 auto">
     <div class="section-header">
@@ -429,7 +331,6 @@
   </div>
 </section>
 
-<!-- CONTACT -->
 <section class="contact" id="contact">
   <div style="max-width:1000px;margin:0 auto">
     <div class="section-header" style="margin-bottom:48px">
@@ -440,22 +341,10 @@
     <div class="contact-inner">
       <div class="contact-info">
         <h3>Contact Information</h3>
-        <div class="contact-item">
-          <div class="contact-ico">📍</div>
-          <div class="contact-txt"><strong>Address</strong><span>Patna, Bihar, India</span></div>
-        </div>
-        <div class="contact-item">
-          <div class="contact-ico">📧</div>
-          <div class="contact-txt"><strong>Email</strong><span>info@narasimhaglobal.com</span></div>
-        </div>
-        <div class="contact-item">
-          <div class="contact-ico">📞</div>
-          <div class="contact-txt"><strong>Phone</strong><span>+91 &mdash; 9341554887</span></div>
-        </div>
-        <div class="contact-item">
-          <div class="contact-ico">🕐</div>
-          <div class="contact-txt"><strong>Working Hours</strong><span>Mon – Sat: 9:00 AM – 6:00 PM</span></div>
-        </div>
+        <div class="contact-item"><div class="contact-ico">📍</div><div class="contact-txt"><strong>Address</strong><span>Patna, Bihar, India</span></div></div>
+        <div class="contact-item"><div class="contact-ico">📧</div><div class="contact-txt"><strong>Email</strong><span>info@narasimhaglobal.com</span></div></div>
+        <div class="contact-item"><div class="contact-ico">📞</div><div class="contact-txt"><strong>Phone</strong><span>+91 &mdash; 9341554887</span></div></div>
+        <div class="contact-item"><div class="contact-ico">🕐</div><div class="contact-txt"><strong>Working Hours</strong><span>Mon – Sat: 9:00 AM – 6:00 PM</span></div></div>
       </div>
       <div class="contact-form">
         <h3>Send Us a Message</h3>
@@ -477,7 +366,6 @@
   </div>
 </section>
 
-<!-- FOOTER -->
 <footer>
   <div class="footer-top">
     <div class="footer-brand">
@@ -498,7 +386,7 @@
       <ul>
         <li><a href="{% url 'add_daily_report' %}">Add Daily Report</a></li>
         <li><a href="{% url 'add_daily_report_bulk' %}">Bulk Report Entry</a></li>
-        <!-- <li><a href="{% url 'report_list' %}">View All Reports</a></li> -->
+        <li><a href="{% url 'update_report_search' %}">Update Report</a></li>
       </ul>
     </div>
   </div>

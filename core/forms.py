@@ -14,10 +14,33 @@ class CertificateForm(forms.ModelForm):
             'certificate_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'CERT-12345'}),
         }
 
+
+# 1. Standard Form - Used for Single Upload (Includes Name)
 class DailyReportForm(forms.ModelForm):
     class Meta:
         model = DailyReport
-        # 'name' is excluded here because it is handled globally
+        fields = [
+            'name', 'location', 'year', 'volume_num', 
+            'num_of_deed', 'num_of_page', 'pdf_deed', 
+            'indexing', 'uploading', 'metadata'
+        ]
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Employee Name'}),
+            'location': forms.Select(attrs={'class': 'form-select'}),
+            'year': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 2026'}),
+            'volume_num': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Vol-12'}),
+            'num_of_deed': forms.NumberInput(attrs={'class': 'form-control', 'min': '0'}),
+            'num_of_page': forms.NumberInput(attrs={'class': 'form-control', 'min': '0'}),
+            'pdf_deed': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'indexing': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'uploading': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'metadata': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+# 2. Bulk Form - Used for Multi-Row Matrix (Excludes Name)
+class DailyReportBulkForm(forms.ModelForm):
+    class Meta:
+        model = DailyReport
         fields = ['location', 'year', 'volume_num', 'num_of_deed', 'num_of_page', 'pdf_deed', 'indexing', 'uploading', 'metadata']
         widgets = {
             'location': forms.Select(attrs={'class': 'form-select form-select-sm'}),
@@ -31,6 +54,7 @@ class DailyReportForm(forms.ModelForm):
             'metadata': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
+        
 # class DailyReportForm(forms.ModelForm):
 #     class Meta:
 #         model = DailyReport

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ContactMessage, CompanyCertificate
+from .models import ContactMessage, CompanyCertificate, DailyReport
 
 @admin.register(ContactMessage)
 class ContactMessageAdmin(admin.ModelAdmin):
@@ -34,5 +34,36 @@ class CompanyCertificateAdmin(admin.ModelAdmin):
         }),
         ('Issue Date', {
             'fields': ('issue_date',)
+        }),
+    )
+
+@admin.register(DailyReport)
+class DailyReportAdmin(admin.ModelAdmin):
+    # What columns to show in the list view table
+    list_display = ('date', 'location', 'name', 'year', 'volume_num', 'num_of_deed', 'num_of_page')
+    
+    # What fields can be clicked to open the edit page
+    list_display_links = ('date', 'name')
+    
+    # Right sidebar filters
+    list_filter = ('date', 'location', 'pdf_deed', 'indexing', 'uploading', 'metadata')
+    
+    # Search bar configuration (case-insensitive search)
+    search_fields = ('name', 'volume_num', 'year')
+    
+    # Keeps records ordered with the newest reports on top
+    ordering = ('-date',)
+    
+    # Layout optimization using Fieldsets to group quantitative stats and process checks
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('date', 'location', 'name')
+        }),
+        ('Book details', {
+            'fields': ('year', 'volume_num', 'num_of_deed', 'num_of_page')
+        }),
+        ('Status Checklists', {
+            'fields': ('pdf_deed', 'indexing', 'uploading', 'metadata'),
+            'description': 'Mark operations as true once completed.'
         }),
     )

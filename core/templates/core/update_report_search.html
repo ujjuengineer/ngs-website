@@ -1,0 +1,211 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Update Daily Report | NGS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy-dk: #1F2935; --navy: #2C3947; --navy-lt: #3B4D61;
+      --blue: #547A95; --gold: #C2A56D; --gold-lt: #D2B985;
+      --gold-pale: #E5D6B7; --bg: #E8EDF2; --white: #fff;
+      --text: #2C3947; --muted: #5E6B77;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* NAV */
+    nav {
+      background: var(--navy-dk); border-bottom: 2px solid var(--gold);
+      padding: 0 5%; height: 64px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-brand img { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; }
+    .nav-brand span { font-family: 'Cinzel', serif; color: var(--gold-lt); font-size: 0.9rem; }
+    .nav-back { color: var(--gold-pale); text-decoration: none; font-size: 0.82rem; letter-spacing: 0.06em; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
+    .nav-back:hover { color: var(--gold-lt); }
+
+    /* PAGE */
+    .page { max-width: 680px; margin: 48px auto; padding: 0 20px 60px; }
+    .page-header { margin-bottom: 32px; }
+    .page-label { font-family: 'Cinzel', serif; color: var(--gold); font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 8px; }
+    .page-title { font-family: 'Cinzel', serif; color: var(--navy-dk); font-size: 1.8rem; font-weight: 700; }
+
+    /* SEARCH CARD */
+    .card { background: var(--white); border-radius: 12px; padding: 36px; border: 1px solid rgba(194,165,109,0.25); margin-bottom: 24px; }
+    .card-title { font-family: 'Cinzel', serif; color: var(--navy-dk); font-size: 1rem; margin-bottom: 24px; display: flex; align-items: center; gap: 10px; }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+    .form-group label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--navy); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+    .form-group input, .form-group select {
+      width: 100%; padding: 11px 14px; border: 1.5px solid rgba(44,57,71,0.2);
+      border-radius: 6px; font-size: 0.9rem; font-family: 'Inter', sans-serif;
+      background: var(--bg); color: var(--text); outline: none; transition: border-color 0.2s;
+    }
+    .form-group input:focus, .form-group select:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(194,165,109,0.15); }
+
+    .btn-search {
+      width: 100%; background: linear-gradient(135deg, var(--navy-dk), var(--navy-lt));
+      color: var(--gold-pale); border: none; padding: 13px; border-radius: 6px;
+      font-size: 0.88rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+      cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s;
+    }
+    .btn-search:hover { background: linear-gradient(135deg, var(--navy-lt), var(--blue)); }
+
+    /* RESULT */
+    .result-found {
+      background: var(--white); border-radius: 12px; padding: 32px;
+      border: 2px solid rgba(194,165,109,0.4);
+    }
+    .result-found .result-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
+    }
+    .result-badge {
+      background: rgba(40,120,40,0.1); color: #1a6b1a;
+      border: 1px solid rgba(40,120,40,0.3); border-radius: 20px;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; padding: 4px 12px;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .report-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+    .report-field label { display: block; font-size: 0.7rem; font-weight: 600; color: var(--gold); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+    .report-field span { font-size: 0.92rem; color: var(--text); font-weight: 500; }
+    .status-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
+    .status-pill {
+      padding: 5px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    .status-pill.yes { background: rgba(40,120,40,0.1); color: #1a6b1a; border: 1px solid rgba(40,120,40,0.25); }
+    .status-pill.no { background: rgba(180,30,30,0.08); color: #8b1a1a; border: 1px solid rgba(180,30,30,0.2); }
+
+    .btn-update {
+      display: inline-block; background: var(--gold); color: var(--navy-dk);
+      padding: 12px 28px; border-radius: 6px; font-weight: 700; font-size: 0.88rem;
+      letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; transition: all 0.2s;
+    }
+    .btn-update:hover { background: var(--gold-lt); }
+
+    /* NOT FOUND */
+    .not-found-card {
+      background: var(--white); border-radius: 12px; padding: 36px;
+      border: 2px solid rgba(194,165,109,0.3); text-align: center;
+    }
+    .not-found-icon { font-size: 3rem; margin-bottom: 16px; }
+    .not-found-card h3 { font-family: 'Cinzel', serif; color: var(--navy-dk); font-size: 1.1rem; margin-bottom: 10px; }
+    .not-found-card p { color: var(--muted); font-size: 0.9rem; margin-bottom: 28px; line-height: 1.6; }
+    .not-found-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn-add {
+      background: linear-gradient(135deg, var(--navy-dk), var(--navy-lt));
+      color: var(--gold-pale); padding: 12px 28px; border-radius: 6px;
+      font-weight: 600; font-size: 0.88rem; letter-spacing: 0.06em;
+      text-transform: uppercase; text-decoration: none; transition: all 0.2s;
+    }
+    .btn-add:hover { background: linear-gradient(135deg, var(--navy-lt), var(--blue)); }
+    .btn-cancel {
+      background: transparent; color: var(--muted); padding: 12px 28px; border-radius: 6px;
+      font-weight: 600; font-size: 0.88rem; letter-spacing: 0.06em;
+      text-transform: uppercase; text-decoration: none; transition: all 0.2s;
+      border: 1.5px solid rgba(44,57,71,0.2);
+    }
+    .btn-cancel:hover { border-color: var(--navy); color: var(--navy); }
+
+    @media (max-width: 600px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .report-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-brand">
+    <img src="{% static 'core/images/logo.jpeg' %}" alt="NGS" />
+    <span>Narasimha Global</span>
+  </a>
+  <a href="/" class="nav-back">← Back to Home</a>
+</nav>
+
+<div class="page">
+  <div class="page-header">
+    <p class="page-label">Staff Portal</p>
+    <h1 class="page-title">Update Daily Report</h1>
+  </div>
+
+  <!-- SEARCH FORM -->
+  <div class="card">
+    <h2 class="card-title">🔍 Search Report</h2>
+    <form method="GET" action="{% url 'update_report_search' %}">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="year">Year</label>
+          <input type="text" id="year" name="year" placeholder="e.g. 2023-24" value="{{ year }}" required />
+        </div>
+        <div class="form-group">
+          <label for="volume_num">Volume Number</label>
+          <input type="text" id="volume_num" name="volume_num" placeholder="e.g. VOL-01" value="{{ volume_num }}" required />
+        </div>
+        <div class="form-group">
+          <label for="location">Location</label>
+          <select id="location" name="location" required>
+            <option value="">-- Select --</option>
+            {% for val, label in locations %}
+              <option value="{{ val }}" {% if location == val %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <button type="submit" class="btn-search">Search Report →</button>
+    </form>
+  </div>
+
+  <!-- REPORT FOUND -->
+  {% if report %}
+  <div class="result-found">
+    <div class="result-header">
+      <h2 style="font-family:'Cinzel',serif;color:var(--navy-dk);font-size:1.05rem;">Report Found</h2>
+      <span class="result-badge">✓ Record Exists</span>
+    </div>
+    <div class="report-grid">
+      <div class="report-field"><label>Employee Name</label><span>{{ report.name }}</span></div>
+      <div class="report-field"><label>Date</label><span>{{ report.date }}</span></div>
+      <div class="report-field"><label>Location</label><span>{{ report.get_location_display }}</span></div>
+      <div class="report-field"><label>Year</label><span>{{ report.year }}</span></div>
+      <div class="report-field"><label>Volume Number</label><span>{{ report.volume_num }}</span></div>
+      <div class="report-field"><label>No. of Deeds</label><span>{{ report.num_of_deed }}</span></div>
+      <div class="report-field"><label>No. of Pages</label><span>{{ report.num_of_page }}</span></div>
+    </div>
+    <div class="status-row">
+      <span class="status-pill {% if report.pdf_deed %}yes{% else %}no{% endif %}">PDF: {% if report.pdf_deed %}✓ Done{% else %}✗ Pending{% endif %}</span>
+      <span class="status-pill {% if report.indexing %}yes{% else %}no{% endif %}">Indexing: {% if report.indexing %}✓ Done{% else %}✗ Pending{% endif %}</span>
+      <span class="status-pill {% if report.uploading %}yes{% else %}no{% endif %}">Uploading: {% if report.uploading %}✓ Done{% else %}✗ Pending{% endif %}</span>
+      <span class="status-pill {% if report.metadata %}yes{% else %}no{% endif %}">Metadata: {% if report.metadata %}✓ Done{% else %}✗ Pending{% endif %}</span>
+    </div>
+    <a href="{% url 'update_daily_report' report.pk %}" class="btn-update">Edit This Report →</a>
+  </div>
+  {% endif %}
+
+  <!-- REPORT NOT FOUND -->
+  {% if not_found %}
+  <div class="not-found-card">
+    <div class="not-found-icon">🔎</div>
+    <h3>Record Not Found</h3>
+    <p>
+      No report found for <strong>Year: {{ year }}</strong>, <strong>Volume: {{ volume_num }}</strong>,
+      <strong>Location: {{ location }}</strong>.<br/>
+      Would you like to add this report to the database?
+    </p>
+    <div class="not-found-actions">
+      <a href="{% url 'add_daily_report' %}?year={{ year }}&volume_num={{ volume_num }}&location={{ location }}&next={% url 'update_report_search' %}%3Fyear={{ year }}%26volume_num={{ volume_num }}%26location={{ location }}" class="btn-add">
+        ✚ Yes, Add This Report
+      </a>
+      <a href="{% url 'update_report_search' %}" class="btn-cancel">Search Again</a>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+</body>
+</html>
