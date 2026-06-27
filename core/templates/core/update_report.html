@@ -77,6 +77,10 @@
 
     @media (max-width: 600px) {
       .form-row, .checkbox-grid { grid-template-columns: 1fr; }
+      .page { padding: 0 16px 60px; }
+      .card { padding: 24px 20px; }
+      .form-actions { flex-direction: column; }
+      .btn-save, .btn-discard { width: 100%; text-align: center; }
     }
   </style>
 </head>
@@ -155,9 +159,6 @@
           </label>
           <label class="checkbox-item">
             {{ form.uploading }} <span>Uploading</span>
-          </label>
-          <label class="checkbox-item">
-            {{ form.QC }} <span>QC</span>
           </label>
           <label class="checkbox-item">
             {{ form.metadata }} <span>Metadata</span>

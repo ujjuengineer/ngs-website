@@ -89,3 +89,8 @@ CSRF_TRUSTED_ORIGINS = [
     "https://narasimhaglobal.com",
     "https://www.narasimhaglobal.com",
 ]
+
+# ── AUTH SETTINGS ──
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/login/'
