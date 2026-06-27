@@ -10,10 +10,20 @@
 
     <div class="container-fluid mt-5 px-4">
         <div class="card shadow border-0 mb-4">
-            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-3">
+            
+            <div class="card-header bg-dark text-white d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 py-3">
                 <h4 class="mb-0"><i class="bi bi-table me-2"></i>Employee Daily Reports</h4>
-                <a href="{% url 'add_daily_report' %}" class="btn btn-sm btn-success"><i class="bi bi-plus-circle me-1"></i> Add New Log</a>
+                
+                <div class="d-flex gap-2 w-100 w-sm-auto justify-content-sm-end">
+                    <a href="/" class="btn btn-sm btn-outline-light flex-fill flex-sm-none text-center">
+                        <i class="bi bi-house-door-fill me-1"></i> Go to Home
+                    </a>
+                    <a href="{% url 'add_daily_report' %}" class="btn btn-sm btn-success flex-fill flex-sm-none text-center">
+                        <i class="bi bi-plus-circle me-1"></i> Add New Log
+                    </a>
+                </div>
             </div>
+
             <div class="card-body bg-white border-bottom p-4">
                 
                 <form method="GET" class="row g-3 align-items-end">
@@ -108,7 +118,7 @@
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="11" class="text-center py-5 text-muted">
+                            <td colspan="12" class="text-center py-5 text-muted">
                                 <i class="bi bi-file-earmark-break display-4 d-block mb-2"></i>
                                 No logs matched your selected filtering parameters.
                             </td>

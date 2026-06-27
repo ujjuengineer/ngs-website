@@ -64,3 +64,30 @@ class DailyReportBulkForm(forms.ModelForm):
             'QC': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'metadata': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
+
+
+# added seprate form for updating the report
+class DailyReportUpdateForm(forms.ModelForm):
+    class Meta:
+        model = DailyReport
+        fields = [
+            'name', 'location', 'year', 'volume_num',
+            'num_of_deed', 'num_of_page', 'pdf_deed',
+            'indexing', 'uploading', 'QC', 'metadata'
+        ]
+        # Re-use your existing styled widgets
+        widgets = DailyReportForm.Meta.widgets 
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        # 🌟 Lock down structural fields during an update to keep data clean
+        self.fields['location'].disabled = True
+        self.fields['year'].disabled = True
+        self.fields['volume_num'].disabled = True
+        
+        # Optionally make them visually look locked out:
+        lock_style = 'background:#f0f2f5; cursor:not-allowed; color:#5E6B77;'
+        self.fields['location'].widget.attrs['style'] = lock_style
+        self.fields['year'].widget.attrs['style'] = lock_style
+        self.fields['volume_num'].widget.attrs['style'] = lock_style

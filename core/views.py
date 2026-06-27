@@ -6,7 +6,7 @@ from django.utils.decorators import method_decorator
 from .models import ContactMessage, CompanyCertificate, DailyReport
 from django.urls import reverse_lazy, reverse
 from django.views.generic.edit import CreateView, UpdateView
-from .forms import CertificateForm, DailyReportForm, DailyReportBulkForm
+from .forms import CertificateForm, DailyReportForm, DailyReportBulkForm, DailyReportUpdateForm
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views.generic import DetailView
 import datetime
@@ -68,7 +68,7 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     messages.success(request, 'You have been logged out successfully.')
-    return redirect('login')
+    return redirect('home')
 
 
 # ── CERTIFICATES ──
@@ -133,6 +133,7 @@ class DailyReportCreateView(SuccessMessageMixin, CreateView):
         volume_num = form.cleaned_data.get('volume_num')
         location = form.cleaned_data.get('location')
 
+        # if existing then don't add 
         existing = DailyReport.objects.filter(
             year=year, volume_num=volume_num, location=location
         ).first()
@@ -340,7 +341,7 @@ def update_report_search_view(request):
 @method_decorator(login_required, name='dispatch')
 class DailyReportUpdateView(SuccessMessageMixin, UpdateView):
     model = DailyReport
-    form_class = DailyReportForm
+    form_class = DailyReportUpdateForm  # Switch to new update form
     template_name = 'core/update_report.html'
     success_message = "Report updated successfully!"
 
