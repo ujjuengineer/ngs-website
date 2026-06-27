@@ -56,7 +56,7 @@ class DailyReportBulkForm(forms.ModelForm):
             'metadata': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
-        
+    # redeploying
 # class DailyReportForm(forms.ModelForm):
 #     class Meta:
 #         model = DailyReport
