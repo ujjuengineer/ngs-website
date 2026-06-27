@@ -80,7 +80,7 @@
                         <div style="width: 12%;">Volume No.</div>
                         <div style="width: 10%;">No. Deeds</div>
                         <div style="width: 10%;">No. Pages</div>
-                        <div style="width: 43%;">Processes Completed (PDF / Index / Upload / Meta)</div>
+                        <div style="width: 43%;">Processes Completed (PDF / Index / Upload / QC / Meta)</div>
                     </div>
 
                     <div id="form-container">
@@ -101,6 +101,9 @@
                                 </div>
                                 <div class="d-flex d-lg-inline-flex align-items-center me-3">
                                     {{ form.uploading }} <label class="form-check-label ms-1 small">Uploading</label>
+                                </div>
+                                <div class="d-flex d-lg-inline-flex align-items-center me-3">
+                                    {{ form.QC }} <label class="form-check-label ms-1 small">QC</label>
                                 </div>
                                 <div class="d-flex d-lg-inline-flex align-items-center">
                                     {{ form.metadata }} <label class="form-check-label ms-1 small">Metadata</label>

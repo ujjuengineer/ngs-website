@@ -87,6 +87,12 @@
                                 </div>
                                 <div class="col">
                                     <div class="form-check form-switch">
+                                        {{ form.QC }}
+                                        <label class="form-check-label ms-2" for="{{ form.uploading.id_for_label }}">{{ form.QC.label }}</label>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="form-check form-switch">
                                         {{ form.metadata }}
                                         <label class="form-check-label ms-2" for="{{ form.metadata.id_for_label }}">{{ form.metadata.label }}</label>
                                     </div>

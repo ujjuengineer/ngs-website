@@ -76,6 +76,7 @@
                             <th class="text-center">PDF</th>
                             <th class="text-center">Indexing</th>
                             <th class="text-center">Uploading</th>
+                            <th class="text-center">QC</th>
                             <th class="text-center">Metadata</th>
                         </tr>
                     </thead>
@@ -97,6 +98,9 @@
                             </td>
                             <td class="text-center">
                                 {% if report.uploading %}<i class="bi bi-check-circle-fill text-success fs-5"></i>{% else %}<i class="bi bi-x-circle text-muted"></i>{% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if report.QC %}<i class="bi bi-check-circle-fill text-success fs-5"></i>{% else %}<i class="bi bi-x-circle text-muted"></i>{% endif %}
                             </td>
                             <td class="text-center">
                                 {% if report.metadata %}<i class="bi bi-check-circle-fill text-success fs-5"></i>{% else %}<i class="bi bi-x-circle text-muted"></i>{% endif %}

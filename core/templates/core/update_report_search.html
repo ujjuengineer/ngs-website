@@ -181,6 +181,7 @@
       <span class="status-pill {% if report.pdf_deed %}yes{% else %}no{% endif %}">PDF: {% if report.pdf_deed %}✓ Done{% else %}✗ Pending{% endif %}</span>
       <span class="status-pill {% if report.indexing %}yes{% else %}no{% endif %}">Indexing: {% if report.indexing %}✓ Done{% else %}✗ Pending{% endif %}</span>
       <span class="status-pill {% if report.uploading %}yes{% else %}no{% endif %}">Uploading: {% if report.uploading %}✓ Done{% else %}✗ Pending{% endif %}</span>
+      <span class="status-pill {% if report.uploading %}yes{% else %}no{% endif %}">QC: {% if report.QC %}✓ Done{% else %}✗ Pending{% endif %}</span>
       <span class="status-pill {% if report.metadata %}yes{% else %}no{% endif %}">Metadata: {% if report.metadata %}✓ Done{% else %}✗ Pending{% endif %}</span>
     </div>
     <a href="{% url 'update_daily_report' report.pk %}" class="btn-update">Edit This Report →</a>

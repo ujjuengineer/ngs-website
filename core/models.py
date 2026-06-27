@@ -60,6 +60,9 @@ class DailyReport(models.Model):
         ('AURANGABAD', 'Aurangabad'),
         ('JAHANABAD', 'Jahanabad'),
         ('NAWADA', 'Nawada'),
+
+        ('NALANDA', 'Nalanda'),
+        ('HILSA', 'Hilsa'),
     ]
 
     # Date field - auto sets to current date
@@ -87,6 +90,7 @@ class DailyReport(models.Model):
     pdf_deed = models.BooleanField(default=False, verbose_name="PDF (Deed)")
     indexing = models.BooleanField(default=False, verbose_name="Indexing")
     uploading = models.BooleanField(default=False, verbose_name="Uploading")
+    QC = models.BooleanField(default=False, verbose_name="QC")
     metadata = models.BooleanField(default=False, verbose_name="Meta Data")
 
     class Meta:

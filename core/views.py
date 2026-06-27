@@ -140,7 +140,7 @@ def report_list_view(request):
         wb = Workbook()
         ws = wb.active
         ws.title = "Filtered Reports"
-        headers = ['Date', 'Location', 'Employee Name', 'Year', 'Volume No.', 'No. Deeds', 'No. Pages', 'PDF', 'Indexing', 'Uploading', 'Metadata']
+        headers = ['Date', 'Location', 'Employee Name', 'Year', 'Volume No.', 'No. Deeds', 'No. Pages', 'PDF', 'Indexing', 'Uploading', 'QC', 'Metadata']
         ws.append(headers)
         for report in queryset:
             ws.append([
@@ -148,6 +148,7 @@ def report_list_view(request):
                 report.get_location_display(), report.name, report.year, report.volume_num,
                 report.num_of_deed, report.num_of_page,
                 "Yes" if report.pdf_deed else "No", "Yes" if report.indexing else "No",
+                "Yes" if report.QC else "NO",
                 "Yes" if report.uploading else "No", "Yes" if report.metadata else "No",
             ])
         response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')

@@ -22,7 +22,7 @@ class DailyReportForm(forms.ModelForm):
         fields = [
             'name', 'location', 'year', 'volume_num', 
             'num_of_deed', 'num_of_page', 'pdf_deed', 
-            'indexing', 'uploading', 'metadata'
+            'indexing', 'uploading', 'QC', 'metadata'
         ]
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter Employee Name'}),
@@ -34,6 +34,7 @@ class DailyReportForm(forms.ModelForm):
             'pdf_deed': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'indexing': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'uploading': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'QC' : forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'metadata': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
@@ -41,7 +42,7 @@ class DailyReportForm(forms.ModelForm):
 class DailyReportBulkForm(forms.ModelForm):
     class Meta:
         model = DailyReport
-        fields = ['location', 'year', 'volume_num', 'num_of_deed', 'num_of_page', 'pdf_deed', 'indexing', 'uploading', 'metadata']
+        fields = ['location', 'year', 'volume_num', 'num_of_deed', 'num_of_page', 'pdf_deed', 'indexing', 'uploading', 'QC', 'metadata']
         widgets = {
             'location': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'year': forms.TextInput(attrs={'class': 'form-control form-select-sm', 'placeholder': 'Year'}),
@@ -51,6 +52,7 @@ class DailyReportBulkForm(forms.ModelForm):
             'pdf_deed': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'indexing': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'uploading': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'QC' : forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'metadata': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
