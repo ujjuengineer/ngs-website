@@ -13,6 +13,7 @@ import datetime
 from django.http import HttpResponse
 from openpyxl import Workbook
 from django.forms import modelformset_factory
+from django.db.models import Sum
 
 
 # ── HOME ──
@@ -228,6 +229,7 @@ def add_multiple_reports_view(request):
 
 
 # ── REPORT LIST (login required — users see only their own reports) ──
+# ── REPORT LIST (login required — users see only their own reports) ──
 @login_required
 def report_list_view(request):
     # Superusers/staff see all reports; regular users see only their own
@@ -257,24 +259,120 @@ def report_list_view(request):
     if filter_name and (request.user.is_staff or request.user.is_superuser):
         queryset = queryset.filter(name__icontains=filter_name)
 
+    totals = queryset.aggregate(
+        sum_deeds=Sum('num_of_deed'),
+        sum_pages=Sum('num_of_page')
+    )
+
     if 'export_excel' in request.GET:
+        from openpyxl import Workbook
+        from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+        from openpyxl.utils import get_column_letter
+
         wb = Workbook()
         ws = wb.active
         ws.title = "Filtered Reports"
+        
+        # 1. Define Design Styles
+        header_font = Font(name='Calibri', size=11, bold=True, color='FFFFFF')
+        header_fill = PatternFill(start_color='1F2935', end_color='1F2935', fill_type='solid') # Dark Navy
+        data_font = Font(name='Calibri', size=11, bold=False)
+        
+        # Summary Row Branding Colors
+        summary_label_font = Font(name='Calibri', size=11, bold=True, color='1F2935')
+        summary_val_font = Font(name='Calibri', size=11, bold=True, color='000000')
+        summary_fill = PatternFill(start_color='F8F9FA', end_color='F8F9FA', fill_type='solid') # Soft Grey
+        
+        center_align = Alignment(horizontal='center', vertical='center')
+        left_align = Alignment(horizontal='left', vertical='center')
+        right_align = Alignment(horizontal='right', vertical='center')
+        
+        thin_side = Side(border_style="thin", color="D3D3D3")
+        thick_bottom_side = Side(border_style="medium", color="1F2935")
+        thin_border = Border(left=thin_side, right=thin_side, top=thin_side, bottom=thin_side)
+
+        # 2. Add and Format Headers
         headers = ['Date', 'Location', 'Employee Name', 'Year', 'Volume No.',
                    'No. Deeds', 'No. Pages', 'PDF', 'Indexing', 'Uploading', 'QC', 'Metadata']
         ws.append(headers)
+        
+        ws.row_dimensions[1].height = 24
+        for cell in ws[1]:
+            cell.font = header_font
+            cell.fill = header_fill
+            cell.alignment = center_align
+            cell.border = thin_border
+
+        # 3. Append Main Log Rows
         for report in queryset:
-            ws.append([
+            row_data = [
                 report.date.strftime('%Y-%m-%d') if report.date else '',
-                report.get_location_display(), report.name, report.year, report.volume_num,
-                report.num_of_deed, report.num_of_page,
+                report.get_location_display(), 
+                report.name, 
+                report.year, 
+                report.volume_num,
+                report.num_of_deed, 
+                report.num_of_page,
                 "Yes" if report.pdf_deed else "No",
                 "Yes" if report.indexing else "No",
                 "Yes" if report.uploading else "No",
                 "Yes" if report.QC else "No",
                 "Yes" if report.metadata else "No",
-            ])
+            ]
+            ws.append(row_data)
+            
+            current_row = ws.max_row
+            ws.row_dimensions[current_row].height = 20
+            for col_idx, cell in enumerate(ws[current_row], start=1):
+                cell.font = data_font
+                cell.border = thin_border
+                if col_idx in [1, 4, 5, 6, 7, 8, 9, 10, 11, 12]:
+                    cell.alignment = center_align
+                else:
+                    cell.alignment = left_align
+
+        # 4. 🌟 REUSING ALREADY COMPUTED VALUES FIXED 🌟
+        ws.append([]) # Blank spacer row
+
+        summary_rows = [
+            ("Total Number of volume", len(queryset)),  
+            ("Total Deeds", totals['sum_deeds'] or 0),  # 🌟 Fixed key match
+            ("Total Pages", totals['sum_pages'] or 0)   # 🌟 Fixed key match
+        ]
+
+        for label, val in summary_rows:
+            ws.append(["", "", "", "", label, val])
+            s_row = ws.max_row
+            ws.row_dimensions[s_row].height = 22
+            
+            # Format Label (Column E)
+            lbl_cell = ws.cell(row=s_row, column=5)
+            lbl_cell.font = summary_label_font
+            lbl_cell.alignment = right_align
+            lbl_cell.fill = summary_fill
+            lbl_cell.border = Border(left=thin_side, top=thin_side, bottom=thin_side)
+            
+            # Format Value (Column F)
+            val_cell = ws.cell(row=s_row, column=6)
+            val_cell.font = summary_val_font
+            val_cell.alignment = center_align
+            val_cell.fill = summary_fill
+            val_cell.border = Border(right=thin_side, top=thin_side, bottom=thin_side)
+            
+            if label == "Total Pages Processed":
+                lbl_cell.border = Border(left=thin_side, top=thin_side, bottom=thick_bottom_side)
+                val_cell.border = Border(right=thin_side, top=thin_side, bottom=thick_bottom_side)
+
+        # 5. Dynamic Auto-Fit Column Widths
+        for col in ws.columns:
+            max_len = 0
+            col_letter = get_column_letter(col[0].column)
+            for cell in col:
+                if cell.value:
+                    max_len = max(max_len, len(str(cell.value)))
+            ws.column_dimensions[col_letter].width = max(max_len + 4, 12)
+
+        # 6. Build and Stream Response
         response = HttpResponse(
             content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         )
@@ -290,6 +388,8 @@ def report_list_view(request):
 
     context = {
         'reports': queryset,
+        'total_deeds': totals['sum_deeds'],
+        'total_pages': totals['sum_pages'],
         'locations': DailyReport.LOCATION_CHOICES,
         'available_months': available_months,
         'selected_date': filter_date,

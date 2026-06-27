@@ -127,6 +127,37 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- SUMMARY BLOCK ADDED HERE -->
+            {% if reports %}
+                <div class="card-footer bg-light border-top p-3">
+                    <div class="row g-3 align-items-center text-center text-md-start">
+                        <div class="col-md-3">
+                            <span class="text-muted small fw-bold d-block mb-1">CONSOLIDATED METRICS</span>
+                            <h6 class="m-0 fw-bold text-dark"><i class="bi bi-calculator me-2 text-primary"></i>Filtered Totals</h6>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="p-2 bg-white rounded border shadow-sm d-flex justify-content-between align-items-center px-3">
+                                <span class="text-muted small"><i class="bi bi-file-earmark-text me-1 text-secondary"></i>Total Volume</span>
+                                <span class="badge bg-primary fs-6">{{ reports|length }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="p-2 bg-white rounded border shadow-sm d-flex justify-content-between align-items-center px-3">
+                                <span class="text-muted small"><i class="bi bi-journal-bookmark me-1 text-secondary"></i>Total Deeds</span>
+                                <span class="badge bg-dark fs-6">{{ total_deeds|default:"0" }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="p-2 bg-white rounded border shadow-sm d-flex justify-content-between align-items-center px-3">
+                                <span class="text-muted small"><i class="bi bi-layers me-1 text-secondary"></i>Total Pages</span>
+                                <span class="badge bg-secondary fs-6">{{ total_pages|default:"0" }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
         </div>
     </div>
 
