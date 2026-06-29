@@ -14,6 +14,8 @@ from django.http import HttpResponse
 from openpyxl import Workbook
 from django.forms import modelformset_factory
 from django.db.models import Sum
+from datetime import timedelta
+from django.utils import timezone
 
 
 # ── HOME ──
@@ -436,16 +438,61 @@ def update_report_search_view(request):
     }
     return render(request, 'core/update_report_search.html', context)
 
-
-# ── UPDATE REPORT FORM (login required) ──
 @method_decorator(login_required, name='dispatch')
 class DailyReportUpdateView(SuccessMessageMixin, UpdateView):
     model = DailyReport
-    form_class = DailyReportUpdateForm  # Switch to new update form
+    form_class = DailyReportUpdateForm
     template_name = 'core/update_report.html'
     success_message = "Report updated successfully!"
 
+    BOOLEAN_FIELDS = [
+        'pdf_deed',
+        'indexing',
+        'uploading',
+        'QC',
+        'metadata',
+    ]
+
+    # def form_valid(self, form):
+    #     user = self.request.user
+
+    #     if (not user.is_superuser and timezone.now() > self.object.created_at + timedelta(hours=24)):
+    #         original = DailyReport.objects.get(pk=self.object.pk)
+    #         protected_fields = [
+    #             'date',
+    #             'location',
+    #             'name',
+    #             'year',
+    #             'volume_num',
+    #             'num_of_deed',
+    #             'num_of_page',
+    #         ]
+    #         for field in protected_fields:
+    #             setattr(form.instance, field, getattr(original, field))
+
+    #     return super().form_valid(form)
+
+    # def get_form(self, form_class=None):
+    #     form = super().get_form(form_class)
+    #     user = self.request.user
+
+    #     # Admin can edit everything forever
+    #     if user.is_superuser:
+    #         return form
+
+    #     # If record is older than 24 hours
+    #     if timezone.now() > self.object.created_at + timedelta(hours=24):
+
+    #         for field_name, field in form.fields.items():
+    #             if field_name not in self.BOOLEAN_FIELDS:
+    #                 field.disabled = True
+
+    #     return form
+    
     def get_success_url(self):
         report = self.object
         return reverse('update_report_search') + \
             f"?year={report.year}&volume_num={report.volume_num}&location={report.location}"
+
+
+

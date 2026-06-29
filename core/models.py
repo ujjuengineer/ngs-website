@@ -67,7 +67,13 @@ class DailyReport(models.Model):
 
     # Date field - auto sets to current date
     date = models.DateField(default=timezone.now, verbose_name="Report Date")
-    
+    created_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        # auto_now_add=True,
+        verbose_name='Created At'
+    )
+
     # Location drop-down selection
     location = models.CharField(
         max_length=50, 

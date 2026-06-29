@@ -39,6 +39,8 @@ class CompanyCertificateAdmin(admin.ModelAdmin):
 
 @admin.register(DailyReport)
 class DailyReportAdmin(admin.ModelAdmin):
+    readonly_fields = ('created_at',)
+    
     # What columns to show in the list view table
     list_display = ('date', 'location', 'name', 'year', 'volume_num', 'num_of_deed', 'num_of_page')
     
@@ -57,7 +59,7 @@ class DailyReportAdmin(admin.ModelAdmin):
     # Layout optimization using Fieldsets to group quantitative stats and process checks
     fieldsets = (
         ('Basic Information', {
-            'fields': ('date', 'location', 'name')
+            'fields': ('date', 'created_at', 'location', 'name')
         }),
         ('Book details', {
             'fields': ('year', 'volume_num', 'num_of_deed', 'num_of_page')
