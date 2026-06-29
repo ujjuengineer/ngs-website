@@ -453,41 +453,41 @@ class DailyReportUpdateView(SuccessMessageMixin, UpdateView):
         'metadata',
     ]
 
-    def form_valid(self, form):
-        user = self.request.user
+    # def form_valid(self, form):
+    #     user = self.request.user
 
-        if (not user.is_superuser and timezone.now() > self.object.created_at + timedelta(hours=24)):
-            original = DailyReport.objects.get(pk=self.object.pk)
-            protected_fields = [
-                'date',
-                'location',
-                'name',
-                'year',
-                'volume_num',
-                'num_of_deed',
-                'num_of_page',
-            ]
-            for field in protected_fields:
-                setattr(form.instance, field, getattr(original, field))
+    #     if (not user.is_superuser and timezone.now() > self.object.created_at + timedelta(hours=24)):
+    #         original = DailyReport.objects.get(pk=self.object.pk)
+    #         protected_fields = [
+    #             'date',
+    #             'location',
+    #             'name',
+    #             'year',
+    #             'volume_num',
+    #             'num_of_deed',
+    #             'num_of_page',
+    #         ]
+    #         for field in protected_fields:
+    #             setattr(form.instance, field, getattr(original, field))
 
-        return super().form_valid(form)
+    #     return super().form_valid(form)
 
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        user = self.request.user
+    # def get_form(self, form_class=None):
+    #     form = super().get_form(form_class)
+    #     user = self.request.user
 
-        # Admin can edit everything forever
-        if user.is_superuser:
-            return form
+    #     # Admin can edit everything forever
+    #     if user.is_superuser:
+    #         return form
 
-        # If record is older than 24 hours
-        if timezone.now() > self.object.created_at + timedelta(hours=24):
+    #     # If record is older than 24 hours
+    #     if timezone.now() > self.object.created_at + timedelta(hours=24):
 
-            for field_name, field in form.fields.items():
-                if field_name not in self.BOOLEAN_FIELDS:
-                    field.disabled = True
+    #         for field_name, field in form.fields.items():
+    #             if field_name not in self.BOOLEAN_FIELDS:
+    #                 field.disabled = True
 
-        return form
+    #     return form
     
     def get_success_url(self):
         report = self.object
