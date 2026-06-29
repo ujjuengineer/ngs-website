@@ -70,7 +70,7 @@ class DailyReport(models.Model):
     created_at = models.DateTimeField(
         null=True,
         blank=True,
-        auto_now_add=True,
+        # auto_now_add=True,
         verbose_name='Created At'
     )
 
