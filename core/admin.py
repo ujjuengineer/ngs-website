@@ -39,7 +39,7 @@ class CompanyCertificateAdmin(admin.ModelAdmin):
 
 @admin.register(DailyReport)
 class DailyReportAdmin(admin.ModelAdmin):
-    readonly_fields = ('created_at',)
+    # readonly_fields = ('created_at',)
     
     # What columns to show in the list view table
     list_display = ('date', 'location', 'name', 'year', 'volume_num', 'num_of_deed', 'num_of_page')
