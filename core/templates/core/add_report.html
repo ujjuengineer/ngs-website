@@ -19,18 +19,30 @@
                     {% endfor %}
                 {% endif %}
 
+                <!-- Duplicate warnings -->
+                {% if duplicate_report %}
+                    <div class="alert alert-warning" role="alert">
+                        <h5>⚠️ Duplicate Found</h5>
+                        <p>
+                            A report for Year <strong>{{ duplicate_report.year }}</strong>, 
+                            Volume <strong>{{ duplicate_report.volume_num }}</strong>, 
+                            Location <strong>{{ duplicate_report.location }}</strong> already exists!
+                        </p>
+                        <p>It was recorded by {{ duplicate_report.name }} on {{ duplicate_report.created_at|date:"F d, Y" }}.</p>
+                        <hr>
+                        <a href="{% url 'update_daily_report' duplicate_report.pk %}" class="btn btn-warning btn-sm">
+                            Edit Existing Record Instead
+                        </a>
+                    </div>
+                {% endif %}
+
                 <div class="card shadow border-0">
-                    <!-- <div class="card-header bg-dark text-white py-3">
-                        <h4 class="card-title mb-0">Employee Daily Work Log</h4>
-                        <a href="/" class="btn btn-sm btn-outline-light flex-fill flex-sm-none text-center"><i class="bi bi-house-door-fill me-1"></i> Go to Home</a>
-                    </div> -->
+
                     <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-3">
                         <h4 class="mb-0"><i class="bi bi-table me-2"></i>Employee Daily Work Log</h4>
                         <a href="{% url 'report_list' %}" class="btn btn-sm btn-info text-dark"><i class="bi bi-house-door-fill me-1"></i> See Your Reports</a>
-                        <!-- <a href="{% url 'report_list' %}" class="btn btn-sm btn-info text-dark flex-fill flex-sm-none text-center fw-semibold">
-                            <i class="bi bi-folder2-open me-1"></i> 
-                        </a> -->
                     </div>
+                    
                     <div class="card-body p-4">
                         
                         <form method="POST" novalidate>

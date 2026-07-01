@@ -51,13 +51,23 @@
                             {% endfor %}
                         </select>
                     </div>
-                    
-                    <div class="col-md-3">
-                        <label class="form-label fw-semibold">Employee Name</label>
-                        <input type="text" name="name" class="form-control" placeholder="Search name..." value="{{ selected_name }}">
+
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold">Workflow Stage</label>
+                        <select name="workflow_stage" class="form-select">
+                            <option value="">-- All Stages --</option>
+                            {% for stage in workflow_stages %}
+                                <option value="{{ stage.value }}" {% if selected_stage == stage.value %}selected{% endif %}>{{ stage.display }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                     
-                    <div class="col-md-3 d-flex gap-2">
+                    <div class="col-md-2">
+                        <label class="form-label fw-semibold">Employee Name</label>
+                        <input type="text" name="name" class="form-control" placeholder="Search name..." value="{{ selected_name }}" {% if not is_admin %}disabled title="Regular users can only view their own logs"{% endif %}>
+                    </div>
+                    
+                    <div class="col-md-2 d-flex gap-2">
                         <button type="submit" class="btn btn-primary flex-grow-1">
                             <i class="bi bi-filter me-1"></i> Apply
                         </button>
@@ -128,10 +138,11 @@
                 </table>
             </div>
 
-            <!-- SUMMARY BLOCK ADDED HERE -->
             {% if reports %}
-                <div class="card-footer bg-light border-top p-3">
-                    <div class="row g-3 align-items-center text-center text-md-start">
+                <div class="card-footer bg-light border-top p-4">
+
+                    {% if is_admin %}
+                    <div class="row g-3 align-items-center text-center text-md-start mb-4">
                         <div class="col-md-3">
                             <span class="text-muted small fw-bold d-block mb-1">CONSOLIDATED METRICS</span>
                             <h6 class="m-0 fw-bold text-dark"><i class="bi bi-calculator me-2 text-primary"></i>Filtered Totals</h6>
@@ -152,6 +163,51 @@
                             <div class="p-2 bg-white rounded border shadow-sm d-flex justify-content-between align-items-center px-3">
                                 <span class="text-muted small"><i class="bi bi-layers me-1 text-secondary"></i>Total Pages</span>
                                 <span class="badge bg-secondary fs-6">{{ total_pages|default:"0" }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <hr class="text-muted my-3 opacity-25">
+
+                    <div class="row g-2 text-center">
+                        <div class="col-12 text-md-start mb-2">
+                            <span class="text-muted small fw-bold d-block mb-1">YOUR PERFORMANCE CONTRIB</span>
+                            <h6 class="m-0 fw-bold text-success"><i class="bi bi-person-check me-2"></i>Logs Actioned By You (In Current View)</h6>
+                        </div>
+                        
+                        <div class="col-md-2 col-6">
+                            <div class="p-2 bg-white rounded border shadow-sm">
+                                <span class="text-muted d-block small mb-1">PDF Created</span>
+                                <span class="fw-bold text-dark fs-5">{{ user_metrics.pdf_count }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-2 col-6">
+                            <div class="p-2 bg-white rounded border shadow-sm">
+                                <span class="text-muted d-block small mb-1">Indexing Done</span>
+                                <span class="fw-bold text-dark fs-5">{{ user_metrics.indexing_count }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-2 col-6">
+                            <div class="p-2 bg-white rounded border shadow-sm">
+                                <span class="text-muted d-block small mb-1">Uploading Done</span>
+                                <span class="fw-bold text-dark fs-5">{{ user_metrics.uploading_count }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-2 col-6">
+                            <div class="p-2 bg-white rounded border shadow-sm">
+                                <span class="text-muted d-block small mb-1">QC Verified</span>
+                                <span class="fw-bold text-dark fs-5">{{ user_metrics.qc_count }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-2 col-6">
+                            <div class="p-2 bg-white rounded border shadow-sm">
+                                <span class="text-muted d-block small mb-1">Metadata Saved</span>
+                                <span class="fw-bold text-dark fs-5">{{ user_metrics.metadata_count }}</span>
                             </div>
                         </div>
                     </div>
