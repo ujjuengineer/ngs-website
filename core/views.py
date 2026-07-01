@@ -1,5 +1,3 @@
-from tkinter import S
-
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -15,7 +13,7 @@ import datetime
 from django.http import HttpResponse
 from openpyxl import Workbook
 from django.forms import modelformset_factory
-from django.db.models import Sum
+from django.db.models import Sum, Q
 from datetime import timedelta
 from django.utils import timezone
 from .utils import sync_workflow_records
