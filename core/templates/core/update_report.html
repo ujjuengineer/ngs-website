@@ -101,6 +101,7 @@
 
   <div class="card">
     <form method="POST">
+      <input type="hidden" name="back_to_url" value="{{ back_to_url }}">
       {% csrf_token %}
 
       <div class="form-row">
@@ -171,7 +172,12 @@
 
       <div class="form-actions">
         <button type="submit" class="btn-save">Save Changes →</button>
-        <a href="{% url 'update_report_search' %}?year={{ object.year }}&volume_num={{ object.volume_num }}&location={{ object.location }}" class="btn-discard">Discard</a>
+
+        {% if back_to_url %}
+            <a href="{{ back_to_url }}" class="btn-discard">Discard</a>
+        {% else %}
+            <a href="{% url 'update_report_search' %}?year={{ report.year }}&volume_num={{ report.volume_num }}&location={{ report.location }}" class="btn-discard">Discard</a>
+        {% endif %}
       </div>
     </form>
   </div>

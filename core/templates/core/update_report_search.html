@@ -137,10 +137,33 @@
 </nav>
 
 <div class="page">
+
+  {% if messages %}
+    <div class="messages-container my-3">
+        {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'warning' %}warning{% elif message.tags == 'info' %}info{% else %}success{% endif %} alert-dismissible fade show shadow-sm border-0 d-flex align-items-center" role="alert">
+                
+                <div class="me-2 fs-5">
+                    {% if message.tags == 'error' %}❌
+                    {% elif message.tags == 'warning' %}⚠️
+                    {% elif message.tags == 'info' %}ℹ️
+                    {% else %}✅
+                    {% endif %}
+
+                    {{ message }}   
+                </div>
+                <hr><hr><br>
+            </div>
+        {% endfor %}
+    </div>
+  {% endif %}
+
   <div class="page-header">
     <p class="page-label">Staff Portal</p>
     <h1 class="page-title">Update Daily Report</h1>
   </div>
+
+  
 
   <!-- SEARCH FORM -->
   <div class="card">

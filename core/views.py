@@ -91,72 +91,149 @@ class CertificateVerifyView(DetailView):
     slug_url_kwarg = 'certificate_number'
 
 
-# ── DAILY REPORT: SINGLE ADD (login required) ──
-@method_decorator(login_required, name='dispatch')
-class DailyReportCreateView(SuccessMessageMixin, CreateView):
-    model = DailyReport
-    form_class = DailyReportForm
-    template_name = 'core/add_report.html'
-    success_message = "Daily report for %(name)s at %(location)s recorded successfully!"
+@login_required
+def daily_report_create_view(request):
+    # 1. Determine the auto-name for the logged-in user
+    user = request.user
+    full_name = user.get_full_name().strip()
+    auto_name = full_name if full_name else user.username
 
-    def get_success_url(self):
-        next_url = self.request.GET.get('next') or self.request.POST.get('next')
-        if next_url:
-            return next_url
-        return reverse_lazy('add_daily_report')
+    duplicate_report = None
 
-    def get_initial(self):
-        initial = super().get_initial()
-        for field in ['year', 'volume_num', 'location']:
-            val = self.request.GET.get(field)
-            if val:
-                initial[field] = val
-        # Auto-fill name from logged-in user
-        user = self.request.user
-        full_name = user.get_full_name().strip()
-        initial['name'] = full_name if full_name else user.username
-        return initial
+    # 2. Handle Form Submission (POST request)
+    if request.method == 'POST':
+        form = DailyReportForm(request.POST)
+        if form.is_valid():
+            year = form.cleaned_data.get('year')
+            volume_num = form.cleaned_data.get('volume_num')
+            location = form.cleaned_data.get('location')
 
-    def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
-        ctx['next'] = self.request.GET.get('next', '')
-        # Pass the auto name so template can show it as read-only
-        user = self.request.user
-        full_name = user.get_full_name().strip()
-        ctx['auto_name'] = full_name if full_name else user.username
-        return ctx
+            # Check if an identical report already exists
+            existing = DailyReport.objects.filter(
+                year=year, volume_num=volume_num, location=location
+            ).first()
 
-    def form_valid(self, form):
-        # Always override name with logged-in user's name (ignore form input)
-        user = self.request.user
-        full_name = user.get_full_name().strip()
-        auto_name = full_name if full_name else user.username
+            if existing:
+                duplicate_report = {
+                    'pk': existing.pk,
+                    'year': existing.year,
+                    'volume_num': existing.volume_num,
+                    'location': existing.get_location_display(),
+                    'name': existing.name,
+                    'created_at': existing.created_at,
+                }
 
-        year = form.cleaned_data.get('year')
-        volume_num = form.cleaned_data.get('volume_num')
-        location = form.cleaned_data.get('location')
+                return render(request, 'core/add_report.html', {
+                    'form': form, # Keeps their input data on screen
+                    'next': request.GET.get('next', ''),
+                    'auto_name': auto_name,
+                    'duplicate_report': duplicate_report,
+                })
+                # return redirect(reverse('update_daily_report', args=[existing.pk]))
 
-        # if existing then don't add 
-        existing = DailyReport.objects.filter(
-            year=year, volume_num=volume_num, location=location
-        ).first()
+            # Save the new report with the auto_name enforced
+            instance = form.save(commit=False)
+            instance.name = auto_name
+            instance.save()
 
-        if existing:
-            messages.warning(
-                self.request,
-                f"⚠️ A report for Year '{year}', Volume '{volume_num}', "
-                f"Location '{existing.get_location_display()}' already exists. "
-                f"Please update the existing record instead."
+            # Success notification
+            messages.success(
+                request, 
+                f"Daily report for {instance.name} at {instance.get_location_display()} recorded successfully!"
             )
-            return redirect(reverse('update_daily_report', args=[existing.pk]))
 
-        # Save with auto name
-        instance = form.save(commit=False)
-        instance.name = auto_name
-        instance.save()
-        # Trigger success message manually since we bypassed super().form_valid
-        messages.success(self.request, f"Daily report for {instance.name} at {instance.get_location_display()} recorded successfully!")
-        return redirect(self.get_success_url())
+            # Determine where to redirect next
+            next_url = request.GET.get('next') or request.POST.get('next')
+            if next_url:
+                return redirect(next_url)
+            return redirect(reverse('add_daily_report'))
+
+    # 3. Handle Initial Page Load (GET request)
+    else:
+        # Build initial data dictionary matching your CBV's get_initial logic
+        initial_data = {
+            'name': auto_name,
+        }
+        # for field in ['year', 'volume_num', 'location']:
+        #     val = request.GET.get(field)
+        #     if val:
+        #         initial_data[field] = val
+
+        form = DailyReportForm(initial=initial_data)
+
+    context = {
+        'form': form,
+        'next': request.GET.get('next', ''),
+        'auto_name': auto_name,
+    }
+    return render(request, 'core/add_report.html', context)
+
+# ── DAILY REPORT: SINGLE ADD (login required) ──
+# @method_decorator(login_required, name='dispatch')
+# class DailyReportCreateView(SuccessMessageMixin, CreateView):
+#     model = DailyReport
+#     form_class = DailyReportForm
+#     template_name = 'core/add_report.html'
+#     success_message = "Daily report for %(name)s at %(location)s recorded successfully!"
+
+#     def get_success_url(self):
+#         next_url = self.request.GET.get('next') or self.request.POST.get('next')
+#         if next_url:
+#             return next_url
+#         return reverse_lazy('add_daily_report')
+
+#     def get_initial(self):
+#         initial = super().get_initial()
+#         for field in ['year', 'volume_num', 'location']:
+#             val = self.request.GET.get(field)
+#             if val:
+#                 initial[field] = val
+#         # Auto-fill name from logged-in user
+#         user = self.request.user
+#         full_name = user.get_full_name().strip()
+#         initial['name'] = full_name if full_name else user.username
+#         return initial
+
+#     def get_context_data(self, **kwargs):
+#         ctx = super().get_context_data(**kwargs)
+#         ctx['next'] = self.request.GET.get('next', '')
+#         # Pass the auto name so template can show it as read-only
+#         user = self.request.user
+#         full_name = user.get_full_name().strip()
+#         ctx['auto_name'] = full_name if full_name else user.username
+#         return ctx
+
+#     def form_valid(self, form):
+#         # Always override name with logged-in user's name (ignore form input)
+#         user = self.request.user
+#         full_name = user.get_full_name().strip()
+#         auto_name = full_name if full_name else user.username
+
+#         year = form.cleaned_data.get('year')
+#         volume_num = form.cleaned_data.get('volume_num')
+#         location = form.cleaned_data.get('location')
+
+#         # if existing then don't add 
+#         existing = DailyReport.objects.filter(
+#             year=year, volume_num=volume_num, location=location
+#         ).first()
+
+#         if existing:
+#             messages.warning(
+#                 self.request,
+#                 f"⚠️ A report for Year '{year}', Volume '{volume_num}', "
+#                 f"Location '{existing.get_location_display()}' already exists. "
+#                 f"Please update the existing record instead."
+#             )
+#             return redirect(reverse('update_daily_report', args=[existing.pk]))
+
+#         # Save with auto name
+#         instance = form.save(commit=False)
+#         instance.name = auto_name
+#         instance.save()
+#         # Trigger success message manually since we bypassed super().form_valid
+#         messages.success(self.request, f"Daily report for {instance.name} at {instance.get_location_display()} recorded successfully!")
+#         return redirect(self.get_success_url())
 
 
 # ── DAILY REPORT: BULK ADD (login required) ──
@@ -177,6 +254,7 @@ def add_multiple_reports_view(request):
     duplicate_reports = []
 
     if request.method == 'POST':
+        # just like creating a form = xyzform(request.post)
         formset = DailyReportFormSet(request.POST)
 
         if formset.is_valid():
@@ -438,61 +516,64 @@ def update_report_search_view(request):
     }
     return render(request, 'core/update_report_search.html', context)
 
-@method_decorator(login_required, name='dispatch')
-class DailyReportUpdateView(SuccessMessageMixin, UpdateView):
-    model = DailyReport
-    form_class = DailyReportUpdateForm
-    template_name = 'core/update_report.html'
-    success_message = "Report updated successfully!"
+@login_required
+def daily_report_update_view(request, pk):
+    # 1. Fetch the existing report instance
+    report = get_object_or_404(DailyReport, pk=pk)
+    user = request.user
+    
+    # Define our fields
+    BOOLEAN_FIELDS = ['pdf_deed', 'indexing', 'uploading', 'QC', 'metadata']
+    PROTECTED_FIELDS = ['date', 'location', 'name', 'year', 'volume_num', 'num_of_deed', 'num_of_page']
+    
+    # Check if the record is older than 24 hours
+    is_expired = timezone.now() > report.created_at + timedelta(hours=24)
 
-    BOOLEAN_FIELDS = [
-        'pdf_deed',
-        'indexing',
-        'uploading',
-        'QC',
-        'metadata',
-    ]
+    # 2. Handle Form Submission (POST)
+    if request.method == 'POST':
+        form = DailyReportUpdateForm(request.POST, instance=report)
+        
+        if form.is_valid():
+            # Enforce 24-hour rule protection on post-back for non-superusers
+            if is_expired and not user.is_superuser:
+                original = DailyReport.objects.get(pk=report.pk)
+                for field in PROTECTED_FIELDS:
+                    setattr(form.instance, field, getattr(original, field))
+            
+            form.save()
+            messages.success(request, "Report updated successfully!")
+            
+            # Read the hidden tracking URL sent by the form
+            back_to_url = request.POST.get('back_to_url')
+            if back_to_url:
+                return redirect(back_to_url)
+                
+            # Default fallback url matching your old get_success_url
+            return redirect(
+                reverse('update_report_search') + 
+                f"?year={report.year}&volume_num={report.volume_num}&location={report.location}"
+            )
 
-    def form_valid(self, form):
-        user = self.request.user
-
-        if (not user.is_superuser and timezone.now() > self.object.created_at + timedelta(hours=24)):
-            original = DailyReport.objects.get(pk=self.object.pk)
-            protected_fields = [
-                'date',
-                'location',
-                'name',
-                'year',
-                'volume_num',
-                'num_of_deed',
-                'num_of_page',
-            ]
-            for field in protected_fields:
-                setattr(form.instance, field, getattr(original, field))
-
-        return super().form_valid(form)
-
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        user = self.request.user
-
-        # Admin can edit everything forever
-        if user.is_superuser:
-            return form
-
-        # If record is older than 24 hours
-        if timezone.now() > self.object.created_at + timedelta(hours=24):
-
+    # 3. Handle Initial Page Load (GET)
+    else:
+        form = DailyReportUpdateForm(instance=report)
+        
+        # Apply field disabling logic if older than 24 hours (and not an admin)
+        if is_expired and not user.is_superuser:
             for field_name, field in form.fields.items():
-                if field_name not in self.BOOLEAN_FIELDS:
+                if field_name not in BOOLEAN_FIELDS:
                     field.disabled = True
 
-        return form
+    # 4. Handle referer url tracking context
+    if request.method == 'GET':
+        back_to_url = request.META.get('HTTP_REFERER', '')
+    else:
+        back_to_url = request.POST.get('back_to_url', '')
+
+    context = {
+        'form': form,
+        'report': report,
+        'back_to_url': back_to_url,
+    }
     
-    def get_success_url(self):
-        report = self.object
-        return reverse('update_report_search') + \
-            f"?year={report.year}&volume_num={report.volume_num}&location={report.location}"
-
-
-
+    return render(request, 'core/update_report.html', context)
