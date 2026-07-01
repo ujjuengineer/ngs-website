@@ -63,7 +63,7 @@ class DailyReport(models.Model):
         ('HILSA', 'Hilsa'),
     ]
     date = models.DateField(default=timezone.now, verbose_name="Report Date")
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Created At')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Created At', null=True, blank=True)
     location = models.CharField(max_length=50, choices=LOCATION_CHOICES, verbose_name="Location")
     name = models.CharField(max_length=255, verbose_name="Employee Name")
     year = models.CharField(max_length=9, verbose_name="Year")
@@ -91,7 +91,7 @@ class DailyReport(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.date} - {self.name} ({self.location})"
+        return f"{self.year} - {self.volume_num} ({self.location})"
 
 # ==========================================
 # WORKFLOW STEP MODELS

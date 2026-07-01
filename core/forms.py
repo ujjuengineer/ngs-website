@@ -81,13 +81,17 @@ class DailyReportUpdateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
-        # 🌟 Lock down structural fields during an update to keep data clean
-        self.fields['location'].disabled = True
-        self.fields['year'].disabled = True
-        self.fields['volume_num'].disabled = True
+
+
+        # no need for this, already managed inside views.py
         
-        # Optionally make them visually look locked out:
-        lock_style = 'background:#f0f2f5; cursor:not-allowed; color:#5E6B77;'
-        self.fields['location'].widget.attrs['style'] = lock_style
-        self.fields['year'].widget.attrs['style'] = lock_style
-        self.fields['volume_num'].widget.attrs['style'] = lock_style
+        # # 🌟 Lock down structural fields during an update to keep data clean
+        # self.fields['location'].disabled = True
+        # self.fields['year'].disabled = True
+        # self.fields['volume_num'].disabled = True
+        
+        # # Optionally make them visually look locked out:
+        # lock_style = 'background:#f0f2f5; cursor:not-allowed; color:#5E6B77;'
+        # self.fields['location'].widget.attrs['style'] = lock_style
+        # self.fields['year'].widget.attrs['style'] = lock_style
+        # self.fields['volume_num'].widget.attrs['style'] = lock_style

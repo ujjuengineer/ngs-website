@@ -1,9 +1,11 @@
+from tkinter import S
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from .models import ContactMessage, CompanyCertificate, DailyReport
+from .models import ContactMessage, CompanyCertificate, DailyReport, PDFRecord, IndexingRecord, UploadingRecord, QCRecord, MetadataRecord
 from django.urls import reverse_lazy, reverse
 from django.views.generic.edit import CreateView, UpdateView
 from .forms import CertificateForm, DailyReportForm, DailyReportBulkForm, DailyReportUpdateForm
@@ -16,7 +18,7 @@ from django.forms import modelformset_factory
 from django.db.models import Sum
 from datetime import timedelta
 from django.utils import timezone
-
+from .utils import sync_workflow_records
 
 # ── HOME ──
 def home(request):
@@ -129,12 +131,14 @@ def daily_report_create_view(request):
                     'auto_name': auto_name,
                     'duplicate_report': duplicate_report,
                 })
-                # return redirect(reverse('update_daily_report', args=[existing.pk]))
 
             # Save the new report with the auto_name enforced
             instance = form.save(commit=False)
             instance.name = auto_name
             instance.save()
+
+            # create the submodel
+            sync_workflow_records(instance, request.user)
 
             # Success notification
             messages.success(
@@ -282,6 +286,8 @@ def add_multiple_reports_view(request):
                     })
                 else:
                     instance.save()
+                    # create the submodels
+                    sync_workflow_records(instance, request.user)
                     saved_count += 1
 
             if saved_count:
@@ -308,21 +314,42 @@ def add_multiple_reports_view(request):
     })
 
 
-# ── REPORT LIST (login required — users see only their own reports) ──
-# ── REPORT LIST (login required — users see only their own reports) ──
+import datetime
+from django.contrib.auth.decorators import login_required
+from django.db.models import Sum, Q
+from django.shortcuts import render
+from django.http import HttpResponse
+from .models import DailyReport
+
 @login_required
 def report_list_view(request):
-    # Superusers/staff see all reports; regular users see only their own
-    if request.user.is_staff or request.user.is_superuser:
-        queryset = DailyReport.objects.all()
+    is_admin = request.user.is_staff or request.user.is_superuser
+    
+    # 1. 🌟 FILTER BASED ON ENGAGEMENT / ROLE 🌟
+    # Admins see everything. Regular users see records they created OR sub-stages they completed.
+    if is_admin:
+        base_queryset = DailyReport.objects.all()
     else:
-        queryset = DailyReport.objects.filter(name=request.user.get_full_name().upper() or request.user.username.upper())
+        user_full_name = request.user.get_full_name().upper() if request.user.get_full_name() else request.user.username.upper()
+        base_queryset = DailyReport.objects.filter(
+            Q(name__iexact=user_full_name) |
+            Q(pdf_records__created_by=request.user) |
+            Q(indexing_records__created_by=request.user) |
+            Q(uploading_records__created_by=request.user) |
+            Q(qc_records__created_by=request.user) |
+            Q(metadata_records__created_by=request.user)
+        ).distinct()
 
+    # Capture URL GET Filter Parameters
     filter_date = request.GET.get('date', '').strip()
     filter_month = request.GET.get('month', '').strip()
     filter_location = request.GET.get('location', '').strip()
     filter_name = request.GET.get('name', '').strip()
+    filter_stage = request.GET.get('workflow_stage', '').strip() # 🌟 New Dropdown Parameter
 
+    # Apply Standard Filters
+    queryset = base_queryset
+    
     if filter_date:
         queryset = queryset.filter(date=filter_date)
 
@@ -336,14 +363,53 @@ def report_list_view(request):
     if filter_location:
         queryset = queryset.filter(location=filter_location)
 
-    if filter_name and (request.user.is_staff or request.user.is_superuser):
+    if filter_name and is_admin:
         queryset = queryset.filter(name__icontains=filter_name)
 
+    # 2. 🌟 DYNAMIC WORKFLOW SUB-MODEL STAGE FILTER 🌟
+    if filter_stage:
+        if filter_stage == 'pdf':
+            queryset = queryset.filter(pdf_records__isnull=False)
+        elif filter_stage == 'indexing':
+            queryset = queryset.filter(indexing_records__isnull=False)
+        elif filter_stage == 'uploading':
+            queryset = queryset.filter(uploading_records__isnull=False)
+        elif filter_stage == 'qc':
+            queryset = queryset.filter(qc_records__isnull=False)
+        elif filter_stage == 'metadata':
+            queryset = queryset.filter(metadata_records__isnull=False)
+
+    # Calculate Totals
     totals = queryset.aggregate(
         sum_deeds=Sum('num_of_deed'),
         sum_pages=Sum('num_of_page')
     )
 
+    # user_metrics = {
+    #     'pdf_count': PDFRecord.objects.filter(created_by=request.user).filter(daily_report__in=queryset).count(),
+    #     'indexing_count': IndexingRecord.objects.filter(created_by=request.user).filter(daily_report__in=queryset).count(),
+    #     'uploading_count': UploadingRecord.objects.filter(created_by=request.user).filter(daily_report__in=queryset).count(),
+    #     'qc_count': QCRecord.objects.filter(created_by=request.user).filter(daily_report__in=queryset).count(),
+    #     'metadata_count': MetadataRecord.objects.filter(created_by=request.user).filter(daily_report__in=queryset).count(),
+    # }
+    user_metrics = {
+        # Total Deeds for reports where this user created the PDF
+        'pdf_count': PDFRecord.objects.filter(created_by=request.user, daily_report__in=queryset).aggregate(s=Sum('daily_report__num_of_deed'))['s'] or 0,
+        
+        # Total Deeds for reports where this user did the Indexing
+        'indexing_count': IndexingRecord.objects.filter(created_by=request.user, daily_report__in=queryset).aggregate(s=Sum('daily_report__num_of_deed'))['s'] or 0,
+        
+        # Total Deeds for reports where this user handled Uploading
+        'uploading_count': UploadingRecord.objects.filter(created_by=request.user, daily_report__in=queryset).aggregate(s=Sum('daily_report__num_of_deed'))['s'] or 0,
+        
+        # Total Deeds for reports where this user did the Quality Check (QC)
+        'qc_count': QCRecord.objects.filter(created_by=request.user, daily_report__in=queryset).aggregate(s=Sum('daily_report__num_of_deed'))['s'] or 0,
+        
+        # Total Pages for reports where this user entered the Metadata
+        'metadata_count': MetadataRecord.objects.filter(created_by=request.user, daily_report__in=queryset).aggregate(s=Sum('daily_report__num_of_page'))['s'] or 0,
+    }
+
+    # 3. Excel Export Engine
     if 'export_excel' in request.GET:
         from openpyxl import Workbook
         from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
@@ -353,15 +419,13 @@ def report_list_view(request):
         ws = wb.active
         ws.title = "Filtered Reports"
         
-        # 1. Define Design Styles
         header_font = Font(name='Calibri', size=11, bold=True, color='FFFFFF')
-        header_fill = PatternFill(start_color='1F2935', end_color='1F2935', fill_type='solid') # Dark Navy
+        header_fill = PatternFill(start_color='1F2935', end_color='1F2935', fill_type='solid')
         data_font = Font(name='Calibri', size=11, bold=False)
         
-        # Summary Row Branding Colors
         summary_label_font = Font(name='Calibri', size=11, bold=True, color='1F2935')
         summary_val_font = Font(name='Calibri', size=11, bold=True, color='000000')
-        summary_fill = PatternFill(start_color='F8F9FA', end_color='F8F9FA', fill_type='solid') # Soft Grey
+        summary_fill = PatternFill(start_color='F8F9FA', end_color='F8F9FA', fill_type='solid')
         
         center_align = Alignment(horizontal='center', vertical='center')
         left_align = Alignment(horizontal='left', vertical='center')
@@ -371,7 +435,6 @@ def report_list_view(request):
         thick_bottom_side = Side(border_style="medium", color="1F2935")
         thin_border = Border(left=thin_side, right=thin_side, top=thin_side, bottom=thin_side)
 
-        # 2. Add and Format Headers
         headers = ['Date', 'Location', 'Employee Name', 'Year', 'Volume No.',
                    'No. Deeds', 'No. Pages', 'PDF', 'Indexing', 'Uploading', 'QC', 'Metadata']
         ws.append(headers)
@@ -383,7 +446,6 @@ def report_list_view(request):
             cell.alignment = center_align
             cell.border = thin_border
 
-        # 3. Append Main Log Rows
         for report in queryset:
             row_data = [
                 report.date.strftime('%Y-%m-%d') if report.date else '',
@@ -411,13 +473,12 @@ def report_list_view(request):
                 else:
                     cell.alignment = left_align
 
-        # 4. 🌟 REUSING ALREADY COMPUTED VALUES FIXED 🌟
-        ws.append([]) # Blank spacer row
+        ws.append([]) # Spacer
 
         summary_rows = [
             ("Total Number of volume", len(queryset)),  
-            ("Total Deeds", totals['sum_deeds'] or 0),  # 🌟 Fixed key match
-            ("Total Pages", totals['sum_pages'] or 0)   # 🌟 Fixed key match
+            ("Total Deeds", totals['sum_deeds'] or 0),  
+            ("Total Pages", totals['sum_pages'] or 0)   
         ]
 
         for label, val in summary_rows:
@@ -425,25 +486,22 @@ def report_list_view(request):
             s_row = ws.max_row
             ws.row_dimensions[s_row].height = 22
             
-            # Format Label (Column E)
             lbl_cell = ws.cell(row=s_row, column=5)
             lbl_cell.font = summary_label_font
             lbl_cell.alignment = right_align
             lbl_cell.fill = summary_fill
             lbl_cell.border = Border(left=thin_side, top=thin_side, bottom=thin_side)
             
-            # Format Value (Column F)
             val_cell = ws.cell(row=s_row, column=6)
             val_cell.font = summary_val_font
             val_cell.alignment = center_align
             val_cell.fill = summary_fill
             val_cell.border = Border(right=thin_side, top=thin_side, bottom=thin_side)
             
-            if label == "Total Pages Processed":
+            if label == "Total Pages":
                 lbl_cell.border = Border(left=thin_side, top=thin_side, bottom=thick_bottom_side)
                 val_cell.border = Border(right=thin_side, top=thin_side, bottom=thick_bottom_side)
 
-        # 5. Dynamic Auto-Fit Column Widths
         for col in ws.columns:
             max_len = 0
             col_letter = get_column_letter(col[0].column)
@@ -452,33 +510,214 @@ def report_list_view(request):
                     max_len = max(max_len, len(str(cell.value)))
             ws.column_dimensions[col_letter].width = max(max_len + 4, 12)
 
-        # 6. Build and Stream Response
-        response = HttpResponse(
-            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        )
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         response['Content-Disposition'] = f'attachment; filename=Reports_Export_{datetime.date.today()}.xlsx'
         wb.save(response)
         return response
 
+    # 4. Context Preparation
     existing_dates = DailyReport.objects.dates('date', 'month', order='DESC')
     available_months = [
         {'value': d.strftime('%Y-%m'), 'display': d.strftime('%B %Y')}
         for d in existing_dates
     ]
 
+    # Explicit Workflow Options for the frontend template HTML dropdown
+    workflow_stages = [
+        {'value': 'pdf', 'display': 'PDF Report'},
+        {'value': 'indexing', 'display': 'Indexing Report'},
+        {'value': 'uploading', 'display': 'Uploading Report'},
+        {'value': 'qc', 'display': 'QC Report'},
+        {'value': 'metadata', 'display': 'Metadata Report'},
+    ]
+
     context = {
         'reports': queryset,
         'total_deeds': totals['sum_deeds'],
         'total_pages': totals['sum_pages'],
+        'user_metrics': user_metrics,
         'locations': DailyReport.LOCATION_CHOICES,
         'available_months': available_months,
+        'workflow_stages': workflow_stages,       # 🌟 Sent to template
         'selected_date': filter_date,
         'selected_month': filter_month,
         'selected_location': filter_location,
         'selected_name': filter_name,
-        'is_admin': request.user.is_staff or request.user.is_superuser,
+        'selected_stage': filter_stage,           # 🌟 Preserves active choice
+        'is_admin': is_admin,
     }
     return render(request, 'core/report_list.html', context)
+
+# ── REPORT LIST (login required — users see only their own reports) ──
+# @login_required
+# def report_list_view(request):
+#     # Superusers/staff see all reports; regular users see only their own
+#     if request.user.is_staff or request.user.is_superuser:
+#         queryset = DailyReport.objects.all()
+#     else:
+#         queryset = DailyReport.objects.filter(name=request.user.get_full_name().upper() or request.user.username.upper())
+
+#     filter_date = request.GET.get('date', '').strip()
+#     filter_month = request.GET.get('month', '').strip()
+#     filter_location = request.GET.get('location', '').strip()
+#     filter_name = request.GET.get('name', '').strip()
+
+#     if filter_date:
+#         queryset = queryset.filter(date=filter_date)
+
+#     if filter_month:
+#         try:
+#             year_part, month_part = map(int, filter_month.split('-'))
+#             queryset = queryset.filter(date__year=year_part, date__month=month_part)
+#         except ValueError:
+#             pass
+
+#     if filter_location:
+#         queryset = queryset.filter(location=filter_location)
+
+#     if filter_name and (request.user.is_staff or request.user.is_superuser):
+#         queryset = queryset.filter(name__icontains=filter_name)
+
+#     totals = queryset.aggregate(
+#         sum_deeds=Sum('num_of_deed'),
+#         sum_pages=Sum('num_of_page')
+#     )
+
+#     if 'export_excel' in request.GET:
+#         from openpyxl import Workbook
+#         from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+#         from openpyxl.utils import get_column_letter
+
+#         wb = Workbook()
+#         ws = wb.active
+#         ws.title = "Filtered Reports"
+        
+#         # 1. Define Design Styles
+#         header_font = Font(name='Calibri', size=11, bold=True, color='FFFFFF')
+#         header_fill = PatternFill(start_color='1F2935', end_color='1F2935', fill_type='solid') # Dark Navy
+#         data_font = Font(name='Calibri', size=11, bold=False)
+        
+#         # Summary Row Branding Colors
+#         summary_label_font = Font(name='Calibri', size=11, bold=True, color='1F2935')
+#         summary_val_font = Font(name='Calibri', size=11, bold=True, color='000000')
+#         summary_fill = PatternFill(start_color='F8F9FA', end_color='F8F9FA', fill_type='solid') # Soft Grey
+        
+#         center_align = Alignment(horizontal='center', vertical='center')
+#         left_align = Alignment(horizontal='left', vertical='center')
+#         right_align = Alignment(horizontal='right', vertical='center')
+        
+#         thin_side = Side(border_style="thin", color="D3D3D3")
+#         thick_bottom_side = Side(border_style="medium", color="1F2935")
+#         thin_border = Border(left=thin_side, right=thin_side, top=thin_side, bottom=thin_side)
+
+#         # 2. Add and Format Headers
+#         headers = ['Date', 'Location', 'Employee Name', 'Year', 'Volume No.',
+#                    'No. Deeds', 'No. Pages', 'PDF', 'Indexing', 'Uploading', 'QC', 'Metadata']
+#         ws.append(headers)
+        
+#         ws.row_dimensions[1].height = 24
+#         for cell in ws[1]:
+#             cell.font = header_font
+#             cell.fill = header_fill
+#             cell.alignment = center_align
+#             cell.border = thin_border
+
+#         # 3. Append Main Log Rows
+#         for report in queryset:
+#             row_data = [
+#                 report.date.strftime('%Y-%m-%d') if report.date else '',
+#                 report.get_location_display(), 
+#                 report.name, 
+#                 report.year, 
+#                 report.volume_num,
+#                 report.num_of_deed, 
+#                 report.num_of_page,
+#                 "Yes" if report.pdf_deed else "No",
+#                 "Yes" if report.indexing else "No",
+#                 "Yes" if report.uploading else "No",
+#                 "Yes" if report.QC else "No",
+#                 "Yes" if report.metadata else "No",
+#             ]
+#             ws.append(row_data)
+            
+#             current_row = ws.max_row
+#             ws.row_dimensions[current_row].height = 20
+#             for col_idx, cell in enumerate(ws[current_row], start=1):
+#                 cell.font = data_font
+#                 cell.border = thin_border
+#                 if col_idx in [1, 4, 5, 6, 7, 8, 9, 10, 11, 12]:
+#                     cell.alignment = center_align
+#                 else:
+#                     cell.alignment = left_align
+
+#         # 4. 🌟 REUSING ALREADY COMPUTED VALUES FIXED 🌟
+#         ws.append([]) # Blank spacer row
+
+#         summary_rows = [
+#             ("Total Number of volume", len(queryset)),  
+#             ("Total Deeds", totals['sum_deeds'] or 0),  # 🌟 Fixed key match
+#             ("Total Pages", totals['sum_pages'] or 0)   # 🌟 Fixed key match
+#         ]
+
+#         for label, val in summary_rows:
+#             ws.append(["", "", "", "", label, val])
+#             s_row = ws.max_row
+#             ws.row_dimensions[s_row].height = 22
+            
+#             # Format Label (Column E)
+#             lbl_cell = ws.cell(row=s_row, column=5)
+#             lbl_cell.font = summary_label_font
+#             lbl_cell.alignment = right_align
+#             lbl_cell.fill = summary_fill
+#             lbl_cell.border = Border(left=thin_side, top=thin_side, bottom=thin_side)
+            
+#             # Format Value (Column F)
+#             val_cell = ws.cell(row=s_row, column=6)
+#             val_cell.font = summary_val_font
+#             val_cell.alignment = center_align
+#             val_cell.fill = summary_fill
+#             val_cell.border = Border(right=thin_side, top=thin_side, bottom=thin_side)
+            
+#             if label == "Total Pages Processed":
+#                 lbl_cell.border = Border(left=thin_side, top=thin_side, bottom=thick_bottom_side)
+#                 val_cell.border = Border(right=thin_side, top=thin_side, bottom=thick_bottom_side)
+
+#         # 5. Dynamic Auto-Fit Column Widths
+#         for col in ws.columns:
+#             max_len = 0
+#             col_letter = get_column_letter(col[0].column)
+#             for cell in col:
+#                 if cell.value:
+#                     max_len = max(max_len, len(str(cell.value)))
+#             ws.column_dimensions[col_letter].width = max(max_len + 4, 12)
+
+#         # 6. Build and Stream Response
+#         response = HttpResponse(
+#             content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+#         )
+#         response['Content-Disposition'] = f'attachment; filename=Reports_Export_{datetime.date.today()}.xlsx'
+#         wb.save(response)
+#         return response
+
+#     existing_dates = DailyReport.objects.dates('date', 'month', order='DESC')
+#     available_months = [
+#         {'value': d.strftime('%Y-%m'), 'display': d.strftime('%B %Y')}
+#         for d in existing_dates
+#     ]
+
+#     context = {
+#         'reports': queryset,
+#         'total_deeds': totals['sum_deeds'],
+#         'total_pages': totals['sum_pages'],
+#         'locations': DailyReport.LOCATION_CHOICES,
+#         'available_months': available_months,
+#         'selected_date': filter_date,
+#         'selected_month': filter_month,
+#         'selected_location': filter_location,
+#         'selected_name': filter_name,
+#         'is_admin': request.user.is_staff or request.user.is_superuser,
+#     }
+#     return render(request, 'core/report_list.html', context)
 
 
 # ── UPDATE REPORT SEARCH (login required) ──
@@ -521,6 +760,10 @@ def daily_report_update_view(request, pk):
     # 1. Fetch the existing report instance
     report = get_object_or_404(DailyReport, pk=pk)
     user = request.user
+
+    # data for submodels
+    full_name = user.get_full_name().strip()
+    current_updater_name = full_name if full_name else user.username
     
     # Define our fields
     BOOLEAN_FIELDS = ['pdf_deed', 'indexing', 'uploading', 'QC', 'metadata']
@@ -529,18 +772,34 @@ def daily_report_update_view(request, pk):
     # Check if the record is older than 24 hours
     is_expired = timezone.now() > report.created_at + timedelta(hours=24)
 
-    # 2. Handle Form Submission (POST)
+    # 1. Initialize the form based on request method
     if request.method == 'POST':
         form = DailyReportUpdateForm(request.POST, instance=report)
+    else:
+        form = DailyReportUpdateForm(instance=report)
+
+    # 2. 🌟 APPLY DISABLING LOGIC HERE (Runs for BOTH GET and POST) 🌟
+    if is_expired and not user.is_superuser:
+        for field_name, field in form.fields.items():
+            if field_name not in BOOLEAN_FIELDS:
+                field.disabled = True
+
+    # 2. Handle Form Submission (POST)
+    if request.method == 'POST':
         
         if form.is_valid():
             # Enforce 24-hour rule protection on post-back for non-superusers
             if is_expired and not user.is_superuser:
                 original = DailyReport.objects.get(pk=report.pk)
                 for field in PROTECTED_FIELDS:
-                    setattr(form.instance, field, getattr(original, field))
+                    setattr(form.instance, field, getattr(original, field)) # checkout this one
             
-            form.save()
+            updated_report = form.save()
+
+            # create the submodels
+            sync_workflow_records(updated_report, request.user)
+
+
             messages.success(request, "Report updated successfully!")
             
             # Read the hidden tracking URL sent by the form
@@ -553,10 +812,6 @@ def daily_report_update_view(request, pk):
                 reverse('update_report_search') + 
                 f"?year={report.year}&volume_num={report.volume_num}&location={report.location}"
             )
-
-    # 3. Handle Initial Page Load (GET)
-    else:
-        form = DailyReportUpdateForm(instance=report)
         
         # Apply field disabling logic if older than 24 hours (and not an admin)
         if is_expired and not user.is_superuser:
