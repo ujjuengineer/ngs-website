@@ -68,8 +68,11 @@ class DailyReport(models.Model):
     name = models.CharField(max_length=255, verbose_name="Employee Name")
     year = models.CharField(max_length=9, verbose_name="Year")
     volume_num = models.CharField(max_length=100, verbose_name="Volume Number")
-    num_of_deed = models.IntegerField(verbose_name="Number of Deeds")
+    
     num_of_page = models.IntegerField(verbose_name="Number of Pages")
+
+    # MADE THIS FIELD OPTIONAL
+    num_of_deed = models.IntegerField(verbose_name="Number of Deeds", null=True, blank=True)
 
     # # Status / Workflow progress boolean fields
     pdf_deed = models.BooleanField(default=False, verbose_name="PDF (Deed)")

@@ -19,7 +19,7 @@ class DailyReportForm(forms.ModelForm):
         model = DailyReport
         fields = [
             'name', 'location', 'year', 'volume_num',
-            'num_of_deed', 'num_of_page', 'pdf_deed',
+            'num_of_page', 'num_of_deed', 'pdf_deed',
             'indexing', 'uploading', 'QC', 'metadata'
         ]
         widgets = {
@@ -33,8 +33,8 @@ class DailyReportForm(forms.ModelForm):
             'location': forms.Select(attrs={'class': 'form-select'}),
             'year': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 2026'}),
             'volume_num': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Vol-12'}),
-            'num_of_deed': forms.NumberInput(attrs={'class': 'form-control', 'min': '0'}),
             'num_of_page': forms.NumberInput(attrs={'class': 'form-control', 'min': '0'}),
+            'num_of_deed': forms.NumberInput(attrs={'class': 'form-control', 'min': '0'}),
             'pdf_deed': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'indexing': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'uploading': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
@@ -49,15 +49,16 @@ class DailyReportBulkForm(forms.ModelForm):
         model = DailyReport
         fields = [
             'location', 'year', 'volume_num',
-            'num_of_deed', 'num_of_page', 'pdf_deed',
+            'num_of_page', 'num_of_deed', 'pdf_deed',
             'indexing', 'uploading', 'QC', 'metadata'
         ]
         widgets = {
             'location': forms.Select(attrs={'class': 'form-select form-select-sm'}),
             'year': forms.TextInput(attrs={'class': 'form-control form-select-sm', 'placeholder': 'Year'}),
             'volume_num': forms.TextInput(attrs={'class': 'form-control form-select-sm', 'placeholder': 'Vol'}),
-            'num_of_deed': forms.NumberInput(attrs={'class': 'form-control form-select-sm', 'min': '0'}),
             'num_of_page': forms.NumberInput(attrs={'class': 'form-control form-select-sm', 'min': '0'}),
+
+            'num_of_deed': forms.NumberInput(attrs={'class': 'form-control form-select-sm', 'min': '0'}),
             'pdf_deed': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'indexing': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'uploading': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
@@ -72,7 +73,7 @@ class DailyReportUpdateForm(forms.ModelForm):
         model = DailyReport
         fields = [
             'name', 'location', 'year', 'volume_num',
-            'num_of_deed', 'num_of_page', 'pdf_deed',
+            'num_of_page', 'num_of_deed', 'pdf_deed',
             'indexing', 'uploading', 'QC', 'metadata'
         ]
         # Re-use your existing styled widgets

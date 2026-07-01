@@ -137,16 +137,19 @@
       </div>
 
       <div class="form-row">
-        <div class="form-group">
-          <label>Number of Deeds</label>
-          {{ form.num_of_deed }}
-          {% if form.num_of_deed.errors %}<ul class="error-list">{% for e in form.num_of_deed.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
-        </div>
+        
         <div class="form-group">
           <label>Number of Pages</label>
           {{ form.num_of_page }}
           {% if form.num_of_page.errors %}<ul class="error-list">{% for e in form.num_of_page.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
         </div>
+
+        <div class="form-group">
+          <label>Number of Deeds</label>
+          {{ form.num_of_deed }}
+          {% if form.num_of_deed.errors %}<ul class="error-list">{% for e in form.num_of_deed.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+        </div>
+        
       </div>
 
       <div class="checkbox-section">

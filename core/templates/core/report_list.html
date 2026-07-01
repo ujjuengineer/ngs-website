@@ -91,8 +91,9 @@
                             <th>Employee Name</th>
                             <th>Year</th>
                             <th>Volume</th>
-                            <th>No. of Deeds</th>
                             <th>No. of Pages</th>
+                            <th>No. of Deeds</th>
+                            
                             <th class="text-center">PDF</th>
                             <th class="text-center">Indexing</th>
                             <th class="text-center">Uploading</th>
@@ -108,8 +109,10 @@
                             <td class="text-uppercase fw-semibold text-dark">{{ report.name }}</td>
                             <td>{{ report.year }}</td>
                             <td>{{ report.volume_num }}</td>
-                            <td>{{ report.num_of_deed }}</td>
                             <td>{{ report.num_of_page }}</td>
+
+                            <td>{{ report.num_of_deed }}</td>
+                            
                             <td class="text-center">
                                 {% if report.pdf_deed %}<i class="bi bi-check-circle-fill text-success fs-5"></i>{% else %}<i class="bi bi-x-circle text-muted"></i>{% endif %}
                             </td>
