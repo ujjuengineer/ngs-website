@@ -14,10 +14,12 @@ from django.http import HttpResponse
 from openpyxl import Workbook
 from django.forms import modelformset_factory
 from django.db.models import Sum, Q
-from datetime import timedelta
+from datetime import date, timedelta
 from django.utils import timezone
 from .utils import sync_workflow_records
 import datetime
+from itertools import chain
+
 
 # ── HOME ──
 def home(request):
@@ -171,73 +173,6 @@ def daily_report_create_view(request):
     }
     return render(request, 'core/add_report.html', context)
 
-# ── DAILY REPORT: SINGLE ADD (login required) ──
-# @method_decorator(login_required, name='dispatch')
-# class DailyReportCreateView(SuccessMessageMixin, CreateView):
-#     model = DailyReport
-#     form_class = DailyReportForm
-#     template_name = 'core/add_report.html'
-#     success_message = "Daily report for %(name)s at %(location)s recorded successfully!"
-
-#     def get_success_url(self):
-#         next_url = self.request.GET.get('next') or self.request.POST.get('next')
-#         if next_url:
-#             return next_url
-#         return reverse_lazy('add_daily_report')
-
-#     def get_initial(self):
-#         initial = super().get_initial()
-#         for field in ['year', 'volume_num', 'location']:
-#             val = self.request.GET.get(field)
-#             if val:
-#                 initial[field] = val
-#         # Auto-fill name from logged-in user
-#         user = self.request.user
-#         full_name = user.get_full_name().strip()
-#         initial['name'] = full_name if full_name else user.username
-#         return initial
-
-#     def get_context_data(self, **kwargs):
-#         ctx = super().get_context_data(**kwargs)
-#         ctx['next'] = self.request.GET.get('next', '')
-#         # Pass the auto name so template can show it as read-only
-#         user = self.request.user
-#         full_name = user.get_full_name().strip()
-#         ctx['auto_name'] = full_name if full_name else user.username
-#         return ctx
-
-#     def form_valid(self, form):
-#         # Always override name with logged-in user's name (ignore form input)
-#         user = self.request.user
-#         full_name = user.get_full_name().strip()
-#         auto_name = full_name if full_name else user.username
-
-#         year = form.cleaned_data.get('year')
-#         volume_num = form.cleaned_data.get('volume_num')
-#         location = form.cleaned_data.get('location')
-
-#         # if existing then don't add 
-#         existing = DailyReport.objects.filter(
-#             year=year, volume_num=volume_num, location=location
-#         ).first()
-
-#         if existing:
-#             messages.warning(
-#                 self.request,
-#                 f"⚠️ A report for Year '{year}', Volume '{volume_num}', "
-#                 f"Location '{existing.get_location_display()}' already exists. "
-#                 f"Please update the existing record instead."
-#             )
-#             return redirect(reverse('update_daily_report', args=[existing.pk]))
-
-#         # Save with auto name
-#         instance = form.save(commit=False)
-#         instance.name = auto_name
-#         instance.save()
-#         # Trigger success message manually since we bypassed super().form_valid
-#         messages.success(self.request, f"Daily report for {instance.name} at {instance.get_location_display()} recorded successfully!")
-#         return redirect(self.get_success_url())
-
 
 # ── DAILY REPORT: BULK ADD (login required) ──
 @login_required
@@ -312,26 +247,69 @@ def add_multiple_reports_view(request):
         'auto_name': auto_name,
     })
 
+import datetime
+from itertools import chain
+from django.contrib.auth.decorators import login_required
+from django.db.models import Sum, Q
+from django.http import HttpResponse
+from django.shortcuts import render
+from .models import DailyReport, PDFRecord, IndexingRecord, UploadingRecord, QCRecord, MetadataRecord
 
 @login_required
 def report_list_view(request):
+    # Setup the base user role check right away
     is_admin = request.user.is_staff or request.user.is_superuser
-    
-    # Standardize user full name for filtering
+
+    # Standardize user full name for filtering personal metrics
     user_full_name = request.user.get_full_name().upper() if request.user.get_full_name() else request.user.username.upper()
 
-    # 1. 🌟 FILTER BASED ON ENGAGEMENT / ROLE 🌟
+    # 🌟 LEVEL ACCESS GATEWAY 🌟
     if is_admin:
-        base_queryset = DailyReport.objects.all()
+        # Admins pull comprehensive datasets across the entire workforce
+        pdf_data = PDFRecord.objects.all()
+        ind_data = IndexingRecord.objects.all()
+        upload_data = UploadingRecord.objects.all()
+        qc_data = QCRecord.objects.all()
+        metadata_data = MetadataRecord.objects.all()
+        
+        # Admins see all logs out-of-the-box
+        scanning_report = DailyReport.objects.all()
     else:
-        base_queryset = DailyReport.objects.filter(
-            Q(name__iexact=user_full_name) |
-            Q(pdf_records__created_by=request.user) |
-            Q(indexing_records__created_by=request.user) |
-            Q(uploading_records__created_by=request.user) |
-            Q(qc_records__created_by=request.user) |
-            Q(metadata_records__created_by=request.user)
-        ).distinct()
+        # Regular employees are strictly limited to their own record contributions
+        pdf_data = PDFRecord.objects.filter(created_by=request.user)
+        ind_data = IndexingRecord.objects.filter(created_by=request.user)
+        upload_data = UploadingRecord.objects.filter(created_by=request.user)
+        qc_data = QCRecord.objects.filter(created_by=request.user)
+        metadata_data = MetadataRecord.objects.filter(created_by=request.user)
+        
+        # Scanners only see their own names mapped on DailyReports
+        scanning_report = DailyReport.objects.none()
+        if request.user.username.endswith('-S'):
+            scanning_report = DailyReport.objects.filter(name=user_full_name)
+
+    # Collect unique DailyReport IDs from all active records
+    daily_report_ids = set(chain(
+        pdf_data.values_list('daily_report_id', flat=True),
+        ind_data.values_list('daily_report_id', flat=True),
+        upload_data.values_list('daily_report_id', flat=True),
+        qc_data.values_list('daily_report_id', flat=True),
+        metadata_data.values_list('daily_report_id', flat=True),
+    ))
+
+    # Fetch corresponding DailyReport objects matching the sub-model IDs
+    daily_reports = DailyReport.objects.filter(id__in=daily_report_ids)
+
+    # NOTE : all the above data can be simply be created by 1 single query
+    # daily_reports = DailyReport.objects.filter(
+    #     Q(pdf_records__created_by=request.user) |
+    #     Q(indexing_records__created_by=request.user) |
+    #     Q(uploading_records__created_by=request.user) |
+    #     Q(qc_records__created_by=request.user) |
+    #     Q(metadata_records__created_by=request.user)
+    # ).distinct()
+
+    # Combine the datasets into a single unified workspace query
+    final_report = (daily_reports | scanning_report).distinct()
 
     # Capture URL GET Filter Parameters
     filter_date = request.GET.get('date', '').strip()
@@ -340,41 +318,77 @@ def report_list_view(request):
     filter_name = request.GET.get('name', '').strip()
     filter_stage = request.GET.get('workflow_stage', '').strip()
 
-    # Apply Standard Filters
-    queryset = base_queryset
-
+    # Apply Standard Date Filter
     if filter_date:
-        queryset = queryset.filter(date=filter_date)
+        pdf_data = pdf_data.filter(created_at__date=filter_date)
+        ind_data = ind_data.filter(created_at__date=filter_date)
+        upload_data = upload_data.filter(created_at__date=filter_date)
+        qc_data = qc_data.filter(created_at__date=filter_date) 
+        metadata_data = metadata_data.filter(created_at__date=filter_date)
 
+        # For admins, this filters all global daily reports by that date. For regular scanners, it filters just theirs.
+        scanning_report = scanning_report.filter(date=filter_date) 
+
+        daily_report_ids = set(chain(
+            pdf_data.values_list('daily_report_id', flat=True),
+            ind_data.values_list('daily_report_id', flat=True),
+            upload_data.values_list('daily_report_id', flat=True),
+            qc_data.values_list('daily_report_id', flat=True),
+            metadata_data.values_list('daily_report_id', flat=True),
+        ))
+
+        daily_reports = DailyReport.objects.filter(id__in=daily_report_ids)
+        final_report = (daily_reports | scanning_report).distinct()
+
+    # Apply Standard Month Filter
     if filter_month:
         try:
             year_part, month_part = map(int, filter_month.split('-'))
-            queryset = queryset.filter(date__year=year_part, date__month=month_part)
+            
+            pdf_data = pdf_data.filter(created_at__year=year_part, created_at__month=month_part)
+            ind_data = ind_data.filter(created_at__year=year_part, created_at__month=month_part)
+            upload_data = upload_data.filter(created_at__year=year_part, created_at__month=month_part)
+            qc_data = qc_data.filter(created_at__year=year_part, created_at__month=month_part)
+            metadata_data = metadata_data.filter(created_at__year=year_part, created_at__month=month_part)
+
+            scanning_report = scanning_report.filter(date__year=year_part, date__month=month_part)
+
+            daily_report_ids = set(chain(
+                pdf_data.values_list('daily_report_id', flat=True),
+                ind_data.values_list('daily_report_id', flat=True),
+                upload_data.values_list('daily_report_id', flat=True),
+                qc_data.values_list('daily_report_id', flat=True),
+                metadata_data.values_list('daily_report_id', flat=True),
+            ))
+
+            daily_reports = DailyReport.objects.filter(id__in=daily_report_ids)
+            final_report = (daily_reports | scanning_report).distinct()
+
         except ValueError:
             pass
 
     if filter_location:
-        queryset = queryset.filter(location=filter_location)
+        final_report = final_report.filter(location=filter_location)
 
+    # Naming query filtering is now accessible globally across the expanded workspace for admins
     if filter_name and is_admin:
-        queryset = queryset.filter(name__icontains=filter_name)
+        final_report = final_report.filter(name__icontains=filter_name)
 
-    # 2. 🌟 DYNAMIC WORKFLOW SUB-MODEL STAGE FILTER 🌟
+    # Workflow Sub-Model Stage Filtering
     if filter_stage:
         if filter_stage == 'pdf':
-            queryset = queryset.filter(pdf_records__isnull=False)
+            final_report = final_report.filter(pdf_records__isnull=False)
         elif filter_stage == 'indexing':
-            queryset = queryset.filter(indexing_records__isnull=False)
+            final_report = final_report.filter(indexing_records__isnull=False)
         elif filter_stage == 'uploading':
-            queryset = queryset.filter(uploading_records__isnull=False)
+            final_report = final_report.filter(uploading_records__isnull=False)
         elif filter_stage == 'qc':
-            queryset = queryset.filter(qc_records__isnull=False)
+            final_report = final_report.filter(qc_records__isnull=False)
         elif filter_stage == 'metadata':
-            queryset = queryset.filter(metadata_records__isnull=False)
+            final_report = final_report.filter(metadata_records__isnull=False)
 
-    # Calculate Global Totals for the current queryset (Consolidated Metrics)
-    # Conditional aggregation sums values only if the respective workflow checkbox is checked
-    totals = queryset.aggregate(
+    # Calculate Global Totals for the current workspace (Consolidated Metrics)
+    totals = final_report.aggregate(
         sum_deeds=Sum('num_of_deed'),
         sum_pages=Sum('num_of_page'),
         sum_pdf=Sum('num_of_deed', filter=Q(pdf_deed=True)),
@@ -386,26 +400,38 @@ def report_list_view(request):
 
     # Calculate User Metrics (Personal Performance Summary)
     user_metrics = {
-        # Total pages from reports explicitly created/owned by this user
-        'pages_scanned_count': queryset.filter(name__iexact=user_full_name).aggregate(s=Sum('num_of_page'))['s'] or 0,
+        # Tracks pages scanned by matching the specific user's name variant
+        'pages_scanned_count': (
+            final_report.filter(name__iexact=user_full_name).aggregate(s=Sum('num_of_page'))['s'] or 0
+        ) if request.user.username.endswith('-S') else 0,
         
-        # Total Deeds for reports where this user created the PDF
-        'pdf_count': PDFRecord.objects.filter(created_by=request.user, daily_report__in=queryset).aggregate(s=Sum('daily_report__num_of_deed'))['s'] or 0,
+        'pdf_count': PDFRecord.objects.filter(
+            created_by=request.user, 
+            daily_report__in=final_report
+        ).aggregate(s=Sum('daily_report__num_of_deed'))['s'] or 0,
         
-        # Total Deeds for reports where this user did the Indexing
-        'indexing_count': IndexingRecord.objects.filter(created_by=request.user, daily_report__in=queryset).aggregate(s=Sum('daily_report__num_of_deed'))['s'] or 0,
+        'indexing_count': IndexingRecord.objects.filter(
+            created_by=request.user, 
+            daily_report__in=final_report
+        ).aggregate(s=Sum('daily_report__num_of_deed'))['s'] or 0,
         
-        # Total Deeds for reports where this user handled Uploading
-        'uploading_count': UploadingRecord.objects.filter(created_by=request.user, daily_report__in=queryset).aggregate(s=Sum('daily_report__num_of_deed'))['s'] or 0,
+        'uploading_count': UploadingRecord.objects.filter(
+            created_by=request.user, 
+            daily_report__in=final_report
+        ).aggregate(s=Sum('daily_report__num_of_deed'))['s'] or 0,
         
-        # Total Deeds for reports where this user did the Quality Check (QC)
-        'qc_count': QCRecord.objects.filter(created_by=request.user, daily_report__in=queryset).aggregate(s=Sum('daily_report__num_of_deed'))['s'] or 0,
+        'qc_count': QCRecord.objects.filter(
+            created_by=request.user, 
+            daily_report__in=final_report
+        ).aggregate(s=Sum('daily_report__num_of_deed'))['s'] or 0,
         
-        # Total Pages for reports where this user entered the Metadata
-        'metadata_count': MetadataRecord.objects.filter(created_by=request.user, daily_report__in=queryset).aggregate(s=Sum('daily_report__num_of_page'))['s'] or 0,
+        'metadata_count': MetadataRecord.objects.filter(
+            created_by=request.user, 
+            daily_report__in=final_report
+        ).aggregate(s=Sum('daily_report__num_of_page'))['s'] or 0,
     }
 
-    # 3. Excel Export Engine
+    # Excel Export Engine
     if 'export_excel' in request.GET:
         from openpyxl import Workbook
         from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
@@ -442,7 +468,7 @@ def report_list_view(request):
             cell.alignment = center_align
             cell.border = thin_border
 
-        for report in queryset:
+        for report in final_report:
             row_data = [
                 report.date.strftime('%d/%m/%Y') if report.date else '',
                 report.get_location_display(), 
@@ -471,23 +497,33 @@ def report_list_view(request):
 
         ws.append([]) # Spacer
 
-        # Expanded Summary Rows to track Consolidated System Metrics + Personalized Performance Metrics
-        summary_rows = [
-            ("Total Number of volume", len(queryset)),  
-            ("Total Deeds", totals['sum_deeds'] or 0),  
-            ("Total Pages", totals['sum_pages'] or 0),
-            ("Total PDF Created (Global)", totals['sum_pdf'] or 0),
-            ("Total Indexing (Global)", totals['sum_indexing'] or 0),
-            ("Total Uploading (Global)", totals['sum_uploading'] or 0),
-            ("Total QC (Global)", totals['sum_qc'] or 0),
-            ("Total Metadata (Global)", totals['sum_metadata'] or 0),
-            ("Total Pages Scanned (By You)", user_metrics['pages_scanned_count']),
-            ("Total PDF Created (By You)", user_metrics['pdf_count']),
-            ("Total Indexing (By You)", user_metrics['indexing_count']),
-            ("Total Uploading (By You)", user_metrics['uploading_count']),
-            ("Total QC (By You)", user_metrics['qc_count']),
-            ("Total Metadata (By You)", user_metrics['metadata_count']),
-        ]
+        # Setup custom output mapping inside Excel according to user authorization levels
+        if is_admin:
+            summary_rows = [
+                ("Total Number of volume", len(final_report)),  
+                ("Total Deeds", totals['sum_deeds'] or 0),  
+                ("Total Pages", totals['sum_pages'] or 0),
+                ("Total PDF Created (Global)", totals['sum_pdf'] or 0),
+                ("Total Indexing (Global)", totals['sum_indexing'] or 0),
+                ("Total Uploading (Global)", totals['sum_uploading'] or 0),
+                ("Total QC (Global)", totals['sum_qc'] or 0),
+                ("Total Metadata (Global)", totals['sum_metadata'] or 0),
+                ("Total Pages Scanned (By You)", user_metrics['pages_scanned_count']),
+                ("Total PDF Created (By You)", user_metrics['pdf_count']),
+                ("Total Indexing (By You)", user_metrics['indexing_count']),
+                ("Total Uploading (By You)", user_metrics['uploading_count']),
+                ("Total QC (By You)", user_metrics['qc_count']),
+                ("Total Metadata (By You)", user_metrics['metadata_count']),
+            ]
+        else:
+            summary_rows = [
+                ("Total Pages Scanned (By You)", user_metrics['pages_scanned_count']),
+                ("Total PDF Created (By You)", user_metrics['pdf_count']),
+                ("Total Indexing (By You)", user_metrics['indexing_count']),
+                ("Total Uploading (By You)", user_metrics['uploading_count']),
+                ("Total QC (By You)", user_metrics['qc_count']),
+                ("Total Metadata (By You)", user_metrics['metadata_count']),
+            ]
 
         for label, val in summary_rows:
             ws.append(["", "", "", "", label, val])
@@ -523,7 +559,7 @@ def report_list_view(request):
         wb.save(response)
         return response
 
-    # 4. Context Preparation
+    # Context Preparation
     existing_dates = DailyReport.objects.dates('date', 'month', order='DESC')
     available_months = [
         {'value': d.strftime('%Y-%m'), 'display': d.strftime('%B %Y')}
@@ -538,18 +574,17 @@ def report_list_view(request):
         {'value': 'metadata', 'display': 'Metadata Report'},
     ]
 
-    # for showing the scanning report inside the personalised summary
     ends_with_s = str(request.user.username).endswith('-S')
 
     context = {
-        'reports': queryset,
+        'reports': final_report,
         'total_deeds': totals['sum_deeds'],
         'total_pages': totals['sum_pages'],
-        'total_pdf': totals['sum_pdf'],          # 🌟 New Consolidated Metric
-        'total_indexing': totals['sum_indexing'], # 🌟 New Consolidated Metric
-        'total_uploading': totals['sum_uploading'],# 🌟 New Consolidated Metric
-        'total_qc': totals['sum_qc'],            # 🌟 New Consolidated Metric
-        'total_metadata': totals['sum_metadata'],    # 🌟 New Consolidated Metric
+        'total_pdf': totals['sum_pdf'],          
+        'total_indexing': totals['sum_indexing'], 
+        'total_uploading': totals['sum_uploading'],
+        'total_qc': totals['sum_qc'],            
+        'total_metadata': totals['sum_metadata'],    
         'user_metrics': user_metrics,
         'locations': DailyReport.LOCATION_CHOICES,
         'available_months': available_months,
@@ -563,6 +598,363 @@ def report_list_view(request):
         'ends_with_s' : ends_with_s,
     }
     return render(request, 'core/report_list.html', context)
+
+# @login_required
+# def report_list_view(request):
+
+#     # Standardize user full name for filtering
+#     user_full_name = request.user.get_full_name().upper() if request.user.get_full_name() else request.user.username.upper()
+
+#     # Fetch PDF, Indexing, Uploading, QC, and Metadata records created by the logged-in user
+#     pdf_data = PDFRecord.objects.filter(created_by=request.user)
+#     ind_data = IndexingRecord.objects.filter(created_by=request.user)
+#     upload_data = UploadingRecord.objects.filter(created_by=request.user)
+#     qc_data = QCRecord.objects.filter(created_by=request.user)
+#     metadata_data = MetadataRecord.objects.filter(created_by=request.user)
+
+#     # Collect unique DailyReport IDs from all records
+#     daily_report_ids = set(chain(
+#         pdf_data.values_list('daily_report_id', flat=True),
+#         ind_data.values_list('daily_report_id', flat=True),
+#         upload_data.values_list('daily_report_id', flat=True),
+#         qc_data.values_list('daily_report_id', flat=True),
+#         metadata_data.values_list('daily_report_id', flat=True),
+#     ))
+
+#     # Fetch the corresponding DailyReport objects
+#     daily_reports = DailyReport.objects.filter(id__in=daily_report_ids)
+
+#     # NOTE : all the above data can be simply be created by 1 single query
+#     # daily_reports = DailyReport.objects.filter(
+#     #     Q(pdf_records__created_by=request.user) |
+#     #     Q(indexing_records__created_by=request.user) |
+#     #     Q(uploading_records__created_by=request.user) |
+#     #     Q(qc_records__created_by=request.user) |
+#     #     Q(metadata_records__created_by=request.user)
+#     # ).distinct()
+
+#     # if username ends with -S, then get the scanning report (daily report created by current user)
+#     scanning_report = DailyReport.objects.none()
+#     if request.user.username.endswith('-S'):
+#         scanning_report = DailyReport.objects.filter(name=user_full_name)
+
+#     # get the final report
+#     final_report = (daily_reports | scanning_report).distinct() # | considered as union
+
+#     # setup the base queryset
+#     is_admin = request.user.is_staff or request.user.is_superuser
+
+#     if is_admin:
+#         final_report = DailyReport.objects.all() # if user is admin the show the complete daily report
+
+#     # Capture URL GET Filter Parameters
+#     filter_date = request.GET.get('date', '').strip()
+#     filter_month = request.GET.get('month', '').strip()
+#     filter_location = request.GET.get('location', '').strip()
+#     filter_name = request.GET.get('name', '').strip()
+#     filter_stage = request.GET.get('workflow_stage', '').strip()
+
+#     # Apply Standard Filters
+#     if filter_date:
+#         # Use __date lookup to extract the calendar date from the created_at datetime field
+#         pdf_data = pdf_data.filter(created_at__date=filter_date)
+#         ind_data = ind_data.filter(created_at__date=filter_date)
+#         upload_data = upload_data.filter(created_at__date=filter_date)
+#         qc_data = qc_data.filter(created_by=request.user, created_at__date=filter_date) # assuming qc matches pattern
+#         metadata_data = metadata_data.filter(created_at__date=filter_date)
+
+#         # If the user is a scanner (ends with -S), we also need to filter their scanning reports by date!
+#         if request.user.username.endswith('-S'):
+#             # DailyReport has a plain .date field 
+#             scanning_report = scanning_report.filter(date=filter_date) 
+
+#         # Re-collect unique IDs from the sub-models based on the new date filters
+#         daily_report_ids = set(chain(
+#             pdf_data.values_list('daily_report_id', flat=True),
+#             ind_data.values_list('daily_report_id', flat=True),
+#             upload_data.values_list('daily_report_id', flat=True),
+#             qc_data.values_list('daily_report_id', flat=True),
+#             metadata_data.values_list('daily_report_id', flat=True),
+#         ))
+
+#         daily_reports = DailyReport.objects.filter(id__in=daily_report_ids)
+        
+#         # Re-combine the updated subsets into the final report queryset
+#         final_report = (daily_reports | scanning_report).distinct()
+
+#     if filter_month:
+#         try:
+#             year_part, month_part = map(int, filter_month.split('-'))
+            
+#             # 1. Filter sub-models using __year and __month lookups on the created_at field
+#             pdf_data = pdf_data.filter(created_at__year=year_part, created_at__month=month_part)
+#             ind_data = ind_data.filter(created_at__year=year_part, created_at__month=month_part)
+#             upload_data = upload_data.filter(created_at__year=year_part, created_at__month=month_part)
+#             qc_data = qc_data.filter(created_at__year=year_part, created_at__month=month_part)
+#             metadata_data = metadata_data.filter(created_at__year=year_part, created_at__month=month_part)
+
+#             # 2. Filter scanning reports (DailyReport uses its standard date field)
+#             if request.user.username.endswith('-S'):
+#                 scanning_report = scanning_report.filter(date__year=year_part, date__month=month_part)
+
+#             # 3. Re-collect unique IDs from the month-filtered sub-models
+#             daily_report_ids = set(chain(
+#                 pdf_data.values_list('daily_report_id', flat=True),
+#                 ind_data.values_list('daily_report_id', flat=True),
+#                 upload_data.values_list('daily_report_id', flat=True),
+#                 qc_data.values_list('daily_report_id', flat=True),
+#                 metadata_data.values_list('daily_report_id', flat=True),
+#             ))
+
+#             daily_reports = DailyReport.objects.filter(id__in=daily_report_ids)
+            
+#             # 4. Re-combine the updated subsets into your final report queryset
+#             final_report = (daily_reports | scanning_report).distinct()
+
+#         except ValueError:
+#             pass
+
+#     if filter_location:
+#         final_report = final_report.filter(location=filter_location)
+
+#     if filter_name and is_admin:
+#         final_report = final_report.filter(name__icontains=filter_name)
+
+#     # 2. 🌟 DYNAMIC WORKFLOW SUB-MODEL STAGE FILTER 🌟
+#     if filter_stage:
+#         if filter_stage == 'pdf':
+#             final_report = final_report.filter(pdf_records__isnull=False)
+#         elif filter_stage == 'indexing':
+#             final_report = final_report.filter(indexing_records__isnull=False)
+#         elif filter_stage == 'uploading':
+#             final_report = final_report.filter(uploading_records__isnull=False)
+#         elif filter_stage == 'qc':
+#             final_report = final_report.filter(qc_records__isnull=False)
+#         elif filter_stage == 'metadata':
+#             final_report = final_report.filter(metadata_records__isnull=False)
+
+#     # Calculate Global Totals for the current queryset (Consolidated Metrics)
+#     # Conditional aggregation sums values only if the respective workflow checkbox is checked
+#     totals = final_report.aggregate(
+#         sum_deeds=Sum('num_of_deed'),
+#         sum_pages=Sum('num_of_page'),
+#         sum_pdf=Sum('num_of_deed', filter=Q(pdf_deed=True)),
+#         sum_indexing=Sum('num_of_deed', filter=Q(indexing=True)),
+#         sum_uploading=Sum('num_of_deed', filter=Q(uploading=True)),
+#         sum_qc=Sum('num_of_deed', filter=Q(QC=True)),
+#         sum_metadata=Sum('num_of_page', filter=Q(metadata=True))
+#     )
+
+#     # Calculate User Metrics (Personal Performance Summary)
+#     user_metrics = {
+#         # 🌟 Only calculate pages scanned if the user's username ends with -S, otherwise default to 0
+#         'pages_scanned_count': (
+#             final_report.filter(name__iexact=user_full_name).aggregate(s=Sum('num_of_page'))['s'] or 0
+#         ) if request.user.username.endswith('-S') else 0,
+        
+#         # Total Deeds for reports where this user created the PDF
+#         'pdf_count': PDFRecord.objects.filter(
+#             created_by=request.user, 
+#             daily_report__in=final_report
+#         ).aggregate(s=Sum('daily_report__num_of_deed'))['s'] or 0,
+        
+#         # Total Deeds for reports where this user did the Indexing
+#         'indexing_count': IndexingRecord.objects.filter(
+#             created_by=request.user, 
+#             daily_report__in=final_report
+#         ).aggregate(s=Sum('daily_report__num_of_deed'))['s'] or 0,
+        
+#         # Total Deeds for reports where this user handled Uploading 
+#         'uploading_count': UploadingRecord.objects.filter(
+#             created_by=request.user, 
+#             daily_report__in=final_report
+#         ).aggregate(s=Sum('daily_report__num_of_deed'))['s'] or 0,
+        
+#         # Total Deeds for reports where this user did the Quality Check (QC)
+#         'qc_count': QCRecord.objects.filter(
+#             created_by=request.user, 
+#             daily_report__in=final_report
+#         ).aggregate(s=Sum('daily_report__num_of_deed'))['s'] or 0,
+        
+#         # Total Pages for reports where this user entered the Metadata
+#         'metadata_count': MetadataRecord.objects.filter(
+#             created_by=request.user, 
+#             daily_report__in=final_report
+#         ).aggregate(s=Sum('daily_report__num_of_page'))['s'] or 0,
+#     }
+
+#     # 3. Excel Export Engine
+#     if 'export_excel' in request.GET:
+#         from openpyxl import Workbook
+#         from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+#         from openpyxl.utils import get_column_letter
+
+#         wb = Workbook()
+#         ws = wb.active
+#         ws.title = "Filtered Reports"
+        
+#         header_font = Font(name='Calibri', size=11, bold=True, color='FFFFFF')
+#         header_fill = PatternFill(start_color='1F2935', end_color='1F2935', fill_type='solid')
+#         data_font = Font(name='Calibri', size=11, bold=False)
+        
+#         summary_label_font = Font(name='Calibri', size=11, bold=True, color='1F2935')
+#         summary_val_font = Font(name='Calibri', size=11, bold=True, color='000000')
+#         summary_fill = PatternFill(start_color='F8F9FA', end_color='F8F9FA', fill_type='solid')
+        
+#         center_align = Alignment(horizontal='center', vertical='center')
+#         left_align = Alignment(horizontal='left', vertical='center')
+#         right_align = Alignment(horizontal='right', vertical='center')
+        
+#         thin_side = Side(border_style="thin", color="D3D3D3")
+#         thick_bottom_side = Side(border_style="medium", color="1F2935")
+#         thin_border = Border(left=thin_side, right=thin_side, top=thin_side, bottom=thin_side)
+
+#         headers = ['Date', 'Location', 'Employee Name', 'Year', 'Volume No.',
+#                    'No. Deeds', 'No. Pages', 'PDF', 'Indexing', 'Uploading', 'QC', 'Metadata']
+#         ws.append(headers)
+        
+#         ws.row_dimensions[1].height = 24
+#         for cell in ws[1]:
+#             cell.font = header_font
+#             cell.fill = header_fill
+#             cell.alignment = center_align
+#             cell.border = thin_border
+
+#         for report in final_report:
+#             row_data = [
+#                 report.date.strftime('%d/%m/%Y') if report.date else '',
+#                 report.get_location_display(), 
+#                 report.name, 
+#                 report.year, 
+#                 report.volume_num,
+#                 report.num_of_deed, 
+#                 report.num_of_page,
+#                 "Yes" if report.pdf_deed else "No",
+#                 "Yes" if report.indexing else "No",
+#                 "Yes" if report.uploading else "No",
+#                 "Yes" if report.QC else "No",
+#                 "Yes" if report.metadata else "No",
+#             ]
+#             ws.append(row_data)
+            
+#             current_row = ws.max_row
+#             ws.row_dimensions[current_row].height = 20
+#             for col_idx, cell in enumerate(ws[current_row], start=1):
+#                 cell.font = data_font
+#                 cell.border = thin_border
+#                 if col_idx in [1, 4, 5, 6, 7, 8, 9, 10, 11, 12]:
+#                     cell.alignment = center_align
+#                 else:
+#                     cell.alignment = left_align
+
+#         ws.append([]) # Spacer
+
+#         # Dynamically build summary rows based on user role
+#         if is_admin:
+#             # Admins get everything: Global Consolidated Metrics + Personalized Summary
+#             summary_rows = [
+#                 ("Total Number of volume", len(queryset)),  
+#                 ("Total Deeds", totals['sum_deeds'] or 0),  
+#                 ("Total Pages", totals['sum_pages'] or 0),
+#                 ("Total PDF Created (Global)", totals['sum_pdf'] or 0),
+#                 ("Total Indexing (Global)", totals['sum_indexing'] or 0),
+#                 ("Total Uploading (Global)", totals['sum_uploading'] or 0),
+#                 ("Total QC (Global)", totals['sum_qc'] or 0),
+#                 ("Total Metadata (Global)", totals['sum_metadata'] or 0),
+#                 ("Total Pages Scanned (By You)", user_metrics['pages_scanned_count']),
+#                 ("Total PDF Created (By You)", user_metrics['pdf_count']),
+#                 ("Total Indexing (By You)", user_metrics['indexing_count']),
+#                 ("Total Uploading (By You)", user_metrics['uploading_count']),
+#                 ("Total QC (By You)", user_metrics['qc_count']),
+#                 ("Total Metadata (By You)", user_metrics['metadata_count']),
+#             ]
+#         else:
+#             # Regular users only see their own personal performance metrics
+#             summary_rows = [
+#                 ("Total Pages Scanned (By You)", user_metrics['pages_scanned_count']),
+#                 ("Total PDF Created (By You)", user_metrics['pdf_count']),
+#                 ("Total Indexing (By You)", user_metrics['indexing_count']),
+#                 ("Total Uploading (By You)", user_metrics['uploading_count']),
+#                 ("Total QC (By You)", user_metrics['qc_count']),
+#                 ("Total Metadata (By You)", user_metrics['metadata_count']),
+#             ]
+
+#         # Write out whatever rows were packed into summary_rows
+#         for label, val in summary_rows:
+#             ws.append(["", "", "", "", label, val])
+#             s_row = ws.max_row
+#             ws.row_dimensions[s_row].height = 22
+            
+#             lbl_cell = ws.cell(row=s_row, column=5)
+#             lbl_cell.font = summary_label_font
+#             lbl_cell.alignment = right_align
+#             lbl_cell.fill = summary_fill
+#             lbl_cell.border = Border(left=thin_side, top=thin_side, bottom=thin_side)
+            
+#             val_cell = ws.cell(row=s_row, column=6)
+#             val_cell.font = summary_val_font
+#             val_cell.alignment = center_align
+#             val_cell.fill = summary_fill
+#             val_cell.border = Border(right=thin_side, top=thin_side, bottom=thin_side)
+            
+#             # Formats the bottom outline cleanly on whichever row finishes the file
+#             if label == "Total Metadata (By You)":
+#                 lbl_cell.border = Border(left=thin_side, top=thin_side, bottom=thick_bottom_side)
+#                 val_cell.border = Border(right=thin_side, top=thin_side, bottom=thick_bottom_side)
+
+#         for col in ws.columns:
+#             max_len = 0
+#             col_letter = get_column_letter(col[0].column)
+#             for cell in col:
+#                 if cell.value:
+#                     max_len = max(max_len, len(str(cell.value)))
+#             ws.column_dimensions[col_letter].width = max(max_len + 4, 12)
+
+#         response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+#         response['Content-Disposition'] = f'attachment; filename=Reports_Export_{datetime.date.today()}.xlsx'
+#         wb.save(response)
+#         return response
+
+#     # Context Preparation
+#     existing_dates = DailyReport.objects.dates('date', 'month', order='DESC')
+#     available_months = [
+#         {'value': d.strftime('%Y-%m'), 'display': d.strftime('%B %Y')}
+#         for d in existing_dates
+#     ]
+
+#     workflow_stages = [
+#         {'value': 'pdf', 'display': 'PDF Report'},
+#         {'value': 'indexing', 'display': 'Indexing Report'},
+#         {'value': 'uploading', 'display': 'Uploading Report'},
+#         {'value': 'qc', 'display': 'QC Report'},
+#         {'value': 'metadata', 'display': 'Metadata Report'},
+#     ]
+
+#     ends_with_s = str(request.user.username).endswith('-S')
+
+#     context = {
+#         'reports': final_report,
+#         'total_deeds': totals['sum_deeds'],
+#         'total_pages': totals['sum_pages'],
+#         'total_pdf': totals['sum_pdf'],          
+#         'total_indexing': totals['sum_indexing'], 
+#         'total_uploading': totals['sum_uploading'],
+#         'total_qc': totals['sum_qc'],            
+#         'total_metadata': totals['sum_metadata'],    
+#         'user_metrics': user_metrics,
+#         'locations': DailyReport.LOCATION_CHOICES,
+#         'available_months': available_months,
+#         'workflow_stages': workflow_stages,       
+#         'selected_date': filter_date,
+#         'selected_month': filter_month,
+#         'selected_location': filter_location,
+#         'selected_name': filter_name,
+#         'selected_stage': filter_stage,           
+#         'is_admin': is_admin,
+#         'ends_with_s' : ends_with_s,
+#     }
+#     return render(request, 'core/report_list.html', context)
+
 
 # @login_required
 # def report_list_view(request):

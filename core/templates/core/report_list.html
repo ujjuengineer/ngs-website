@@ -145,7 +145,7 @@
                 <div class="card-footer bg-light border-top p-4">
 
                     {% if is_admin %}
-                    <!-- 🌟 Expanded Consolidated Metrics Panel 🌟 -->
+                    <!-- 🌟 Expanded Consolidated Metrics Panel (Admins Only) 🌟 -->
                     <div class="row g-3 align-items-center text-center text-md-start mb-3">
                         <div class="col-12">
                             <span class="text-muted small fw-bold d-block mb-1">CONSOLIDATED METRICS</span>
@@ -209,22 +209,22 @@
                         </div>
                     </div>
                     
-                    <!-- Custom style extension override helper rule inside layout to balance 5 columns evenly -->
                     <style>
                         @media (min-width: 768px) { .col-md-2-4 { flex: 0 0 20%; max-width: 20%; } }
                     </style>
-                    {% endif %}
-                    
                     <hr class="text-muted my-3 opacity-25">
+                    {% endif %}
 
+                    <!-- 🌟 Personal Performance Contribution Panel (All Users See This) 🌟 -->
                     <div class="row g-2 text-center">
                         <div class="col-12 text-md-start mb-2">
                             <span class="text-muted small fw-bold d-block mb-1">YOUR PERFORMANCE CONTRIB</span>
                             <h6 class="m-0 fw-bold text-success"><i class="bi bi-person-check me-2"></i>Logs Actioned By You (In Current View)</h6>
                         </div>
                         
+                        <!-- Pages Scanned Card (Only displays for scanner accounts ending with -S) -->
                         {% if ends_with_s %}
-                        <div class="col-md-2 col-sm-4 col-6">
+                        <div class="col border-0 p-1">
                             <div class="p-2 bg-white rounded border shadow-sm">
                                 <span class="text-muted d-block small mb-1 text-truncate">Pages Scanned</span>
                                 <span class="fw-bold text-dark fs-5">{{ user_metrics.pages_scanned_count }}</span>
@@ -232,41 +232,42 @@
                         </div>
                         {% endif %}
                         
-                        <div class="col-md-2 col-sm-4 col-6">
+                        <div class="col border-0 p-1">
                             <div class="p-2 bg-white rounded border shadow-sm">
                                 <span class="text-muted d-block small mb-1 text-truncate">PDF Created</span>
                                 <span class="fw-bold text-dark fs-5">{{ user_metrics.pdf_count }}</span>
                             </div>
                         </div>
                         
-                        <div class="col-md-2 col-sm-4 col-6">
+                        <div class="col border-0 p-1">
                             <div class="p-2 bg-white rounded border shadow-sm">
                                 <span class="text-muted d-block small mb-1 text-truncate">Indexing Done</span>
                                 <span class="fw-bold text-dark fs-5">{{ user_metrics.indexing_count }}</span>
                             </div>
                         </div>
                         
-                        <div class="col-md-2 col-sm-4 col-6">
+                        <div class="col border-0 p-1">
                             <div class="p-2 bg-white rounded border shadow-sm">
                                 <span class="text-muted d-block small mb-1 text-truncate">Uploading Done</span>
                                 <span class="fw-bold text-dark fs-5">{{ user_metrics.uploading_count }}</span>
                             </div>
                         </div>
                         
-                        <div class="col-md-2 col-sm-4 col-6">
+                        <div class="col border-0 p-1">
                             <div class="p-2 bg-white rounded border shadow-sm">
                                 <span class="text-muted d-block small mb-1 text-truncate">QC Verified</span>
                                 <span class="fw-bold text-dark fs-5">{{ user_metrics.qc_count }}</span>
                             </div>
                         </div>
                         
-                        <div class="col-md-2 col-sm-4 col-6">
+                        <div class="col border-0 p-1">
                             <div class="p-2 bg-white rounded border shadow-sm">
                                 <span class="text-muted d-block small mb-1 text-truncate">Metadata Saved</span>
                                 <span class="fw-bold text-dark fs-5">{{ user_metrics.metadata_count }}</span>
                             </div>
                         </div>
                     </div>
+
                 </div>
             {% endif %}
 
