@@ -399,35 +399,46 @@ def report_list_view(request):
     )
 
     # Calculate User Metrics (Personal Performance Summary)
+    # Calculate User Metrics (Personal Performance Summary)
     user_metrics = {
-        # Tracks pages scanned by matching the specific user's name variant
+        # 1. Pages Scanned (Only tracks if user is a scanner account ending with -S)
         'pages_scanned_count': (
             final_report.filter(name__iexact=user_full_name).aggregate(s=Sum('num_of_page'))['s'] or 0
         ) if request.user.username.endswith('-S') else 0,
         
+        # 2. PDF Created (Sum of deeds from daily reports where this user created the PDF work entry)
         'pdf_count': PDFRecord.objects.filter(
             created_by=request.user, 
-            daily_report__in=final_report
+            daily_report__in=final_report,
+            daily_report__pdf_deed=True  # Confirms the PDF checkbox status is active
         ).aggregate(s=Sum('daily_report__num_of_deed'))['s'] or 0,
         
+        # 3. Indexing Done (Sum of deeds from daily reports indexed by this user)
         'indexing_count': IndexingRecord.objects.filter(
             created_by=request.user, 
-            daily_report__in=final_report
+            daily_report__in=final_report,
+            daily_report__indexing=True  # Confirms the Indexing checkbox status is active
         ).aggregate(s=Sum('daily_report__num_of_deed'))['s'] or 0,
         
+        # 4. Uploading Done (Sum of deeds from daily reports uploaded by this user)
         'uploading_count': UploadingRecord.objects.filter(
             created_by=request.user, 
-            daily_report__in=final_report
+            daily_report__in=final_report,
+            daily_report__uploading=True  # Confirms the Uploading checkbox status is active
         ).aggregate(s=Sum('daily_report__num_of_deed'))['s'] or 0,
         
+        # 5. QC Verified (Sum of deeds from daily reports QC verified by this user)
         'qc_count': QCRecord.objects.filter(
             created_by=request.user, 
-            daily_report__in=final_report
+            daily_report__in=final_report,
+            daily_report__QC=True          # Confirms the QC checkbox status is active
         ).aggregate(s=Sum('daily_report__num_of_deed'))['s'] or 0,
         
+        # 6. Metadata Saved (Sum of pages from daily reports metadata processed by this user)
         'metadata_count': MetadataRecord.objects.filter(
             created_by=request.user, 
-            daily_report__in=final_report
+            daily_report__in=final_report,
+            daily_report__metadata=True    # Confirms the Metadata checkbox status is active
         ).aggregate(s=Sum('daily_report__num_of_page'))['s'] or 0,
     }
 
