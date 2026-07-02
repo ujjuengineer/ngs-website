@@ -287,7 +287,7 @@ def report_list_view(request):
         if request.user.username.endswith('-S'):
             scanning_report = DailyReport.objects.filter(name=user_full_name)
 
-    # Collect unique DailyReport IDs from all active records
+    # Collect unique DailyReport IDs from all active records 
     daily_report_ids = set(chain(
         pdf_data.values_list('daily_report_id', flat=True),
         ind_data.values_list('daily_report_id', flat=True),
@@ -310,6 +310,9 @@ def report_list_view(request):
 
     # Combine the datasets into a single unified workspace query
     final_report = (daily_reports | scanning_report).distinct()
+    print(final_report)
+    print(daily_reports)
+    print(final_report)
 
     # Capture URL GET Filter Parameters
     filter_date = request.GET.get('date', '').strip()
@@ -328,6 +331,7 @@ def report_list_view(request):
 
         # For admins, this filters all global daily reports by that date. For regular scanners, it filters just theirs.
         scanning_report = scanning_report.filter(date=filter_date) 
+        
 
         daily_report_ids = set(chain(
             pdf_data.values_list('daily_report_id', flat=True),
