@@ -312,6 +312,7 @@ def add_multiple_reports_view(request):
         'auto_name': auto_name,
     })
 
+
 @login_required
 def report_list_view(request):
     is_admin = request.user.is_staff or request.user.is_superuser
@@ -371,10 +372,16 @@ def report_list_view(request):
         elif filter_stage == 'metadata':
             queryset = queryset.filter(metadata_records__isnull=False)
 
-    # Calculate Global Totals for the current queryset
+    # Calculate Global Totals for the current queryset (Consolidated Metrics)
+    # Conditional aggregation sums values only if the respective workflow checkbox is checked
     totals = queryset.aggregate(
         sum_deeds=Sum('num_of_deed'),
-        sum_pages=Sum('num_of_page')
+        sum_pages=Sum('num_of_page'),
+        sum_pdf=Sum('num_of_deed', filter=Q(pdf_deed=True)),
+        sum_indexing=Sum('num_of_deed', filter=Q(indexing=True)),
+        sum_uploading=Sum('num_of_deed', filter=Q(uploading=True)),
+        sum_qc=Sum('num_of_deed', filter=Q(QC=True)),
+        sum_metadata=Sum('num_of_page', filter=Q(metadata=True))
     )
 
     # Calculate User Metrics (Personal Performance Summary)
@@ -464,11 +471,16 @@ def report_list_view(request):
 
         ws.append([]) # Spacer
 
-        # Combined Dataset Summary + Personalized User Summary Metrics
+        # Expanded Summary Rows to track Consolidated System Metrics + Personalized Performance Metrics
         summary_rows = [
             ("Total Number of volume", len(queryset)),  
             ("Total Deeds", totals['sum_deeds'] or 0),  
             ("Total Pages", totals['sum_pages'] or 0),
+            ("Total PDF Created (Global)", totals['sum_pdf'] or 0),
+            ("Total Indexing (Global)", totals['sum_indexing'] or 0),
+            ("Total Uploading (Global)", totals['sum_uploading'] or 0),
+            ("Total QC (Global)", totals['sum_qc'] or 0),
+            ("Total Metadata (Global)", totals['sum_metadata'] or 0),
             ("Total Pages Scanned (By You)", user_metrics['pages_scanned_count']),
             ("Total PDF Created (By You)", user_metrics['pdf_count']),
             ("Total Indexing (By You)", user_metrics['indexing_count']),
@@ -494,7 +506,6 @@ def report_list_view(request):
             val_cell.fill = summary_fill
             val_cell.border = Border(right=thin_side, top=thin_side, bottom=thin_side)
             
-            # Apply terminal thick bottom line to the last summary item
             if label == "Total Metadata (By You)":
                 lbl_cell.border = Border(left=thin_side, top=thin_side, bottom=thick_bottom_side)
                 val_cell.border = Border(right=thin_side, top=thin_side, bottom=thick_bottom_side)
@@ -527,10 +538,18 @@ def report_list_view(request):
         {'value': 'metadata', 'display': 'Metadata Report'},
     ]
 
+    # for showing the scanning report inside the personalised summary
+    ends_with_s = str(request.user.username).endswith('-S')
+
     context = {
         'reports': queryset,
         'total_deeds': totals['sum_deeds'],
         'total_pages': totals['sum_pages'],
+        'total_pdf': totals['sum_pdf'],          # 🌟 New Consolidated Metric
+        'total_indexing': totals['sum_indexing'], # 🌟 New Consolidated Metric
+        'total_uploading': totals['sum_uploading'],# 🌟 New Consolidated Metric
+        'total_qc': totals['sum_qc'],            # 🌟 New Consolidated Metric
+        'total_metadata': totals['sum_metadata'],    # 🌟 New Consolidated Metric
         'user_metrics': user_metrics,
         'locations': DailyReport.LOCATION_CHOICES,
         'available_months': available_months,
@@ -541,6 +560,7 @@ def report_list_view(request):
         'selected_name': filter_name,
         'selected_stage': filter_stage,           
         'is_admin': is_admin,
+        'ends_with_s' : ends_with_s,
     }
     return render(request, 'core/report_list.html', context)
 
@@ -548,12 +568,13 @@ def report_list_view(request):
 # def report_list_view(request):
 #     is_admin = request.user.is_staff or request.user.is_superuser
     
+#     # Standardize user full name for filtering
+#     user_full_name = request.user.get_full_name().upper() if request.user.get_full_name() else request.user.username.upper()
+
 #     # 1. 🌟 FILTER BASED ON ENGAGEMENT / ROLE 🌟
-#     # Admins see everything. Regular users see records they created OR sub-stages they completed.
 #     if is_admin:
 #         base_queryset = DailyReport.objects.all()
 #     else:
-#         user_full_name = request.user.get_full_name().upper() if request.user.get_full_name() else request.user.username.upper()
 #         base_queryset = DailyReport.objects.filter(
 #             Q(name__iexact=user_full_name) |
 #             Q(pdf_records__created_by=request.user) |
@@ -568,7 +589,7 @@ def report_list_view(request):
 #     filter_month = request.GET.get('month', '').strip()
 #     filter_location = request.GET.get('location', '').strip()
 #     filter_name = request.GET.get('name', '').strip()
-#     filter_stage = request.GET.get('workflow_stage', '').strip() # 🌟 New Dropdown Parameter
+#     filter_stage = request.GET.get('workflow_stage', '').strip()
 
 #     # Apply Standard Filters
 #     queryset = base_queryset
@@ -602,17 +623,17 @@ def report_list_view(request):
 #         elif filter_stage == 'metadata':
 #             queryset = queryset.filter(metadata_records__isnull=False)
 
-#     # Calculate Totals
+#     # Calculate Global Totals for the current queryset
 #     totals = queryset.aggregate(
 #         sum_deeds=Sum('num_of_deed'),
 #         sum_pages=Sum('num_of_page')
 #     )
 
+#     # Calculate User Metrics (Personal Performance Summary)
 #     user_metrics = {
-
 #         # Total pages from reports explicitly created/owned by this user
 #         'pages_scanned_count': queryset.filter(name__iexact=user_full_name).aggregate(s=Sum('num_of_page'))['s'] or 0,
-
+        
 #         # Total Deeds for reports where this user created the PDF
 #         'pdf_count': PDFRecord.objects.filter(created_by=request.user, daily_report__in=queryset).aggregate(s=Sum('daily_report__num_of_deed'))['s'] or 0,
         
@@ -668,7 +689,7 @@ def report_list_view(request):
 
 #         for report in queryset:
 #             row_data = [
-#                 report.date.strftime('%Y-%m-%d') if report.date else '',
+#                 report.date.strftime('%d/%m/%Y') if report.date else '',
 #                 report.get_location_display(), 
 #                 report.name, 
 #                 report.year, 
@@ -725,7 +746,8 @@ def report_list_view(request):
 #             val_cell.fill = summary_fill
 #             val_cell.border = Border(right=thin_side, top=thin_side, bottom=thin_side)
             
-#             if label == "Total Pages":
+#             # Apply terminal thick bottom line to the last summary item
+#             if label == "Total Metadata (By You)":
 #                 lbl_cell.border = Border(left=thin_side, top=thin_side, bottom=thick_bottom_side)
 #                 val_cell.border = Border(right=thin_side, top=thin_side, bottom=thick_bottom_side)
 
@@ -749,7 +771,6 @@ def report_list_view(request):
 #         for d in existing_dates
 #     ]
 
-#     # Explicit Workflow Options for the frontend template HTML dropdown
 #     workflow_stages = [
 #         {'value': 'pdf', 'display': 'PDF Report'},
 #         {'value': 'indexing', 'display': 'Indexing Report'},
@@ -765,15 +786,16 @@ def report_list_view(request):
 #         'user_metrics': user_metrics,
 #         'locations': DailyReport.LOCATION_CHOICES,
 #         'available_months': available_months,
-#         'workflow_stages': workflow_stages,       # 🌟 Sent to template
+#         'workflow_stages': workflow_stages,       
 #         'selected_date': filter_date,
 #         'selected_month': filter_month,
 #         'selected_location': filter_location,
 #         'selected_name': filter_name,
-#         'selected_stage': filter_stage,           # 🌟 Preserves active choice
+#         'selected_stage': filter_stage,           
 #         'is_admin': is_admin,
 #     }
 #     return render(request, 'core/report_list.html', context)
+
 
 
 # ── UPDATE REPORT SEARCH (login required) ──

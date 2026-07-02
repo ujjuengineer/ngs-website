@@ -104,7 +104,6 @@
                     <tbody>
                         {% for report in reports %}
                         <tr>
-                            <!-- 🌟 Fixed Date Format Here 🌟 -->
                             <td class="fw-medium">{{ report.date|date:"d/m/Y" }}</td>
                             <td><span class="badge bg-secondary-subtle text-secondary border px-2 py-1">{{ report.get_location_display }}</span></td>
                             <td class="text-uppercase fw-semibold text-dark">{{ report.name }}</td>
@@ -146,30 +145,74 @@
                 <div class="card-footer bg-light border-top p-4">
 
                     {% if is_admin %}
-                    <div class="row g-3 align-items-center text-center text-md-start mb-4">
-                        <div class="col-md-3">
+                    <!-- 🌟 Expanded Consolidated Metrics Panel 🌟 -->
+                    <div class="row g-3 align-items-center text-center text-md-start mb-3">
+                        <div class="col-12">
                             <span class="text-muted small fw-bold d-block mb-1">CONSOLIDATED METRICS</span>
-                            <h6 class="m-0 fw-bold text-dark"><i class="bi bi-calculator me-2 text-primary"></i>Filtered Totals</h6>
+                            <h6 class="m-0 fw-bold text-dark"><i class="bi bi-calculator me-2 text-primary"></i>Filtered Totals (Global View)</h6>
                         </div>
-                        <div class="col-md-3">
+                    </div>
+                    
+                    <!-- Core Counter row -->
+                    <div class="row g-3 text-center mb-3">
+                        <div class="col-md-4">
                             <div class="p-2 bg-white rounded border shadow-sm d-flex justify-content-between align-items-center px-3">
-                                <span class="text-muted small"><i class="bi bi-file-earmark-text me-1 text-secondary"></i>Total Volume</span>
+                                <span class="text-muted small fw-semibold"><i class="bi bi-file-earmark-text me-1 text-secondary"></i>Total Volume</span>
                                 <span class="badge bg-primary fs-6">{{ reports|length }}</span>
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <div class="p-2 bg-white rounded border shadow-sm d-flex justify-content-between align-items-center px-3">
-                                <span class="text-muted small"><i class="bi bi-journal-bookmark me-1 text-secondary"></i>Total Deeds</span>
+                                <span class="text-muted small fw-semibold"><i class="bi bi-journal-bookmark me-1 text-secondary"></i>Total Deeds</span>
                                 <span class="badge bg-dark fs-6">{{ total_deeds|default:"0" }}</span>
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <div class="p-2 bg-white rounded border shadow-sm d-flex justify-content-between align-items-center px-3">
-                                <span class="text-muted small"><i class="bi bi-layers me-1 text-secondary"></i>Total Pages</span>
+                                <span class="text-muted small fw-semibold"><i class="bi bi-layers me-1 text-secondary"></i>Total Pages</span>
                                 <span class="badge bg-secondary fs-6">{{ total_pages|default:"0" }}</span>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Stage Performance Row -->
+                    <div class="row g-2 text-center mb-4">
+                        <div class="col-md-2-4 col-sm-4 col-6">
+                            <div class="p-2 bg-white rounded border shadow-sm border-start border-success border-3">
+                                <span class="text-muted d-block small mb-1 text-truncate">Total PDF Created</span>
+                                <span class="fw-bold text-dark fs-6">{{ total_pdf|default:"0" }} <span class="text-muted small fw-normal">Deeds</span></span>
+                            </div>
+                        </div>
+                        <div class="col-md-2-4 col-sm-4 col-6">
+                            <div class="p-2 bg-white rounded border shadow-sm border-start border-success border-3">
+                                <span class="text-muted d-block small mb-1 text-truncate">Total Indexing</span>
+                                <span class="fw-bold text-dark fs-6">{{ total_indexing|default:"0" }} <span class="text-muted small fw-normal">Deeds</span></span>
+                            </div>
+                        </div>
+                        <div class="col-md-2-4 col-sm-4 col-6">
+                            <div class="p-2 bg-white rounded border shadow-sm border-start border-success border-3">
+                                <span class="text-muted d-block small mb-1 text-truncate">Total Uploading</span>
+                                <span class="fw-bold text-dark fs-6">{{ total_uploading|default:"0" }} <span class="text-muted small fw-normal">Deeds</span></span>
+                            </div>
+                        </div>
+                        <div class="col-md-2-4 col-sm-6 col-6">
+                            <div class="p-2 bg-white rounded border shadow-sm border-start border-success border-3">
+                                <span class="text-muted d-block small mb-1 text-truncate">Total QC Checked</span>
+                                <span class="fw-bold text-dark fs-6">{{ total_qc|default:"0" }} <span class="text-muted small fw-normal">Deeds</span></span>
+                            </div>
+                        </div>
+                        <div class="col-md-2-4 col-sm-6 col-12">
+                            <div class="p-2 bg-white rounded border shadow-sm border-start border-success border-3">
+                                <span class="text-muted d-block small mb-1 text-truncate">Total Metadata</span>
+                                <span class="fw-bold text-dark fs-6">{{ total_metadata|default:"0" }} <span class="text-muted small fw-normal">Pages</span></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Custom style extension override helper rule inside layout to balance 5 columns evenly -->
+                    <style>
+                        @media (min-width: 768px) { .col-md-2-4 { flex: 0 0 20%; max-width: 20%; } }
+                    </style>
                     {% endif %}
                     
                     <hr class="text-muted my-3 opacity-25">
@@ -180,13 +223,15 @@
                             <h6 class="m-0 fw-bold text-success"><i class="bi bi-person-check me-2"></i>Logs Actioned By You (In Current View)</h6>
                         </div>
                         
+                        {% if ends_with_s %}
                         <div class="col-md-2 col-sm-4 col-6">
                             <div class="p-2 bg-white rounded border shadow-sm">
                                 <span class="text-muted d-block small mb-1 text-truncate">Pages Scanned</span>
                                 <span class="fw-bold text-dark fs-5">{{ user_metrics.pages_scanned_count }}</span>
                             </div>
                         </div>
-
+                        {% endif %}
+                        
                         <div class="col-md-2 col-sm-4 col-6">
                             <div class="p-2 bg-white rounded border shadow-sm">
                                 <span class="text-muted d-block small mb-1 text-truncate">PDF Created</span>
