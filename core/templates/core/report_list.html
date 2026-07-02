@@ -104,7 +104,8 @@
                     <tbody>
                         {% for report in reports %}
                         <tr>
-                            <td class="fw-medium">{{ report.date|date:"Y-m-d" }}</td>
+                            <!-- 🌟 Fixed Date Format Here 🌟 -->
+                            <td class="fw-medium">{{ report.date|date:"d/m/Y" }}</td>
                             <td><span class="badge bg-secondary-subtle text-secondary border px-2 py-1">{{ report.get_location_display }}</span></td>
                             <td class="text-uppercase fw-semibold text-dark">{{ report.name }}</td>
                             <td>{{ report.year }}</td>
@@ -179,37 +180,44 @@
                             <h6 class="m-0 fw-bold text-success"><i class="bi bi-person-check me-2"></i>Logs Actioned By You (In Current View)</h6>
                         </div>
                         
-                        <div class="col-md-2 col-6">
+                        <div class="col-md-2 col-sm-4 col-6">
                             <div class="p-2 bg-white rounded border shadow-sm">
-                                <span class="text-muted d-block small mb-1">PDF Created</span>
+                                <span class="text-muted d-block small mb-1 text-truncate">Pages Scanned</span>
+                                <span class="fw-bold text-dark fs-5">{{ user_metrics.pages_scanned_count }}</span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2 col-sm-4 col-6">
+                            <div class="p-2 bg-white rounded border shadow-sm">
+                                <span class="text-muted d-block small mb-1 text-truncate">PDF Created</span>
                                 <span class="fw-bold text-dark fs-5">{{ user_metrics.pdf_count }}</span>
                             </div>
                         </div>
                         
-                        <div class="col-md-2 col-6">
+                        <div class="col-md-2 col-sm-4 col-6">
                             <div class="p-2 bg-white rounded border shadow-sm">
-                                <span class="text-muted d-block small mb-1">Indexing Done</span>
+                                <span class="text-muted d-block small mb-1 text-truncate">Indexing Done</span>
                                 <span class="fw-bold text-dark fs-5">{{ user_metrics.indexing_count }}</span>
                             </div>
                         </div>
                         
-                        <div class="col-md-2 col-6">
+                        <div class="col-md-2 col-sm-4 col-6">
                             <div class="p-2 bg-white rounded border shadow-sm">
-                                <span class="text-muted d-block small mb-1">Uploading Done</span>
+                                <span class="text-muted d-block small mb-1 text-truncate">Uploading Done</span>
                                 <span class="fw-bold text-dark fs-5">{{ user_metrics.uploading_count }}</span>
                             </div>
                         </div>
                         
-                        <div class="col-md-2 col-6">
+                        <div class="col-md-2 col-sm-4 col-6">
                             <div class="p-2 bg-white rounded border shadow-sm">
-                                <span class="text-muted d-block small mb-1">QC Verified</span>
+                                <span class="text-muted d-block small mb-1 text-truncate">QC Verified</span>
                                 <span class="fw-bold text-dark fs-5">{{ user_metrics.qc_count }}</span>
                             </div>
                         </div>
                         
-                        <div class="col-md-2 col-6">
+                        <div class="col-md-2 col-sm-4 col-6">
                             <div class="p-2 bg-white rounded border shadow-sm">
-                                <span class="text-muted d-block small mb-1">Metadata Saved</span>
+                                <span class="text-muted d-block small mb-1 text-truncate">Metadata Saved</span>
                                 <span class="fw-bold text-dark fs-5">{{ user_metrics.metadata_count }}</span>
                             </div>
                         </div>
