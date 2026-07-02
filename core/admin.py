@@ -74,7 +74,7 @@ class MetadataRecordInline(admin.TabularInline):
 class DailyReportAdmin(admin.ModelAdmin):
     list_display = ('id', 'year', 'volume_num', 'location', 'name', 'pdf_deed', 'indexing', 'uploading', 'QC', 'metadata', 'created_at')
     list_filter = ('location', 'year', 'pdf_deed', 'indexing', 'uploading', 'QC', 'metadata')
-    search_fields = ('name', 'volume_num')
+    search_fields = ('name', 'year', 'volume_num')
 
     
     # Embed the inline tables nicely at the bottom of the edit layout
