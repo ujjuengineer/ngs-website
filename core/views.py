@@ -310,9 +310,9 @@ def report_list_view(request):
 
     # Combine the datasets into a single unified workspace query
     final_report = (daily_reports | scanning_report).distinct()
-    print(final_report)
-    print(daily_reports)
-    print(final_report)
+    # print(final_report)
+    # print(daily_reports)
+    # print(final_report)
 
     # Capture URL GET Filter Parameters
     filter_date = request.GET.get('date', '').strip()
@@ -321,27 +321,6 @@ def report_list_view(request):
     filter_name = request.GET.get('name', '').strip()
     filter_stage = request.GET.get('workflow_stage', '').strip()
 
-    # Naming query filtering is now accessible globally across the expanded workspace for admins
-    if filter_name and is_admin:
-        name_q = (
-            Q(name__icontains=filter_name) |
-            Q(pdf_records__created_by__username__icontains=filter_name) |
-            Q(pdf_records__created_by__first_name__icontains=filter_name) |
-            Q(pdf_records__created_by__last_name__icontains=filter_name) |
-            Q(indexing_records__created_by__username__icontains=filter_name) |
-            Q(indexing_records__created_by__first_name__icontains=filter_name) |
-            Q(indexing_records__created_by__last_name__icontains=filter_name) |
-            Q(uploading_records__created_by__username__icontains=filter_name) |
-            Q(uploading_records__created_by__first_name__icontains=filter_name) |
-            Q(uploading_records__created_by__last_name__icontains=filter_name) |
-            Q(qc_records__created_by__username__icontains=filter_name) |
-            Q(qc_records__created_by__first_name__icontains=filter_name) |
-            Q(qc_records__created_by__last_name__icontains=filter_name) |
-            Q(metadata_records__created_by__username__icontains=filter_name) |
-            Q(metadata_records__created_by__first_name__icontains=filter_name) |
-            Q(metadata_records__created_by__last_name__icontains=filter_name)
-        )
-        final_report = final_report.filter(name_q).distinct()
 
     # Apply Standard Date Filter
     if filter_date:
@@ -396,7 +375,27 @@ def report_list_view(request):
     if filter_location:
         final_report = final_report.filter(location=filter_location)
 
-    
+    # Naming query filtering is now accessible globally across the expanded workspace for admins
+    if filter_name and is_admin:
+        name_q = (
+            Q(name__icontains=filter_name) |
+            Q(pdf_records__created_by__username__icontains=filter_name) |
+            Q(pdf_records__created_by__first_name__icontains=filter_name) |
+            Q(pdf_records__created_by__last_name__icontains=filter_name) |
+            Q(indexing_records__created_by__username__icontains=filter_name) |
+            Q(indexing_records__created_by__first_name__icontains=filter_name) |
+            Q(indexing_records__created_by__last_name__icontains=filter_name) |
+            Q(uploading_records__created_by__username__icontains=filter_name) |
+            Q(uploading_records__created_by__first_name__icontains=filter_name) |
+            Q(uploading_records__created_by__last_name__icontains=filter_name) |
+            Q(qc_records__created_by__username__icontains=filter_name) |
+            Q(qc_records__created_by__first_name__icontains=filter_name) |
+            Q(qc_records__created_by__last_name__icontains=filter_name) |
+            Q(metadata_records__created_by__username__icontains=filter_name) |
+            Q(metadata_records__created_by__first_name__icontains=filter_name) |
+            Q(metadata_records__created_by__last_name__icontains=filter_name)
+        )
+        final_report = final_report.filter(name_q).distinct()
 
     # Workflow Sub-Model Stage Filtering
     if filter_stage:
