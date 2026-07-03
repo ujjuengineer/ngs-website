@@ -105,7 +105,7 @@ class DailyReportAdmin(admin.ModelAdmin):
 class PDFRecordAdmin(admin.ModelAdmin):
     # 1. Swap 'daily_report' with our new custom method 'link_to_daily_report'
     list_display = ('link_to_daily_report', 'name', 'created_at')
-    search_fields = ('name', 'daily_report__volume_num')
+    search_fields = ('name', 'daily_report__year', 'created_by__username')
 
     def link_to_daily_report(self, obj):
         """
@@ -126,7 +126,7 @@ class PDFRecordAdmin(admin.ModelAdmin):
 @admin.register(IndexingRecord)
 class IndexingRecordAdmin(admin.ModelAdmin):
     list_display = ('link_to_daily_report', 'created_by', 'name', 'created_at')
-    search_fields = ('name', 'daily_report__volume_num')
+    search_fields = ('name', 'daily_report__year', 'created_by__username')
 
     def link_to_daily_report(self, obj):
         """
@@ -147,7 +147,7 @@ class IndexingRecordAdmin(admin.ModelAdmin):
 @admin.register(UploadingRecord)
 class UploadingRecordAdmin(admin.ModelAdmin):
     list_display = ('link_to_daily_report', 'created_by', 'name', 'created_at')
-    search_fields = ('name', 'daily_report__volume_num')
+    search_fields = ('name', 'daily_report__year', 'created_by__username')
 
     def link_to_daily_report(self, obj):
         """
@@ -168,7 +168,7 @@ class UploadingRecordAdmin(admin.ModelAdmin):
 @admin.register(QCRecord)
 class QCRecordAdmin(admin.ModelAdmin):
     list_display = ('link_to_daily_report', 'created_by', 'name', 'created_at')
-    search_fields = ('name', 'daily_report__volume_num')
+    search_fields = ('name', 'daily_report__year', 'created_by__username')
 
     def link_to_daily_report(self, obj):
         """
@@ -189,7 +189,7 @@ class QCRecordAdmin(admin.ModelAdmin):
 @admin.register(MetadataRecord)
 class MetadataRecordAdmin(admin.ModelAdmin):
     list_display = ('link_to_daily_report', 'created_by', 'name', 'created_at')
-    search_fields = ('name', 'daily_report__volume_num')
+    search_fields =('name', 'daily_report__year', 'created_by__username')
 
     def link_to_daily_report(self, obj):
         """
