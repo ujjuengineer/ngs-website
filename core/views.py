@@ -398,17 +398,44 @@ def report_list_view(request):
         final_report = final_report.filter(name_q).distinct()
 
     # Workflow Sub-Model Stage Filtering
+    # ==========================================
+    # Refactored Workflow Sub-Model Stage Filtering
+    # ==========================================
     if filter_stage:
         if filter_stage == 'pdf':
-            final_report = final_report.filter(pdf_records__isnull=False)
+            if is_admin:
+                # Admins see any daily report that has a PDF entry
+                final_report = final_report.filter(pdf_records__isnull=False)
+            else:
+                # Regular users only see reports where THEY created the PDF entry
+                final_report = final_report.filter(pdf_records__created_by=request.user)
+                
         elif filter_stage == 'indexing':
-            final_report = final_report.filter(indexing_records__isnull=False)
+            if is_admin:
+                final_report = final_report.filter(indexing_records__isnull=False)
+            else:
+                final_report = final_report.filter(indexing_records__created_by=request.user)
+                
         elif filter_stage == 'uploading':
-            final_report = final_report.filter(uploading_records__isnull=False)
+            if is_admin:
+                final_report = final_report.filter(uploading_records__isnull=False)
+            else:
+                final_report = final_report.filter(uploading_records__created_by=request.user)
+                
         elif filter_stage == 'qc':
-            final_report = final_report.filter(qc_records__isnull=False)
+            if is_admin:
+                final_report = final_report.filter(qc_records__isnull=False)
+            else:
+                final_report = final_report.filter(qc_records__created_by=request.user)
+                
         elif filter_stage == 'metadata':
-            final_report = final_report.filter(metadata_records__isnull=False)
+            if is_admin:
+                final_report = final_report.filter(metadata_records__isnull=False)
+            else:
+                final_report = final_report.filter(metadata_records__created_by=request.user)
+
+    # Note: Because Django chains filters using "AND" logic, any other active 
+    # query parameters (date, location, name) will cleanly pile on top of this.
 
     # Calculate Global Totals for the current workspace (Consolidated Metrics)
     totals = final_report.aggregate(
