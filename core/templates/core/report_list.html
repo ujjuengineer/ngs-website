@@ -88,7 +88,7 @@
                 <table class="table table-hover table-striped align-middle mb-0">
                     <thead class="table-light border-bottom">
                         <tr>
-                            <th>Date</th>
+                            <!-- <th>Date</th> -->
                             <th>Location</th>
 
                             {% if is_admin %}
@@ -110,7 +110,7 @@
                     <tbody>
                         {% for report in reports %}
                         <tr>
-                            <td class="fw-medium">{{ report.date|date:"d/m/Y" }}</td>
+                            <!-- <td class="fw-medium">{{ report.date|date:"d/m/Y" }}</td> -->
                             <td><span class="badge bg-secondary-subtle text-secondary border px-2 py-1">{{ report.get_location_display }}</span></td>
                             {% if is_admin %}
                                 <td class="text-uppercase fw-semibold text-dark">{{ report.name }}</td>
