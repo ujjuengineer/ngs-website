@@ -578,6 +578,8 @@ def report_list_view(request):
             ]
         else:
             summary_rows = [
+                ("Total Number of volume", len(final_report)),
+                ("Total Deed", totals['sum_deeds']),
                 ("Total Pages Scanned (By You)", user_metrics['pages_scanned_count']),
                 ("Total PDF Created (By You)", user_metrics['pdf_count']),
                 ("Total Indexing (By You)", user_metrics['indexing_count']),
