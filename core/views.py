@@ -376,7 +376,25 @@ def report_list_view(request):
 
     # Naming query filtering is now accessible globally across the expanded workspace for admins
     if filter_name and is_admin:
-        final_report = final_report.filter(name__icontains=filter_name)
+        name_q = (
+            Q(name__icontains=filter_name) |
+            Q(pdf_records__created_by__username__icontains=filter_name) |
+            Q(pdf_records__created_by__first_name__icontains=filter_name) |
+            Q(pdf_records__created_by__last_name__icontains=filter_name) |
+            Q(indexing_records__created_by__username__icontains=filter_name) |
+            Q(indexing_records__created_by__first_name__icontains=filter_name) |
+            Q(indexing_records__created_by__last_name__icontains=filter_name) |
+            Q(uploading_records__created_by__username__icontains=filter_name) |
+            Q(uploading_records__created_by__first_name__icontains=filter_name) |
+            Q(uploading_records__created_by__last_name__icontains=filter_name) |
+            Q(qc_records__created_by__username__icontains=filter_name) |
+            Q(qc_records__created_by__first_name__icontains=filter_name) |
+            Q(qc_records__created_by__last_name__icontains=filter_name) |
+            Q(metadata_records__created_by__username__icontains=filter_name) |
+            Q(metadata_records__created_by__first_name__icontains=filter_name) |
+            Q(metadata_records__created_by__last_name__icontains=filter_name)
+        )
+        final_report = final_report.filter(name_q).distinct()
 
     # Workflow Sub-Model Stage Filtering
     if filter_stage:
