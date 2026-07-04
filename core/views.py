@@ -427,6 +427,13 @@ def report_list_view(request):
                 else:
                     final_report = final_report.none()
 
+            # add month and date filter on scanning report
+            if filter_month:
+                year_part, month_part = map(int, filter_month.split('-'))
+                final_report = final_report.filter(created_at__year=year_part, created_at__month=month_part) 
+            if filter_date : 
+                final_report = final_report.filter(created_at__date=filter_date)
+
         elif filter_stage == 'pdf':
             if is_admin:
                 # Admins see any daily report that has a PDF entry
