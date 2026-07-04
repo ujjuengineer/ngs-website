@@ -254,7 +254,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Sum, Q
 from django.http import HttpResponse
 from django.shortcuts import render
-from .models import DailyReport, PDFRecord, IndexingRecord, UploadingRecord, QCRecord, MetadataRecord
+from .models import DailyReport, PDFRecord, IndexingRecord, UploadingRecord
 
 @login_required
 def report_list_view(request):
@@ -459,8 +459,7 @@ def report_list_view(request):
             else:
                 final_report = final_report.filter(metadata_records__created_by=request.user)
 
-    # Note: Because Django chains filters using "AND" logic, any other active 
-    # query parameters (date, location, name) will cleanly pile on top of this.
+    final_report = final_report.order_by('-date', 'name')
 
     # Calculate Global Totals for the current workspace (Consolidated Metrics)
     totals = final_report.aggregate(
