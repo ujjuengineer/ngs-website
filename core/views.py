@@ -263,9 +263,9 @@ def report_list_view(request):
     # Standardize user full name for filtering personal metrics
     user_full_name = request.user.get_full_name().upper() if request.user.get_full_name() else request.user.username.upper()
 
-    # 🌟 LEVEL ACCESS GATEWAY 🌟
+    # 🌟 LEVEL ACCESS GATEWAY 🌟 
     if is_admin:
-        # Admins pull comprehensive datasets across the entire workforce
+        # Admins pull comprehensive datasets across the entire workforce 
         pdf_data = PDFRecord.objects.all()
         ind_data = IndexingRecord.objects.all()
         upload_data = UploadingRecord.objects.all()
@@ -377,32 +377,43 @@ def report_list_view(request):
 
     # Naming query filtering is now accessible globally across the expanded workspace for admins
     if filter_name and is_admin:
-        name_q = (
-            Q(name__icontains=filter_name) |
-            Q(pdf_records__created_by__username__icontains=filter_name) |
-            Q(pdf_records__created_by__first_name__icontains=filter_name) |
-            Q(pdf_records__created_by__last_name__icontains=filter_name) |
-            Q(indexing_records__created_by__username__icontains=filter_name) |
-            Q(indexing_records__created_by__first_name__icontains=filter_name) |
-            Q(indexing_records__created_by__last_name__icontains=filter_name) |
-            Q(uploading_records__created_by__username__icontains=filter_name) |
-            Q(uploading_records__created_by__first_name__icontains=filter_name) |
-            Q(uploading_records__created_by__last_name__icontains=filter_name) |
-            Q(qc_records__created_by__username__icontains=filter_name) |
-            Q(qc_records__created_by__first_name__icontains=filter_name) |
-            Q(qc_records__created_by__last_name__icontains=filter_name) |
-            Q(metadata_records__created_by__username__icontains=filter_name) |
-            Q(metadata_records__created_by__first_name__icontains=filter_name) |
-            Q(metadata_records__created_by__last_name__icontains=filter_name)
-        )
+        if filter_stage == 'scanning':
+            name_q = Q(name__icontains=filter_name)
+        else:
+            name_q = (
+                Q(name__icontains=filter_name) |
+                Q(pdf_records__created_by__username__icontains=filter_name) |
+                Q(pdf_records__created_by__first_name__icontains=filter_name) |
+                Q(pdf_records__created_by__last_name__icontains=filter_name) |
+                Q(indexing_records__created_by__username__icontains=filter_name) |
+                Q(indexing_records__created_by__first_name__icontains=filter_name) |
+                Q(indexing_records__created_by__last_name__icontains=filter_name) |
+                Q(uploading_records__created_by__username__icontains=filter_name) |
+                Q(uploading_records__created_by__first_name__icontains=filter_name) |
+                Q(uploading_records__created_by__last_name__icontains=filter_name) |
+                Q(qc_records__created_by__username__icontains=filter_name) |
+                Q(qc_records__created_by__first_name__icontains=filter_name) |
+                Q(qc_records__created_by__last_name__icontains=filter_name) |
+                Q(metadata_records__created_by__username__icontains=filter_name) |
+                Q(metadata_records__created_by__first_name__icontains=filter_name) |
+                Q(metadata_records__created_by__last_name__icontains=filter_name)
+            )
         final_report = final_report.filter(name_q).distinct()
 
     # Workflow Sub-Model Stage Filtering
-    # ==========================================
     # Refactored Workflow Sub-Model Stage Filtering
-    # ==========================================
+
     if filter_stage:
-        if filter_stage == 'pdf':
+        if filter_stage == 'scanning':
+            if is_admin:
+                final_report = final_report.filter(name__isnull=False) 
+            else:
+                if request.user.username.endswith('-S'):
+                    final_report = final_report.filter(name=user_full_name)
+                else:
+                    final_report = final_report.none()
+
+        elif filter_stage == 'pdf':
             if is_admin:
                 # Admins see any daily report that has a PDF entry
                 final_report = final_report.filter(pdf_records__isnull=False)
@@ -630,6 +641,7 @@ def report_list_view(request):
     ]
 
     workflow_stages = [
+        {'value': 'scanning', 'display': 'Scanning Report'},
         {'value': 'pdf', 'display': 'PDF Report'},
         {'value': 'indexing', 'display': 'Indexing Report'},
         {'value': 'uploading', 'display': 'Uploading Report'},
@@ -1290,15 +1302,15 @@ def update_report_search_view(request):
 
 @login_required
 def daily_report_update_view(request, pk):
-    # 1. Fetch the existing report instance
+    # 1. Fetch the existing report instance 
     report = get_object_or_404(DailyReport, pk=pk)
     user = request.user
 
-    # data for submodels
+    # data for submodels 
     full_name = user.get_full_name().strip()
     current_updater_name = full_name if full_name else user.username
     
-    # Define our fields
+    # Define our fields 
     BOOLEAN_FIELDS = ['pdf_deed', 'indexing', 'uploading', 'QC', 'metadata']
     PROTECTED_FIELDS = ['date', 'location', 'name', 'year', 'volume_num', 'num_of_deed', 'num_of_page']
     
