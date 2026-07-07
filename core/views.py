@@ -622,6 +622,7 @@ def report_list_view(request):
             else:
                 summary_rows = [
                     ("Total Number of volume", reports_qs.count()),
+                    ("Total Pages", tab_totals['sum_pages'] or 0),
                     ("Total Deed", tab_totals['sum_deeds'] or 0),
                 ]
 
