@@ -71,7 +71,7 @@ class DailyReport(models.Model):
         ('JHANJHARPUR', 'Jhanjharpur'),
         ('JAINAGAR', 'Jainagar'),
         ('SAMASTIPUR', 'Samastipur'),
-        ('KARAMGANJ', 'Karamganj'),
+        ('KAMTAUL', 'Kamtaul'),
         ('KHAJAULI', 'Khajauli')
     ]
 
