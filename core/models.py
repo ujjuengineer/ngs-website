@@ -105,6 +105,8 @@ class DailyReport(models.Model):
     def save(self, *args, **kwargs):
         if self.name:
             self.name = self.name.upper()
+        if not self.pk: 
+            self.scanning = True
         super().save(*args, **kwargs)
 
     def __str__(self):
