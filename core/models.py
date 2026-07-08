@@ -61,7 +61,20 @@ class DailyReport(models.Model):
         ('NAWADA', 'Nawada'),
         ('NALANDA', 'Nalanda'),
         ('HILSA', 'Hilsa'),
+        ('ROSARA', 'Rosara'),
+        ('KISHANPUR', 'Kishanpur'),
+        ('DARBHANGA', 'Darbhanga'),
+        ('BAHERA', 'Bahera'),
+        ('DALSINGHSARAI','Dalsinghsarai'),
+        ('BENIPATTI', 'Benipatti'),
+        ('PHULPARAS', 'Phulparas'),
+        ('JHANJHARPUR', 'Jhanjharpur'),
+        ('JAINAGAR', 'Jainagar'),
+        ('SAMASTIPUR', 'Samastipur'),
+        ('KARAMGANJ', 'Karamganj'),
+        ('KHAJAULI', 'Khajauli')
     ]
+
     date = models.DateField(default=timezone.now, verbose_name="Report Date")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Created At', null=True, blank=True)
     location = models.CharField(max_length=50, choices=LOCATION_CHOICES, verbose_name="Location")
@@ -74,7 +87,8 @@ class DailyReport(models.Model):
     # MADE THIS FIELD OPTIONAL
     num_of_deed = models.IntegerField(verbose_name="Number of Deeds", null=True, blank=True)
 
-    # # Status / Workflow progress boolean fields
+    # Workflow progress boolean fields
+    scanning = models.BooleanField(default=True, verbose_name="Scanning")
     pdf_deed = models.BooleanField(default=False, verbose_name="PDF (Deed)")
     indexing = models.BooleanField(default=False, verbose_name="Indexing")
     uploading = models.BooleanField(default=False, verbose_name="Uploading")
@@ -96,9 +110,9 @@ class DailyReport(models.Model):
     def __str__(self):
         return f"{self.year} - {self.volume_num} ({self.location})"
 
-# ==========================================
+
+
 # WORKFLOW STEP MODELS
-# ==========================================
 
 class PDFRecord(models.Model):
     daily_report = models.ForeignKey(

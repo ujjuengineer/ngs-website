@@ -248,13 +248,6 @@ def add_multiple_reports_view(request):
         'auto_name': auto_name,
     })
 
-import datetime
-from itertools import chain
-from django.contrib.auth.decorators import login_required
-from django.db.models import Sum, Q
-from django.http import HttpResponse
-from django.shortcuts import render
-from .models import DailyReport, PDFRecord, IndexingRecord, UploadingRecord
 
 @login_required
 def report_list_view(request):
@@ -888,7 +881,7 @@ def daily_report_update_view(request, pk):
     current_updater_name = full_name if full_name else user.username
     
     # Define our fields 
-    BOOLEAN_FIELDS = ['pdf_deed', 'indexing', 'uploading', 'QC', 'metadata']
+    BOOLEAN_FIELDS = ['scanning', 'pdf_deed', 'indexing', 'uploading', 'QC', 'metadata']
     PROTECTED_FIELDS = ['date', 'location', 'name', 'year', 'volume_num', 'num_of_deed', 'num_of_page']
     
     # Check if the record is older than 24 hours

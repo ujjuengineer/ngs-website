@@ -137,7 +137,6 @@
       </div>
 
       <div class="form-row">
-        
         <div class="form-group">
           <label>Number of Pages</label>
           {{ form.num_of_page }}
@@ -149,12 +148,14 @@
           {{ form.num_of_deed }}
           {% if form.num_of_deed.errors %}<ul class="error-list">{% for e in form.num_of_deed.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
         </div>
-        
       </div>
 
       <div class="checkbox-section">
         <h4>Workflow Status</h4>
         <div class="checkbox-grid">
+          <label class="checkbox-item">
+            {{ form.scanning }} <span>Scanning</span>
+          </label>
           <label class="checkbox-item">
             {{ form.pdf_deed }} <span>PDF (Deed)</span>
           </label>
