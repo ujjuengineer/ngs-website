@@ -746,8 +746,8 @@ def daily_report_update_view(request, pk):
     current_updater_name = full_name if full_name else user.username
     
     # Define our fields 
-    BOOLEAN_FIELDS = ['scanning', 'pdf_deed', 'indexing', 'uploading', 'QC', 'metadata']
-    PROTECTED_FIELDS = ['date', 'location', 'name', 'year', 'volume_num', 'num_of_deed', 'num_of_page']
+    BOOLEAN_FIELDS = ['num_of_deed','scanning', 'pdf_deed', 'indexing', 'uploading', 'QC', 'metadata']
+    PROTECTED_FIELDS = ['date', 'location', 'name', 'year', 'volume_num', 'num_of_page']
     
     # Check if the record is older than 24 hours
     is_expired = timezone.now() > report.created_at + timedelta(hours=24)
