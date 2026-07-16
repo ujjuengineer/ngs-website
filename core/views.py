@@ -94,8 +94,10 @@ class CertificateVerifyView(DetailView):
     slug_field = 'certificate_number'
     slug_url_kwarg = 'certificate_number'
 
+from django.shortcuts import render, redirect
+from django.urls import reverse
+from django.contrib import messages
 
-@login_required
 def daily_report_create_view(request):
     # 1. Determine the auto-name for the logged-in user
     user = request.user
@@ -108,13 +110,21 @@ def daily_report_create_view(request):
     if request.method == 'POST':
         form = DailyReportForm(request.POST)
         if form.is_valid():
-            year = form.cleaned_data.get('year')
-            volume_num = form.cleaned_data.get('volume_num')
+            # Extract and strip spaces/periods from front and back
+            raw_year = form.cleaned_data.get('year') or ''
+            raw_volume = form.cleaned_data.get('volume_num') or ''
+            
+            cleaned_year = str(raw_year).strip(" .")
+            cleaned_volume = str(raw_volume).strip(" .")
             location = form.cleaned_data.get('location')
 
-            # Check if an identical report already exists
+            # Check if an identical report already exists using __iexact or direct matching
+            # Note: This assumes your DB values might also need standardizing, 
+            # or we match against the newly cleaned formats.
             existing = DailyReport.objects.filter(
-                year=year, volume_num=volume_num, location=location
+                year__iexact=cleaned_year, 
+                volume_num__iexact=cleaned_volume, 
+                location=location
             ).first()
 
             if existing:
@@ -137,9 +147,14 @@ def daily_report_create_view(request):
             # Save the new report with the auto_name enforced
             instance = form.save(commit=False)
             instance.name = auto_name
+            
+            # Apply the stripped values to the instance before saving
+            instance.year = cleaned_year
+            instance.volume_num = cleaned_volume
+            
             instance.save()
 
-            # create the submodel
+            # Create the submodel
             sync_workflow_records(instance, request.user)
 
             # Success notification
@@ -156,15 +171,9 @@ def daily_report_create_view(request):
 
     # 3. Handle Initial Page Load (GET request)
     else:
-        # Build initial data dictionary matching your CBV's get_initial logic
         initial_data = {
             'name': auto_name,
         }
-        # for field in ['year', 'volume_num', 'location']:
-        #     val = request.GET.get(field)
-        #     if val:
-        #         initial_data[field] = val
-
         form = DailyReportForm(initial=initial_data)
 
     context = {
@@ -173,6 +182,85 @@ def daily_report_create_view(request):
         'auto_name': auto_name,
     }
     return render(request, 'core/add_report.html', context)
+
+# @login_required
+# def daily_report_create_view(request):
+#     # 1. Determine the auto-name for the logged-in user
+#     user = request.user
+#     full_name = user.get_full_name().strip()
+#     auto_name = full_name if full_name else user.username
+
+#     duplicate_report = None
+
+#     # 2. Handle Form Submission (POST request)
+#     if request.method == 'POST':
+#         form = DailyReportForm(request.POST)
+#         if form.is_valid():
+#             year = form.cleaned_data.get('year')
+#             volume_num = form.cleaned_data.get('volume_num')
+#             location = form.cleaned_data.get('location')
+
+#             # Check if an identical report already exists
+#             existing = DailyReport.objects.filter(
+#                 year=year, volume_num=volume_num, location=location
+#             ).first()
+
+#             if existing:
+#                 duplicate_report = {
+#                     'pk': existing.pk,
+#                     'year': existing.year,
+#                     'volume_num': existing.volume_num,
+#                     'location': existing.get_location_display(),
+#                     'name': existing.name,
+#                     'created_at': existing.created_at,
+#                 }
+
+#                 return render(request, 'core/add_report.html', {
+#                     'form': form, # Keeps their input data on screen
+#                     'next': request.GET.get('next', ''),
+#                     'auto_name': auto_name,
+#                     'duplicate_report': duplicate_report,
+#                 })
+
+#             # Save the new report with the auto_name enforced
+#             instance = form.save(commit=False)
+#             instance.name = auto_name
+#             instance.save()
+
+#             # create the submodel
+#             sync_workflow_records(instance, request.user)
+
+#             # Success notification
+#             messages.success(
+#                 request, 
+#                 f"Daily report for {instance.name} at {instance.get_location_display()} recorded successfully!"
+#             )
+
+#             # Determine where to redirect next
+#             next_url = request.GET.get('next') or request.POST.get('next')
+#             if next_url:
+#                 return redirect(next_url)
+#             return redirect(reverse('add_daily_report'))
+
+#     # 3. Handle Initial Page Load (GET request)
+#     else:
+#         # Build initial data dictionary matching your CBV's get_initial logic
+#         initial_data = {
+#             'name': auto_name,
+#         }
+#         # for field in ['year', 'volume_num', 'location']:
+#         #     val = request.GET.get(field)
+#         #     if val:
+#         #         initial_data[field] = val
+
+#         form = DailyReportForm(initial=initial_data)
+
+#     context = {
+#         'form': form,
+#         'next': request.GET.get('next', ''),
+#         'auto_name': auto_name,
+#     }
+#     return render(request, 'core/add_report.html', context)
 
 
 # ── DAILY REPORT: BULK ADD (login required) ──
