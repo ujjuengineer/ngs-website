@@ -93,6 +93,23 @@
             border-color: var(--brand-dark);
         }
         .pagination .page-item.disabled .page-link { color: #b3bac4; }
+        .employee-menu {
+            width: min(320px, 90vw);
+            max-height: 320px;
+            overflow-y: auto;
+        }
+        .employee-menu .form-check {
+            padding: .45rem 1rem .45rem 2.25rem;
+            margin: 0;
+        }
+        .employee-menu .form-check:hover { background: #f4f6f8; }
+        .employee-select-btn {
+            min-height: 38px;
+            text-align: left;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
         @media (min-width: 768px) {
             .col-md-2-4 { flex: 0 0 20%; max-width: 20%; }
         }
@@ -165,12 +182,27 @@
                 {% if is_admin %}
                 <div class="col-md-2 col-6">
                     <label class="form-label">Employee Name</label>
-                    <select name="name" class="form-select">
-                        <option value="">All Employees</option>
-                        {% for emp in employee_names %}
-                            <option value="{{ emp }}" {% if selected_name == emp %}selected{% endif %}>{{ emp }}</option>
-                        {% endfor %}
-                    </select>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary employee-select-btn w-100 dropdown-toggle"
+                                type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                            <span id="employee-select-label">{{ selected_employee_label }}</span>
+                        </button>
+                        <div class="dropdown-menu employee-menu shadow">
+                            <label class="form-check border-bottom">
+                                <input class="form-check-input" type="checkbox" name="name" value=""
+                                       id="all-employees" {% if not selected_names %}checked{% endif %}>
+                                <span class="form-check-label fw-semibold">All Employees</span>
+                            </label>
+                            {% for emp in employee_names %}
+                            <label class="form-check">
+                                <input class="form-check-input employee-checkbox" type="checkbox"
+                                       name="name" value="{{ emp }}"
+                                       {% if emp in selected_names %}checked{% endif %}>
+                                <span class="form-check-label">{{ emp }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
                 </div>
                 {% endif %}
 
@@ -188,6 +220,45 @@
             </form>
         </div>
     </div>
+
+    <!-- ── CONSOLIDATED METRICS ── -->
+    {% if is_admin and reports %}
+    <div class="card filter-card shadow-sm mb-4">
+        <div class="card-body p-4">
+            <div class="mb-3">
+                <span class="text-muted small fw-bold d-block mb-1">CONSOLIDATED METRICS</span>
+                <h6 class="m-0 fw-bold text-dark"><i class="bi bi-calculator me-2 text-primary"></i>Filtered Totals for {{ selected_employee_label }}</h6>
+            </div>
+            <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                    <div class="stat-tile d-flex justify-content-between align-items-center">
+                        <span class="stat-label"><i class="bi bi-file-earmark-text me-1"></i>Total Volume</span>
+                        <span class="badge bg-primary fs-6">{{ total_volume }}</span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-tile d-flex justify-content-between align-items-center">
+                        <span class="stat-label"><i class="bi bi-journal-bookmark me-1"></i>Total Deeds</span>
+                        <span class="badge bg-dark fs-6">{{ total_deeds|default:"0" }}</span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-tile d-flex justify-content-between align-items-center">
+                        <span class="stat-label"><i class="bi bi-layers me-1"></i>Total Pages</span>
+                        <span class="badge bg-secondary fs-6">{{ total_pages|default:"0" }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="row g-2 text-center">
+                <div class="col-md-2-4 col-sm-4 col-6"><div class="stat-tile stage-tile"><span class="stat-label d-block mb-1 text-truncate">Total PDF Created</span><span class="stat-value">{{ total_pdf|default:"0" }} <span class="text-muted small fw-normal">Deeds</span></span></div></div>
+                <div class="col-md-2-4 col-sm-4 col-6"><div class="stat-tile stage-tile"><span class="stat-label d-block mb-1 text-truncate">Total Indexing</span><span class="stat-value">{{ total_indexing|default:"0" }} <span class="text-muted small fw-normal">Deeds</span></span></div></div>
+                <div class="col-md-2-4 col-sm-4 col-6"><div class="stat-tile stage-tile"><span class="stat-label d-block mb-1 text-truncate">Total Uploading</span><span class="stat-value">{{ total_uploading|default:"0" }} <span class="text-muted small fw-normal">Deeds</span></span></div></div>
+                <div class="col-md-2-4 col-sm-6 col-6"><div class="stat-tile stage-tile"><span class="stat-label d-block mb-1 text-truncate">Total QC Checked</span><span class="stat-value">{{ total_qc|default:"0" }} <span class="text-muted small fw-normal">Deeds</span></span></div></div>
+                <div class="col-md-2-4 col-sm-6 col-12"><div class="stat-tile stage-tile"><span class="stat-label d-block mb-1 text-truncate">Total Metadata</span><span class="stat-value">{{ total_metadata|default:"0" }} <span class="text-muted small fw-normal">Pages</span></span></div></div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
     <!-- ── REPORT TABLE ── -->
     <div class="card table-card shadow-sm mb-4">
@@ -303,69 +374,6 @@
     <div class="card filter-card shadow-sm">
         <div class="card-body p-4">
 
-            {% if is_admin %}
-            <div class="mb-3">
-                <span class="text-muted small fw-bold d-block mb-1">CONSOLIDATED METRICS</span>
-                <h6 class="m-0 fw-bold text-dark"><i class="bi bi-calculator me-2 text-primary"></i>Filtered Totals (Global View)</h6>
-            </div>
-
-            <div class="row g-3 mb-3">
-                <div class="col-md-4">
-                    <div class="stat-tile d-flex justify-content-between align-items-center">
-                        <span class="stat-label"><i class="bi bi-file-earmark-text me-1"></i>Total Volume</span>
-                        <span class="badge bg-primary fs-6">{{ total_volume }}</span>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="stat-tile d-flex justify-content-between align-items-center">
-                        <span class="stat-label"><i class="bi bi-journal-bookmark me-1"></i>Total Deeds</span>
-                        <span class="badge bg-dark fs-6">{{ total_deeds|default:"0" }}</span>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="stat-tile d-flex justify-content-between align-items-center">
-                        <span class="stat-label"><i class="bi bi-layers me-1"></i>Total Pages</span>
-                        <span class="badge bg-secondary fs-6">{{ total_pages|default:"0" }}</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row g-2 text-center mb-4">
-                <div class="col-md-2-4 col-sm-4 col-6">
-                    <div class="stat-tile stage-tile">
-                        <span class="stat-label d-block mb-1 text-truncate">Total PDF Created</span>
-                        <span class="stat-value">{{ total_pdf|default:"0" }} <span class="text-muted small fw-normal">Deeds</span></span>
-                    </div>
-                </div>
-                <div class="col-md-2-4 col-sm-4 col-6">
-                    <div class="stat-tile stage-tile">
-                        <span class="stat-label d-block mb-1 text-truncate">Total Indexing</span>
-                        <span class="stat-value">{{ total_indexing|default:"0" }} <span class="text-muted small fw-normal">Deeds</span></span>
-                    </div>
-                </div>
-                <div class="col-md-2-4 col-sm-4 col-6">
-                    <div class="stat-tile stage-tile">
-                        <span class="stat-label d-block mb-1 text-truncate">Total Uploading</span>
-                        <span class="stat-value">{{ total_uploading|default:"0" }} <span class="text-muted small fw-normal">Deeds</span></span>
-                    </div>
-                </div>
-                <div class="col-md-2-4 col-sm-6 col-6">
-                    <div class="stat-tile stage-tile">
-                        <span class="stat-label d-block mb-1 text-truncate">Total QC Checked</span>
-                        <span class="stat-value">{{ total_qc|default:"0" }} <span class="text-muted small fw-normal">Deeds</span></span>
-                    </div>
-                </div>
-                <div class="col-md-2-4 col-sm-6 col-12">
-                    <div class="stat-tile stage-tile">
-                        <span class="stat-label d-block mb-1 text-truncate">Total Metadata</span>
-                        <span class="stat-value">{{ total_metadata|default:"0" }} <span class="text-muted small fw-normal">Pages</span></span>
-                    </div>
-                </div>
-            </div>
-
-            <hr class="text-muted my-3 opacity-25">
-            {% endif %}
-
             <!-- Personal Performance Contribution Panel (All Users) -->
             <div class="row g-2 text-center">
                 <div class="col-12 text-md-start mb-2">
@@ -424,5 +432,37 @@
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const allEmployees = document.getElementById('all-employees');
+    const employeeCheckboxes = [...document.querySelectorAll('.employee-checkbox')];
+    const employeeLabel = document.getElementById('employee-select-label');
+
+    function updateEmployeeLabel() {
+        const selected = employeeCheckboxes.filter(box => box.checked);
+        if (allEmployees?.checked || selected.length === 0) {
+            employeeLabel.textContent = 'All Employees';
+        } else if (selected.length === 1) {
+            employeeLabel.textContent = selected[0].value;
+        } else {
+            employeeLabel.textContent = `${selected.length} employees selected`;
+        }
+    }
+
+    allEmployees?.addEventListener('change', () => {
+        if (allEmployees.checked) {
+            employeeCheckboxes.forEach(box => box.checked = false);
+        } else if (!employeeCheckboxes.some(box => box.checked)) {
+            allEmployees.checked = true;
+        }
+        updateEmployeeLabel();
+    });
+
+    employeeCheckboxes.forEach(box => box.addEventListener('change', () => {
+        if (box.checked) allEmployees.checked = false;
+        if (!employeeCheckboxes.some(item => item.checked)) allEmployees.checked = true;
+        updateEmployeeLabel();
+    }));
+</script>
 </body>
 </html>

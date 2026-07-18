@@ -1,5 +1,8 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin, GroupAdmin as BaseGroupAdmin
+from django.contrib.auth.models import User, Group
 from unfold.admin import ModelAdmin, TabularInline
+from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
 from unfold.contrib.filters.admin import (
     ChoicesDropdownFilter,
     DropdownFilter,
@@ -20,6 +23,72 @@ class PremiumAdmin(ModelAdmin):
     list_filter_submit = True
     list_filter_sheet = False
     show_full_result_count = False
+
+
+# ── USERS & GROUPS (restyled with the Unfold theme) ──
+admin.site.unregister(User)
+admin.site.unregister(Group)
+
+
+@admin.register(User)
+class UserAdmin(BaseUserAdmin, ModelAdmin):
+    # Unfold-styled forms so the add/change user pages match the admin theme
+    form = UserChangeForm
+    add_form = UserCreationForm
+    change_password_form = AdminPasswordChangeForm
+
+    list_display = ('username', 'full_name_display', 'role_display', 'is_active', 'last_login')
+    list_filter = ('is_staff', 'is_superuser', 'is_active')
+    search_fields = ('username', 'first_name', 'last_name', 'email')
+    search_help_text = "Search by username, name, or email"
+    ordering = ('username',)
+    list_per_page = 25
+    list_filter_submit = True
+    list_filter_sheet = False
+
+    add_fieldsets = (
+        ('Account Credentials', {
+            'classes': ('wide',),
+            'fields': ('username', 'password1', 'password2'),
+            'description': "Usernames ending with -S are treated as scanner accounts.",
+        }),
+        ('Employee Details', {
+            'classes': ('wide',),
+            'fields': ('first_name', 'last_name', 'email'),
+            'description': "First and last name appear as the employee name on daily reports.",
+        }),
+        ('Permissions', {
+            'classes': ('wide',),
+            'fields': ('is_active', 'is_staff', 'is_superuser'),
+            'description': "Staff status makes this user an admin who can see all reports.",
+        }),
+    )
+
+    fieldsets = (
+        ('Account Credentials', {'fields': ('username', 'password')}),
+        ('Employee Details', {'fields': ('first_name', 'last_name', 'email')}),
+        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
+        ('Important Dates', {'fields': ('last_login', 'date_joined'), 'classes': ('collapse',)}),
+    )
+
+    def full_name_display(self, obj):
+        return obj.get_full_name() or "—"
+    full_name_display.short_description = "Full Name"
+
+    def role_display(self, obj):
+        if obj.is_superuser:
+            return format_html('<strong style="color:#dc2626;">Superuser</strong>')
+        if obj.is_staff:
+            return format_html('<strong style="color:#d97706;">Admin</strong>')
+        if obj.username.endswith('-S'):
+            return format_html('<strong style="color:#15803d;">Scanner</strong>')
+        return "Employee"
+    role_display.short_description = "Role"
+
+
+@admin.register(Group)
+class GroupAdmin(BaseGroupAdmin, ModelAdmin):
+    pass
 
 
 class ReportYearDropdownFilter(DropdownFilter):

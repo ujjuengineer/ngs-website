@@ -400,13 +400,40 @@ def report_list_view(request):
     # print(daily_reports)
     # print(final_report)
 
+    # Build the admin employee dropdown before applying filters so the first
+    # employee can be selected on the initial page load.
+    employee_names = []
+    if is_admin:
+        report_names = DailyReport.objects.exclude(name='').values_list(
+            'name', flat=True
+        ).distinct()
+        account_names = []
+        for employee in User.objects.filter(
+            is_active=True, is_staff=False, is_superuser=False
+        ):
+            full_name = employee.get_full_name().strip()
+            account_names.append(
+                (full_name if full_name else employee.username).upper()
+            )
+        employee_names = sorted(set(chain(report_names, account_names)))
+
     # Capture URL GET Filter Parameters
     filter_date = request.GET.get('date', '').strip()
     filter_month = request.GET.get('month', '').strip()
     filter_location = request.GET.get('location', '').strip()
-    filter_name = request.GET.get('name', '').strip()
     filter_stage = request.GET.get('workflow_stage', '').strip()
 
+    # An explicit empty value means "All Employees". On the initial load, the
+    # first real employee (the second dropdown option) is selected by default.
+    selected_names = []
+    if is_admin:
+        if 'name' in request.GET:
+            selected_names = [
+                name.strip() for name in request.GET.getlist('name')
+                if name.strip()
+            ]
+        elif employee_names:
+            selected_names = [employee_names[0]]
 
     # Apply Standard Date Filter
     if filter_date:
@@ -461,28 +488,27 @@ def report_list_view(request):
     if filter_location:
         final_report = final_report.filter(location=filter_location)
 
-    # Naming query filtering is now accessible globally across the expanded workspace for admins
-    if filter_name and is_admin:
+    # Match any selected employee across scanning and all workflow records.
+    if selected_names and is_admin:
         if filter_stage == 'scanning':
-            name_q = Q(name__icontains=filter_name)
+            name_q = Q(name__in=selected_names)
         else:
+            selected_user_ids = []
+            for employee in User.objects.filter(is_active=True):
+                full_name = employee.get_full_name().strip()
+                display_name = (
+                    full_name if full_name else employee.username
+                ).upper()
+                if display_name in selected_names:
+                    selected_user_ids.append(employee.pk)
+
             name_q = (
-                Q(name__icontains=filter_name) |
-                Q(pdf_records__created_by__username__icontains=filter_name) |
-                Q(pdf_records__created_by__first_name__icontains=filter_name) |
-                Q(pdf_records__created_by__last_name__icontains=filter_name) |
-                Q(indexing_records__created_by__username__icontains=filter_name) |
-                Q(indexing_records__created_by__first_name__icontains=filter_name) |
-                Q(indexing_records__created_by__last_name__icontains=filter_name) |
-                Q(uploading_records__created_by__username__icontains=filter_name) |
-                Q(uploading_records__created_by__first_name__icontains=filter_name) |
-                Q(uploading_records__created_by__last_name__icontains=filter_name) |
-                Q(qc_records__created_by__username__icontains=filter_name) |
-                Q(qc_records__created_by__first_name__icontains=filter_name) |
-                Q(qc_records__created_by__last_name__icontains=filter_name) |
-                Q(metadata_records__created_by__username__icontains=filter_name) |
-                Q(metadata_records__created_by__first_name__icontains=filter_name) |
-                Q(metadata_records__created_by__last_name__icontains=filter_name)
+                Q(name__in=selected_names) |
+                Q(pdf_records__created_by_id__in=selected_user_ids) |
+                Q(indexing_records__created_by_id__in=selected_user_ids) |
+                Q(uploading_records__created_by_id__in=selected_user_ids) |
+                Q(qc_records__created_by_id__in=selected_user_ids) |
+                Q(metadata_records__created_by_id__in=selected_user_ids)
             )
         final_report = final_report.filter(name_q).distinct()
 
@@ -750,16 +776,6 @@ def report_list_view(request):
         return response
 
 
-    # Employee name dropdown options (admins only)
-    employee_names = []
-    if is_admin:
-        report_names = DailyReport.objects.exclude(name='').values_list('name', flat=True).distinct()
-        user_names = []
-        for u in User.objects.filter(is_active=True):
-            fn = u.get_full_name().strip()
-            user_names.append((fn if fn else u.username).upper())
-        employee_names = sorted(set(chain(report_names, user_names)))
-
     # Pagination (totals above are computed on the full filtered queryset)
     total_volume = final_report.count()
     paginator = Paginator(final_report, 25)
@@ -811,7 +827,11 @@ def report_list_view(request):
         'selected_date': filter_date,
         'selected_month': filter_month,
         'selected_location': filter_location,
-        'selected_name': filter_name,
+        'selected_names': selected_names,
+        'selected_name': selected_names[0] if selected_names else '',
+        'selected_employee_label': (
+            ', '.join(selected_names) if selected_names else 'All Employees'
+        ),
         'selected_stage': filter_stage,           
         'is_admin': is_admin,
         'ends_with_s' : ends_with_s,
