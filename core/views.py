@@ -15,6 +15,7 @@ from django.http import HttpResponse
 from openpyxl import Workbook
 from django.forms import modelformset_factory
 from django.db.models import Sum, Q
+from django.core.paginator import Paginator
 from datetime import date, timedelta
 from django.utils import timezone
 from .utils import sync_workflow_records
@@ -98,6 +99,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib import messages
 
+@login_required
 def daily_report_create_view(request):
     # 1. Determine the auto-name for the logged-in user
     user = request.user
@@ -171,9 +173,11 @@ def daily_report_create_view(request):
 
     # 3. Handle Initial Page Load (GET request)
     else:
-        initial_data = {
-            'name': auto_name,
-        }
+        initial_data = {'name': auto_name}
+        for field in ('year', 'volume_num', 'location'):
+            value = request.GET.get(field, '').strip()
+            if value:
+                initial_data[field] = value
         form = DailyReportForm(initial=initial_data)
 
     context = {
@@ -746,6 +750,27 @@ def report_list_view(request):
         return response
 
 
+    # Employee name dropdown options (admins only)
+    employee_names = []
+    if is_admin:
+        report_names = DailyReport.objects.exclude(name='').values_list('name', flat=True).distinct()
+        user_names = []
+        for u in User.objects.filter(is_active=True):
+            fn = u.get_full_name().strip()
+            user_names.append((fn if fn else u.username).upper())
+        employee_names = sorted(set(chain(report_names, user_names)))
+
+    # Pagination (totals above are computed on the full filtered queryset)
+    total_volume = final_report.count()
+    paginator = Paginator(final_report, 25)
+    page_obj = paginator.get_page(request.GET.get('page'))
+    page_range = paginator.get_elided_page_range(page_obj.number, on_each_side=1, on_ends=1)
+
+    # Preserve active filters in pagination links
+    query_params = request.GET.copy()
+    query_params.pop('page', None)
+    querystring = query_params.urlencode()
+
     # Context Preparation
     existing_dates = DailyReport.objects.dates('date', 'month', order='DESC')
     available_months = [
@@ -765,7 +790,13 @@ def report_list_view(request):
     ends_with_s = str(request.user.username).endswith('-S')
 
     context = {
-        'reports': final_report,
+        'reports': page_obj,
+        'page_obj': page_obj,
+        'paginator': paginator,
+        'page_range': page_range,
+        'querystring': querystring,
+        'total_volume': total_volume,
+        'employee_names': employee_names,
         'total_deeds': totals['sum_deeds'],
         'total_pages': totals['sum_pages'],
         'total_pdf': totals['sum_pdf'],          

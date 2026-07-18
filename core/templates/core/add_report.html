@@ -1,138 +1,79 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Submit Daily Report</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Add Daily Report | NGS</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="{% static 'core/css/staff-portal.css' %}">
 </head>
-<body class="bg-light">
+<body>
+<nav class="portal-nav navbar px-3 px-md-5 py-2">
+  <a href="/" class="portal-brand d-flex align-items-center gap-2">
+    <img src="{% static 'core/images/logo.jpeg' %}" alt="NGS"> Narasimha Global
+  </a>
+  <a href="{% url 'report_list' %}" class="btn btn-sm btn-outline-light"><i class="bi bi-list-ul me-1"></i> Reports</a>
+</nav>
 
-    <div class="container mt-5 mb-5">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
-                            <strong>Success!</strong> {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
-
-                <!-- Duplicate warnings -->
-                {% if duplicate_report %}
-                    <div class="alert alert-warning" role="alert">
-                        <h5>⚠️ Duplicate Found</h5>
-                        <p>
-                            A report for Year <strong>{{ duplicate_report.year }}</strong>, 
-                            Volume <strong>{{ duplicate_report.volume_num }}</strong>, 
-                            Location <strong>{{ duplicate_report.location }}</strong> already exists!
-                        </p>
-                        <p>It was recorded by {{ duplicate_report.name }} on {{ duplicate_report.created_at|date:"F d, Y" }}.</p>
-                        <hr>
-                        <a href="{% url 'update_daily_report' duplicate_report.pk %}" class="btn btn-warning btn-sm">
-                            Edit Existing Record Instead
-                        </a>
-                    </div>
-                {% endif %}
-
-                <div class="card shadow border-0">
-
-                    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-3">
-                        <h4 class="mb-0"><i class="bi bi-table me-2"></i>Employee Daily Work Log</h4>
-                        <a href="{% url 'report_list' %}" class="btn btn-sm btn-info text-dark"><i class="bi bi-house-door-fill me-1"></i> See Your Reports</a>
-                    </div>
-                    
-                    <div class="card-body p-4">
-                        
-                        <form method="POST" novalidate>
-                            {% csrf_token %}
-                            
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold">{{ form.name.label }}</label>
-                                    {{ form.name }}
-                                    <div class="text-danger small">{{ form.name.errors }}</div>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold">{{ form.location.label }}</label>
-                                    {{ form.location }}
-                                    <div class="text-danger small">{{ form.location.errors }}</div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold">{{ form.year.label }}</label>
-                                    {{ form.year }}
-                                    <div class="text-danger small">{{ form.year.errors }}</div>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold">{{ form.volume_num.label }}</label>
-                                    {{ form.volume_num }}
-                                    <div class="text-danger small">{{ form.volume_num.errors }}</div>
-                                </div>
-
-                                
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold">{{ form.num_of_page.label }}</label>
-                                    {{ form.num_of_page }}
-                                    <div class="text-danger small">{{ form.num_of_page.errors }}</div>
-                                </div>
-
-                                <hr>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold">{{ form.num_of_deed.label }}</label>
-                                    {{ form.num_of_deed }}
-                                    <div class="text-danger small">{{ form.num_of_deed.errors }}</div>
-                                </div>
-                            </div>
-
-                            <hr class="my-4">
-
-                            <h5 class="mb-3 text-secondary">Work Processes Completed</h5>
-                            <div class="row row-cols-2 g-3 bg-light p-3 rounded border">
-                                <div class="col">
-                                    <div class="form-check form-switch">
-                                        {{ form.pdf_deed }}
-                                        <label class="form-check-label ms-2" for="{{ form.pdf_deed.id_for_label }}">{{ form.pdf_deed.label }}</label>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="form-check form-switch">
-                                        {{ form.indexing }}
-                                        <label class="form-check-label ms-2" for="{{ form.indexing.id_for_label }}">{{ form.indexing.label }}</label>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="form-check form-switch">
-                                        {{ form.uploading }}
-                                        <label class="form-check-label ms-2" for="{{ form.uploading.id_for_label }}">{{ form.uploading.label }}</label>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="form-check form-switch">
-                                        {{ form.QC }}
-                                        <label class="form-check-label ms-2" for="{{ form.uploading.id_for_label }}">{{ form.QC.label }}</label>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="form-check form-switch">
-                                        {{ form.metadata }}
-                                        <label class="form-check-label ms-2" for="{{ form.metadata.id_for_label }}">{{ form.metadata.label }}</label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="d-grid gap-2 mt-4">
-                                <button type="submit" class="btn btn-primary btn-lg">Submit Report</button>
-                            </div>
-                        </form>
-
-                    </div>
-                </div>
-                
-            </div>
-        </div>
+<main class="portal-shell" style="max-width:900px">
+  <section class="portal-hero d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4">
+    <div>
+      <div class="text-white-50 small text-uppercase fw-bold mb-1">Staff Portal</div>
+      <h2 class="mb-1 fw-bold"><i class="bi bi-file-earmark-plus me-2"></i>Add Daily Report</h2>
+      <p class="mb-0 text-white-50">Record one volume and its workflow progress.</p>
     </div>
+    <a href="{% url 'add_daily_report_bulk' %}" class="btn btn-outline-light"><i class="bi bi-collection me-1"></i> Bulk Entry</a>
+  </section>
 
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags|default:'success' }} shadow-sm">{{ message }}</div>
+  {% endfor %}
+
+  {% if duplicate_report %}
+  <div class="alert alert-warning shadow-sm">
+    <h6 class="fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i>Duplicate report found</h6>
+    <p class="mb-2">Year <strong>{{ duplicate_report.year }}</strong>, volume <strong>{{ duplicate_report.volume_num }}</strong> at <strong>{{ duplicate_report.location }}</strong> already exists.</p>
+    <small class="d-block mb-3">Recorded by {{ duplicate_report.name }} on {{ duplicate_report.created_at|date:"d M Y" }}.</small>
+    <a href="{% url 'update_daily_report' duplicate_report.pk %}" class="btn btn-sm btn-warning">Edit existing report</a>
+  </div>
+  {% endif %}
+
+  <div class="card portal-card">
+    <div class="card-body">
+      <form method="POST" novalidate>
+        {% csrf_token %}
+        {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+        <div class="section-title mb-3">Report details</div>
+        <div class="row g-3">
+          <div class="col-md-6"><label class="form-label">{{ form.name.label }}</label>{{ form.name }}{{ form.name.errors }}</div>
+          <div class="col-md-6"><label class="form-label">{{ form.location.label }}</label>{{ form.location }}{{ form.location.errors }}</div>
+          <div class="col-md-6"><label class="form-label">{{ form.year.label }}</label>{{ form.year }}{{ form.year.errors }}</div>
+          <div class="col-md-6"><label class="form-label">{{ form.volume_num.label }}</label>{{ form.volume_num }}{{ form.volume_num.errors }}</div>
+          <div class="col-md-6"><label class="form-label">{{ form.num_of_page.label }}</label>{{ form.num_of_page }}{{ form.num_of_page.errors }}</div>
+          <div class="col-md-6"><label class="form-label">{{ form.num_of_deed.label }}</label>{{ form.num_of_deed }}{{ form.num_of_deed.errors }}</div>
+        </div>
+
+        <div class="section-title mt-4 mb-3">Workflow completed</div>
+        <div class="workflow-box">
+          <div class="row g-2">
+            <div class="col-sm-6 col-lg"><label class="workflow-option">{{ form.scanning }} <span>Scanning</span></label></div>
+            <div class="col-sm-6 col-lg"><label class="workflow-option">{{ form.pdf_deed }} <span>PDF</span></label></div>
+            <div class="col-sm-6 col-lg"><label class="workflow-option">{{ form.indexing }} <span>Indexing</span></label></div>
+            <div class="col-sm-6 col-lg"><label class="workflow-option">{{ form.uploading }} <span>Uploading</span></label></div>
+            <div class="col-sm-6 col-lg"><label class="workflow-option">{{ form.QC }} <span>QC</span></label></div>
+            <div class="col-sm-6 col-lg"><label class="workflow-option">{{ form.metadata }} <span>Metadata</span></label></div>
+          </div>
+        </div>
+
+        <div class="d-flex flex-column flex-sm-row justify-content-end gap-2 mt-4">
+          <a href="{% url 'report_list' %}" class="btn btn-outline-secondary px-4">Cancel</a>
+          <button type="submit" class="btn btn-ngs px-4"><i class="bi bi-check2-circle me-1"></i> Save Report</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
 </body>
 </html>

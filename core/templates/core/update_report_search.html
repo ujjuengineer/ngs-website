@@ -2,241 +2,100 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Update Daily Report | NGS</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --navy-dk: #1F2935; --navy: #2C3947; --navy-lt: #3B4D61;
-      --blue: #547A95; --gold: #C2A56D; --gold-lt: #D2B985;
-      --gold-pale: #E5D6B7; --bg: #E8EDF2; --white: #fff;
-      --text: #2C3947; --muted: #5E6B77;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-
-    /* NAV */
-    nav {
-      background: var(--navy-dk); border-bottom: 2px solid var(--gold);
-      padding: 0 5%; height: 64px; display: flex; align-items: center; justify-content: space-between;
-    }
-    .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-    .nav-brand img { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover; }
-    .nav-brand span { font-family: 'Cinzel', serif; color: var(--gold-lt); font-size: 0.9rem; }
-    .nav-back { color: var(--gold-pale); text-decoration: none; font-size: 0.82rem; letter-spacing: 0.06em; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
-    .nav-back:hover { color: var(--gold-lt); }
-
-    /* PAGE */
-    .page { max-width: 680px; margin: 48px auto; padding: 0 20px 60px; }
-    .page-header { margin-bottom: 32px; }
-    .page-label { font-family: 'Cinzel', serif; color: var(--gold); font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 8px; }
-    .page-title { font-family: 'Cinzel', serif; color: var(--navy-dk); font-size: 1.8rem; font-weight: 700; }
-
-    /* SEARCH CARD */
-    .card { background: var(--white); border-radius: 12px; padding: 36px; border: 1px solid rgba(194,165,109,0.25); margin-bottom: 24px; }
-    .card-title { font-family: 'Cinzel', serif; color: var(--navy-dk); font-size: 1rem; margin-bottom: 24px; display: flex; align-items: center; gap: 10px; }
-
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px; }
-    .form-group label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--navy); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
-    .form-group input, .form-group select {
-      width: 100%; padding: 11px 14px; border: 1.5px solid rgba(44,57,71,0.2);
-      border-radius: 6px; font-size: 0.9rem; font-family: 'Inter', sans-serif;
-      background: var(--bg); color: var(--text); outline: none; transition: border-color 0.2s;
-    }
-    .form-group input:focus, .form-group select:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(194,165,109,0.15); }
-
-    .btn-search {
-      width: 100%; background: linear-gradient(135deg, var(--navy-dk), var(--navy-lt));
-      color: var(--gold-pale); border: none; padding: 13px; border-radius: 6px;
-      font-size: 0.88rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
-      cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s;
-    }
-    .btn-search:hover { background: linear-gradient(135deg, var(--navy-lt), var(--blue)); }
-
-    /* RESULT */
-    .result-found {
-      background: var(--white); border-radius: 12px; padding: 32px;
-      border: 2px solid rgba(194,165,109,0.4);
-    }
-    .result-found .result-header {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
-    }
-    .result-badge {
-      background: rgba(40,120,40,0.1); color: #1a6b1a;
-      border: 1px solid rgba(40,120,40,0.3); border-radius: 20px;
-      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em;
-      text-transform: uppercase; padding: 4px 12px;
-      display: inline-flex; align-items: center; gap: 6px;
-    }
-    .report-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
-    .report-field label { display: block; font-size: 0.7rem; font-weight: 600; color: var(--gold); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
-    .report-field span { font-size: 0.92rem; color: var(--text); font-weight: 500; }
-    .status-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
-    .status-pill {
-      padding: 5px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;
-      letter-spacing: 0.06em; text-transform: uppercase;
-    }
-    .status-pill.yes { background: rgba(40,120,40,0.1); color: #1a6b1a; border: 1px solid rgba(40,120,40,0.25); }
-    .status-pill.no { background: rgba(180,30,30,0.08); color: #8b1a1a; border: 1px solid rgba(180,30,30,0.2); }
-
-    .btn-update {
-      display: inline-block; background: var(--gold); color: var(--navy-dk);
-      padding: 12px 28px; border-radius: 6px; font-weight: 700; font-size: 0.88rem;
-      letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; transition: all 0.2s;
-    }
-    .btn-update:hover { background: var(--gold-lt); }
-
-    /* NOT FOUND */
-    .not-found-card {
-      background: var(--white); border-radius: 12px; padding: 36px;
-      border: 2px solid rgba(194,165,109,0.3); text-align: center;
-    }
-    .not-found-icon { font-size: 3rem; margin-bottom: 16px; }
-    .not-found-card h3 { font-family: 'Cinzel', serif; color: var(--navy-dk); font-size: 1.1rem; margin-bottom: 10px; }
-    .not-found-card p { color: var(--muted); font-size: 0.9rem; margin-bottom: 28px; line-height: 1.6; }
-    .not-found-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-    .btn-add {
-      background: linear-gradient(135deg, var(--navy-dk), var(--navy-lt));
-      color: var(--gold-pale); padding: 12px 28px; border-radius: 6px;
-      font-weight: 600; font-size: 0.88rem; letter-spacing: 0.06em;
-      text-transform: uppercase; text-decoration: none; transition: all 0.2s;
-    }
-    .btn-add:hover { background: linear-gradient(135deg, var(--navy-lt), var(--blue)); }
-    .btn-cancel {
-      background: transparent; color: var(--muted); padding: 12px 28px; border-radius: 6px;
-      font-weight: 600; font-size: 0.88rem; letter-spacing: 0.06em;
-      text-transform: uppercase; text-decoration: none; transition: all 0.2s;
-      border: 1.5px solid rgba(44,57,71,0.2);
-    }
-    .btn-cancel:hover { border-color: var(--navy); color: var(--navy); }
-
-    @media (max-width: 600px) {
-      .form-grid { grid-template-columns: 1fr; }
-      .report-grid { grid-template-columns: 1fr; }
-      .page { padding: 0 16px 60px; }
-      .card { padding: 24px 20px; }
-      .not-found-card { padding: 28px 20px; }
-      .result-found { padding: 24px 20px; }
-      .not-found-actions { flex-direction: column; }
-      .btn-add, .btn-cancel { text-align: center; width: 100%; padding: 14px; }
-      .status-row { flex-wrap: wrap; gap: 8px; }
-      .report-grid { gap: 12px; }
-    }
-  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="{% static 'core/css/staff-portal.css' %}">
 </head>
 <body>
-
-<nav>
-  <a href="/" class="nav-brand">
-    <img src="{% static 'core/images/logo.jpeg' %}" alt="NGS" />
-    <span>Narasimha Global</span>
+<nav class="portal-nav navbar px-3 px-md-5 py-2">
+  <a href="/" class="portal-brand d-flex align-items-center gap-2">
+    <img src="{% static 'core/images/logo.jpeg' %}" alt="NGS"> Narasimha Global
   </a>
-  <a href="/" class="nav-back">← Back to Home</a>
+  <a href="{% url 'report_list' %}" class="btn btn-sm btn-outline-light"><i class="bi bi-list-ul me-1"></i> Reports</a>
 </nav>
 
-<div class="page">
+<main class="portal-shell" style="max-width:900px">
+  <section class="portal-hero mb-4">
+    <div class="text-white-50 small text-uppercase fw-bold mb-1">Staff Portal</div>
+    <h2 class="mb-1 fw-bold"><i class="bi bi-pencil-square me-2"></i>Update Daily Report</h2>
+    <p class="mb-0 text-white-50">Find a report using its year, volume number, and location.</p>
+  </section>
 
-  {% if messages %}
-    <div class="messages-container my-3">
-        {% for message in messages %}
-            <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'warning' %}warning{% elif message.tags == 'info' %}info{% else %}success{% endif %} alert-dismissible fade show shadow-sm border-0 d-flex align-items-center" role="alert">
-                
-                <div class="me-2 fs-5">
-                    {% if message.tags == 'error' %}❌
-                    {% elif message.tags == 'warning' %}⚠️
-                    {% elif message.tags == 'info' %}ℹ️
-                    {% else %}✅
-                    {% endif %}
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags|default:'success' }} shadow-sm">{{ message }}</div>
+  {% endfor %}
 
-                    {{ message }}   
-                </div>
-                <hr><hr><br>
-            </div>
-        {% endfor %}
+  <div class="card portal-card mb-4">
+    <div class="card-body">
+      <div class="section-title mb-3">Search report</div>
+      <form method="GET" action="{% url 'update_report_search' %}">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label for="year" class="form-label">Year</label>
+            <input class="form-control" type="text" id="year" name="year" placeholder="e.g. 2023-24" value="{{ year }}" required>
+          </div>
+          <div class="col-md-4">
+            <label for="volume_num" class="form-label">Volume Number</label>
+            <input class="form-control" type="text" id="volume_num" name="volume_num" placeholder="e.g. VOL-01" value="{{ volume_num }}" required>
+          </div>
+          <div class="col-md-4">
+            <label for="location" class="form-label">Location</label>
+            <select class="form-select" id="location" name="location" required>
+              <option value="">Select location</option>
+              {% for val, label in locations %}
+                <option value="{{ val }}" {% if location == val %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-ngs w-100 mt-4"><i class="bi bi-search me-1"></i> Search Report</button>
+      </form>
     </div>
-  {% endif %}
-
-  <div class="page-header">
-    <p class="page-label">Staff Portal</p>
-    <h1 class="page-title">Update Daily Report</h1>
   </div>
 
-  
-
-  <!-- SEARCH FORM -->
-  <div class="card">
-    <h2 class="card-title">🔍 Search Report</h2>
-    <form method="GET" action="{% url 'update_report_search' %}">
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="year">Year</label>
-          <input type="text" id="year" name="year" placeholder="e.g. 2023-24" value="{{ year }}" required />
-        </div>
-        <div class="form-group">
-          <label for="volume_num">Volume Number</label>
-          <input type="text" id="volume_num" name="volume_num" placeholder="e.g. VOL-01" value="{{ volume_num }}" required />
-        </div>
-        <div class="form-group">
-          <label for="location">Location</label>
-          <select id="location" name="location" required>
-            <option value="">-- Select --</option>
-            {% for val, label in locations %}
-              <option value="{{ val }}" {% if location == val %}selected{% endif %}>{{ label }}</option>
-            {% endfor %}
-          </select>
-        </div>
-      </div>
-      <button type="submit" class="btn-search">Search Report →</button>
-    </form>
-  </div>
-
-  <!-- REPORT FOUND -->
   {% if report %}
-  <div class="result-found">
-    <div class="result-header">
-      <h2 style="font-family:'Cinzel',serif;color:var(--navy-dk);font-size:1.05rem;">Report Found</h2>
-      <span class="result-badge">✓ Record Exists</span>
+  <div class="card portal-card border border-success-subtle">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center gap-2 mb-3">
+        <h5 class="mb-0 fw-bold">Report Found</h5>
+        <span class="badge text-bg-success"><i class="bi bi-check-circle me-1"></i> Record exists</span>
+      </div>
+      <div class="row g-3 mb-4">
+        <div class="col-sm-6"><div class="result-field"><small>Employee</small><strong>{{ report.name }}</strong></div></div>
+        <div class="col-sm-6"><div class="result-field"><small>Date</small><strong>{{ report.date|date:"d M Y" }}</strong></div></div>
+        <div class="col-sm-6 col-md-4"><div class="result-field"><small>Location</small><strong>{{ report.get_location_display }}</strong></div></div>
+        <div class="col-sm-6 col-md-4"><div class="result-field"><small>Year / Volume</small><strong>{{ report.year }} / {{ report.volume_num }}</strong></div></div>
+        <div class="col-sm-6 col-md-4"><div class="result-field"><small>Pages / Deeds</small><strong>{{ report.num_of_page }} / {{ report.num_of_deed|default_if_none:"—" }}</strong></div></div>
+      </div>
+      <div class="d-flex flex-wrap gap-2 mb-4">
+        <span class="badge {% if report.scanning %}text-bg-success{% else %}text-bg-secondary{% endif %}">Scanning</span>
+        <span class="badge {% if report.pdf_deed %}text-bg-success{% else %}text-bg-secondary{% endif %}">PDF</span>
+        <span class="badge {% if report.indexing %}text-bg-success{% else %}text-bg-secondary{% endif %}">Indexing</span>
+        <span class="badge {% if report.uploading %}text-bg-success{% else %}text-bg-secondary{% endif %}">Uploading</span>
+        <span class="badge {% if report.QC %}text-bg-success{% else %}text-bg-secondary{% endif %}">QC</span>
+        <span class="badge {% if report.metadata %}text-bg-success{% else %}text-bg-secondary{% endif %}">Metadata</span>
+      </div>
+      <a href="{% url 'update_daily_report' report.pk %}" class="btn btn-ngs"><i class="bi bi-pencil me-1"></i> Edit This Report</a>
     </div>
-    <div class="report-grid">
-      <div class="report-field"><label>Employee Name</label><span>{{ report.name }}</span></div>
-      <div class="report-field"><label>Date</label><span>{{ report.date }}</span></div>
-      <div class="report-field"><label>Location</label><span>{{ report.get_location_display }}</span></div>
-      <div class="report-field"><label>Year</label><span>{{ report.year }}</span></div>
-      <div class="report-field"><label>Volume Number</label><span>{{ report.volume_num }}</span></div>
-      <div class="report-field"><label>No. of Deeds</label><span>{{ report.num_of_deed }}</span></div>
-      <div class="report-field"><label>No. of Pages</label><span>{{ report.num_of_page }}</span></div>
-    </div>
-    <div class="status-row">
-      <span class="status-pill {% if report.pdf_deed %}yes{% else %}no{% endif %}">PDF: {% if report.pdf_deed %}✓ Done{% else %}✗ Pending{% endif %}</span>
-      <span class="status-pill {% if report.indexing %}yes{% else %}no{% endif %}">Indexing: {% if report.indexing %}✓ Done{% else %}✗ Pending{% endif %}</span>
-      <span class="status-pill {% if report.uploading %}yes{% else %}no{% endif %}">Uploading: {% if report.uploading %}✓ Done{% else %}✗ Pending{% endif %}</span>
-      <span class="status-pill {% if report.metadata %}yes{% else %}no{% endif %}">Metadata: {% if report.metadata %}✓ Done{% else %}✗ Pending{% endif %}</span>
-    </div>
-    <a href="{% url 'update_daily_report' report.pk %}" class="btn-update">Edit This Report →</a>
   </div>
   {% endif %}
 
-  <!-- REPORT NOT FOUND -->
   {% if not_found %}
-  <div class="not-found-card">
-    <div class="not-found-icon">🔎</div>
-    <h3>Record Not Found</h3>
-    <p>
-      No report found for <strong>Year: {{ year }}</strong>, <strong>Volume: {{ volume_num }}</strong>,
-      <strong>Location: {{ location }}</strong>.<br/>
-      Would you like to add this report to the database?
-    </p>
-    <div class="not-found-actions">
-      <a href="{% url 'add_daily_report' %}?year={{ year }}&volume_num={{ volume_num }}&location={{ location }}&next={% url 'update_report_search' %}%3Fyear={{ year }}%26volume_num={{ volume_num }}%26location={{ location }}" class="btn-add">
-        ✚ Yes, Add This Report
-      </a>
-      <a href="{% url 'update_report_search' %}" class="btn-cancel">Search Again</a>
+  <div class="card portal-card border border-warning-subtle text-center">
+    <div class="card-body py-5">
+      <i class="bi bi-search display-5 text-warning"></i>
+      <h4 class="fw-bold mt-3">Report Not Found</h4>
+      <p class="text-muted">No report matches year <strong>{{ year }}</strong>, volume <strong>{{ volume_num }}</strong>, and the selected location.</p>
+      <div class="d-flex flex-column flex-sm-row justify-content-center gap-2">
+        <a href="{% url 'add_daily_report' %}?year={{ year|urlencode }}&volume_num={{ volume_num|urlencode }}&location={{ location|urlencode }}" class="btn btn-ngs"><i class="bi bi-plus-circle me-1"></i> Add Report</a>
+        <a href="{% url 'update_report_search' %}" class="btn btn-outline-secondary">Search Again</a>
+      </div>
     </div>
   </div>
   {% endif %}
-
-</div>
+</main>
 </body>
 </html>

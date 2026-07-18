@@ -1,0 +1,33 @@
+:root {
+  --ngs-navy: #1f2935;
+  --ngs-navy-light: #34495e;
+  --ngs-gold: #c2a56d;
+  --ngs-bg: #f2f4f8;
+  --ngs-text: #2c3947;
+  --ngs-muted: #6b7280;
+}
+* { box-sizing: border-box; }
+body { min-height: 100vh; background: var(--ngs-bg); color: var(--ngs-text); font-family: "Segoe UI", system-ui, sans-serif; }
+.portal-nav { background: var(--ngs-navy); border-bottom: 2px solid var(--ngs-gold); }
+.portal-brand { color: #fff; font-weight: 700; text-decoration: none; }
+.portal-brand img { width: 38px; height: 38px; border: 2px solid var(--ngs-gold); border-radius: 50%; object-fit: cover; }
+.portal-shell { max-width: 1100px; margin: 0 auto; padding: 32px 16px 60px; }
+.portal-hero { background: linear-gradient(135deg, var(--ngs-navy), var(--ngs-navy-light)); color: #fff; border-radius: 16px; padding: 24px; box-shadow: 0 10px 30px rgba(31, 41, 53, .14); }
+.portal-card { border: 0; border-radius: 16px; box-shadow: 0 4px 18px rgba(31, 41, 53, .08); overflow: hidden; }
+.portal-card .card-body { padding: 28px; }
+.section-title { font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ngs-muted); }
+.form-label { font-size: .8rem; font-weight: 700; color: var(--ngs-text); }
+.form-control, .form-select { min-height: 44px; border-radius: 9px; border-color: #d8dee7; }
+.form-control:focus, .form-select:focus { border-color: var(--ngs-gold); box-shadow: 0 0 0 .2rem rgba(194, 165, 109, .18); }
+.workflow-box { background: #f8fafc; border: 1px solid #e4e9ef; border-radius: 12px; padding: 14px; }
+.workflow-option { min-height: 46px; display: flex; align-items: center; gap: 9px; background: #fff; border: 1px solid #e1e6ec; border-radius: 9px; padding: 10px 12px; }
+.btn-ngs { background: linear-gradient(135deg, var(--ngs-navy), var(--ngs-navy-light)); color: #fff; border: 0; border-radius: 9px; font-weight: 700; padding: 11px 20px; }
+.btn-ngs:hover { background: var(--ngs-navy-light); color: #fff; }
+.result-field { background: #f8fafc; border-radius: 9px; padding: 12px 14px; height: 100%; }
+.result-field small { display: block; color: var(--ngs-muted); font-weight: 700; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 4px; }
+.errorlist { color: #b42318; font-size: .8rem; list-style: none; margin: 5px 0 0; padding: 0; }
+@media (max-width: 576px) {
+  .portal-shell { padding-top: 18px; }
+  .portal-hero { padding: 20px; }
+  .portal-card .card-body { padding: 20px; }
+}
