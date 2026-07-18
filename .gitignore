@@ -3,6 +3,10 @@ __pycache__/
 db.sqlite3
 .env
 staticfiles/
+media/
 *.log
 .DS_Store
 env/
+.venv/
+venv/
+secret.txt

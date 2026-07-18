@@ -1,6 +1,7 @@
 import os
 import dj_database_url
 from pathlib import Path
+from django.templatetags.static import static as static_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -11,6 +12,9 @@ DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 ALLOWED_HOSTS = ['narasimhaglobal.com', 'www.narasimhaglobal.com', '*.up.railway.app', '*']
 
 INSTALLED_APPS = [
+    'unfold',
+    'unfold.contrib.filters',
+    'unfold.contrib.forms',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -94,3 +98,34 @@ CSRF_TRUSTED_ORIGINS = [
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/login/'
+
+# ── ADMIN UI (django-unfold, Tailwind-based) ──
+UNFOLD = {
+    "SITE_TITLE": "NGS Admin",
+    "SITE_HEADER": "Narasimha Global",
+    "SITE_SYMBOL": "business_center",
+    "SHOW_HISTORY": True,
+    "SHOW_VIEW_ON_SITE": True,
+    "STYLES": [
+        lambda request: static_url("core/css/admin-premium.css"),
+    ],
+    "COLORS": {
+        "primary": {
+            "50": "240 253 244",
+            "100": "220 252 231",
+            "200": "187 247 208",
+            "300": "134 239 172",
+            "400": "74 222 128",
+            "500": "34 197 94",
+            "600": "22 163 74",
+            "700": "21 128 61",
+            "800": "22 101 52",
+            "900": "20 83 45",
+            "950": "5 46 22",
+        },
+    },
+    "SIDEBAR": {
+        "show_search": True,
+        "show_all_applications": True,
+    },
+}

@@ -1,0 +1,187 @@
+/* ============================================================
+   NGS Admin — Premium UI/UX animations & polish
+   Loaded on top of the django-unfold (Tailwind) admin theme.
+   ============================================================ */
+
+/* ---------- Page entrance ---------- */
+@keyframes ngs-fade-up {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ngs-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes ngs-scale-in {
+    from { opacity: 0; transform: scale(.97); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+/* Main content slides up softly on every page load */
+main, #content, .content {
+    animation: ngs-fade-up .45s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+/* Header fades in */
+header {
+    animation: ngs-fade-in .5s ease both;
+}
+
+/* ---------- Staggered reveal for dashboard cards / modules ---------- */
+main .flex.flex-col > .border,
+main .grid > div,
+fieldset {
+    animation: ngs-fade-up .5s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+main .grid > div:nth-child(1) { animation-delay: .03s; }
+main .grid > div:nth-child(2) { animation-delay: .08s; }
+main .grid > div:nth-child(3) { animation-delay: .13s; }
+main .grid > div:nth-child(4) { animation-delay: .18s; }
+main .grid > div:nth-child(5) { animation-delay: .23s; }
+main .grid > div:nth-child(6) { animation-delay: .28s; }
+
+/* ---------- Cards & panels ---------- */
+main .border.rounded,
+main .border.rounded-md,
+main [class*="rounded"][class*="border"],
+main [class*="shadow"] {
+    transition: box-shadow .3s ease, transform .3s ease, border-color .3s ease;
+}
+
+/* Gentle lift on hover for card-like blocks on the dashboard */
+main a[class*="border"]:hover,
+main .grid > div:hover {
+    box-shadow: 0 10px 30px -12px rgba(22, 101, 52, .25);
+}
+
+/* ---------- Tables ---------- */
+tbody tr {
+    transition: background-color .18s ease, box-shadow .18s ease;
+}
+
+tbody tr:hover {
+    background-color: rgba(34, 197, 94, .06) !important;
+    box-shadow: inset 3px 0 0 0 rgb(34 197 94);
+}
+
+.dark tbody tr:hover {
+    background-color: rgba(34, 197, 94, .09) !important;
+}
+
+thead th {
+    transition: color .2s ease, background-color .2s ease;
+}
+
+/* ---------- Buttons & links ---------- */
+button,
+a,
+input[type="submit"],
+.button {
+    transition: background-color .2s ease, color .2s ease,
+                border-color .2s ease, box-shadow .25s ease,
+                transform .18s ease, opacity .2s ease;
+}
+
+button:hover,
+input[type="submit"]:hover,
+.button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px -6px rgba(22, 101, 52, .45);
+}
+
+button:active,
+input[type="submit"]:active,
+.button:active {
+    transform: translateY(0) scale(.98);
+    box-shadow: none;
+}
+
+/* ---------- Form controls ---------- */
+input, select, textarea {
+    transition: border-color .2s ease, box-shadow .25s ease, background-color .2s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, .18);
+}
+
+/* Checkbox / radio pop */
+input[type="checkbox"], input[type="radio"] {
+    transition: transform .15s ease, box-shadow .2s ease;
+}
+
+input[type="checkbox"]:checked, input[type="radio"]:checked {
+    animation: ngs-scale-in .18s ease;
+}
+
+input[type="checkbox"]:hover, input[type="radio"]:hover {
+    transform: scale(1.08);
+}
+
+/* ---------- Sidebar navigation ---------- */
+aside a {
+    transition: background-color .2s ease, color .2s ease,
+                padding-left .2s ease, transform .2s ease;
+}
+
+aside a:hover {
+    transform: translateX(3px);
+}
+
+/* ---------- Messages / alerts slide in ---------- */
+ul.messagelist li,
+.messagelist li,
+[role="alert"] {
+    animation: ngs-fade-up .4s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+/* ---------- Pagination ---------- */
+.paginator a {
+    transition: background-color .2s ease, color .2s ease, transform .15s ease;
+}
+
+.paginator a:hover {
+    transform: translateY(-1px);
+}
+
+/* ---------- Login page polish ---------- */
+#login-form, form[action*="login"] {
+    animation: ngs-scale-in .5s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+/* ---------- Custom scrollbar (WebKit) ---------- */
+::-webkit-scrollbar {
+    width: 9px;
+    height: 9px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(34, 197, 94, .35);
+    border-radius: 8px;
+    transition: background .2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(22, 163, 74, .6);
+}
+
+/* ---------- Smooth theme (light/dark) switching ---------- */
+html, body {
+    transition: background-color .3s ease, color .3s ease;
+}
+
+/* ---------- Reduced motion accessibility ---------- */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+    }
+}

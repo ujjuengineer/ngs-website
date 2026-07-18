@@ -1,14 +1,76 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin, TabularInline
+from unfold.contrib.filters.admin import (
+    ChoicesDropdownFilter,
+    DropdownFilter,
+    RangeDateFilter,
+    RelatedDropdownFilter,
+)
 from .models import ContactMessage, CompanyCertificate, DailyReport, PDFRecord, IndexingRecord, UploadingRecord, QCRecord, MetadataRecord
 from .utils import sync_workflow_records
 from django.urls import reverse
 from django.utils.html import format_html
 
+
+class PremiumAdmin(ModelAdmin):
+    """Shared responsive list controls for all admin pages."""
+
+    list_per_page = 25
+    list_max_show_all = 100
+    list_filter_submit = True
+    list_filter_sheet = False
+    show_full_result_count = False
+
+
+class ReportYearDropdownFilter(DropdownFilter):
+    title = "year"
+    parameter_name = "year"
+
+    def lookups(self, request, model_admin):
+        years = DailyReport.objects.order_by("-year").values_list("year", flat=True).distinct()
+        return [(year, year) for year in years if year]
+
+    def queryset(self, request, queryset):
+        return queryset.filter(year=self.value()) if self.value() else queryset
+
+
+class RelatedReportYearDropdownFilter(ReportYearDropdownFilter):
+    parameter_name = "daily_report__year"
+
+    def queryset(self, request, queryset):
+        return (
+            queryset.filter(daily_report__year=self.value())
+            if self.value()
+            else queryset
+        )
+
+
+class CertificateTypeDropdownFilter(DropdownFilter):
+    title = "certificate title"
+    parameter_name = "certificate_name"
+
+    def lookups(self, request, model_admin):
+        names = (
+            CompanyCertificate.objects.order_by("certificate_name")
+            .values_list("certificate_name", flat=True)
+            .distinct()
+        )
+        return [(name, name) for name in names if name]
+
+    def queryset(self, request, queryset):
+        return (
+            queryset.filter(certificate_name=self.value())
+            if self.value()
+            else queryset
+        )
+
+
 @admin.register(ContactMessage)
-class ContactMessageAdmin(admin.ModelAdmin):
+class ContactMessageAdmin(PremiumAdmin):
     list_display = ('name', 'email', 'phone', 'subject', 'created_at', 'is_read')
-    list_filter = ('is_read', 'created_at')
+    list_filter = ('is_read', ('created_at', RangeDateFilter))
     search_fields = ('name', 'email', 'subject')
+    search_help_text = "Search by name, email, or subject"
     readonly_fields = ('created_at',)
     actions = ['mark_as_read']
 
@@ -19,13 +81,17 @@ class ContactMessageAdmin(admin.ModelAdmin):
 
 
 @admin.register(CompanyCertificate)
-class CompanyCertificateAdmin(admin.ModelAdmin):
+class CompanyCertificateAdmin(PremiumAdmin):
     # Removed 'expiry_date' from the end of this list
     list_display = ('certificate_number', 'recipient_name', 'certificate_name', 'issue_date')
     
     list_display_links = ('certificate_number', 'recipient_name')
     search_fields = ('recipient_name', 'certificate_number', 'certificate_name')
-    list_filter = ('issue_date', 'certificate_name')
+    search_help_text = "Search by recipient, certificate number, or title"
+    list_filter = (
+        CertificateTypeDropdownFilter,
+        ('issue_date', RangeDateFilter),
+    )
     
     # Cleaned up the fieldsets layout to remove the dates breakdown
     fieldsets = (
@@ -43,27 +109,27 @@ class CompanyCertificateAdmin(admin.ModelAdmin):
 # --- Optional: Tabular Inlines ---
 # This lets administrators view and edit the sub-records directly at the bottom
 # of the DailyReport page without leaving the screen!
-class PDFRecordInline(admin.TabularInline):
+class PDFRecordInline(TabularInline):
     model = PDFRecord
     extra = 0
     fields = ('created_by', 'name', 'created_at')
 
-class IndexingRecordInline(admin.TabularInline):
+class IndexingRecordInline(TabularInline):
     model = IndexingRecord
     extra = 0
     fields = ('created_by', 'name', 'created_at')
 
-class UploadingRecordInline(admin.TabularInline):
+class UploadingRecordInline(TabularInline):
     model = UploadingRecord
     extra = 0
     fields = ('created_by', 'name', 'created_at')
 
-class QCRecordInline(admin.TabularInline):
+class QCRecordInline(TabularInline):
     model = QCRecord
     extra = 0
     fields = ('created_by', 'name', 'created_at')
 
-class MetadataRecordInline(admin.TabularInline):
+class MetadataRecordInline(TabularInline):
     model = MetadataRecord
     extra = 0
     fields = ('created_by', 'name', 'created_at')
@@ -71,10 +137,19 @@ class MetadataRecordInline(admin.TabularInline):
 
 # --- Main DailyReport Admin ---
 @admin.register(DailyReport)
-class DailyReportAdmin(admin.ModelAdmin):
+class DailyReportAdmin(PremiumAdmin):
     list_display = ('id', 'year', 'volume_num', 'location', 'name', 'pdf_deed', 'indexing', 'uploading', 'QC', 'metadata', 'created_at')
-    list_filter = ('location', 'year', 'pdf_deed', 'indexing', 'uploading', 'QC', 'metadata')
+    list_filter = (
+        ('location', ChoicesDropdownFilter),
+        ReportYearDropdownFilter,
+        'pdf_deed',
+        'indexing',
+        'uploading',
+        'QC',
+        'metadata',
+    )
     search_fields = ('name', 'year', 'volume_num')
+    search_help_text = "Search by employee, year, or volume number"
 
     
     # Embed the inline tables nicely at the bottom of the edit layout
@@ -102,10 +177,17 @@ class DailyReportAdmin(admin.ModelAdmin):
 #     search_fields = ('name', 'daily_report__volume_num')
 
 @admin.register(PDFRecord)
-class PDFRecordAdmin(admin.ModelAdmin):
+class PDFRecordAdmin(PremiumAdmin):
     # 1. Swap 'daily_report' with our new custom method 'link_to_daily_report'
     list_display = ('link_to_daily_report', 'name', 'created_at')
     search_fields = ('name', 'daily_report__year', 'created_by__username')
+    search_help_text = "Search by employee, year, or username"
+    list_filter = (
+        RelatedReportYearDropdownFilter,
+        ('daily_report__location', ChoicesDropdownFilter),
+        ('created_by', RelatedDropdownFilter),
+        ('created_at', RangeDateFilter),
+    )
 
     def link_to_daily_report(self, obj):
         """
@@ -124,9 +206,16 @@ class PDFRecordAdmin(admin.ModelAdmin):
     link_to_daily_report.admin_order_field = "daily_report"
 
 @admin.register(IndexingRecord)
-class IndexingRecordAdmin(admin.ModelAdmin):
+class IndexingRecordAdmin(PremiumAdmin):
     list_display = ('link_to_daily_report', 'created_by', 'name', 'created_at')
     search_fields = ('name', 'daily_report__year', 'created_by__username')
+    search_help_text = "Search by employee, year, or username"
+    list_filter = (
+        RelatedReportYearDropdownFilter,
+        ('daily_report__location', ChoicesDropdownFilter),
+        ('created_by', RelatedDropdownFilter),
+        ('created_at', RangeDateFilter),
+    )
 
     def link_to_daily_report(self, obj):
         """
@@ -145,9 +234,16 @@ class IndexingRecordAdmin(admin.ModelAdmin):
     link_to_daily_report.admin_order_field = "daily_report"
 
 @admin.register(UploadingRecord)
-class UploadingRecordAdmin(admin.ModelAdmin):
+class UploadingRecordAdmin(PremiumAdmin):
     list_display = ('link_to_daily_report', 'created_by', 'name', 'created_at')
     search_fields = ('name', 'daily_report__year', 'created_by__username')
+    search_help_text = "Search by employee, year, or username"
+    list_filter = (
+        RelatedReportYearDropdownFilter,
+        ('daily_report__location', ChoicesDropdownFilter),
+        ('created_by', RelatedDropdownFilter),
+        ('created_at', RangeDateFilter),
+    )
 
     def link_to_daily_report(self, obj):
         """
@@ -166,9 +262,16 @@ class UploadingRecordAdmin(admin.ModelAdmin):
     link_to_daily_report.admin_order_field = "daily_report"
 
 @admin.register(QCRecord)
-class QCRecordAdmin(admin.ModelAdmin):
+class QCRecordAdmin(PremiumAdmin):
     list_display = ('link_to_daily_report', 'created_by', 'name', 'created_at')
     search_fields = ('name', 'daily_report__year', 'created_by__username')
+    search_help_text = "Search by employee, year, or username"
+    list_filter = (
+        RelatedReportYearDropdownFilter,
+        ('daily_report__location', ChoicesDropdownFilter),
+        ('created_by', RelatedDropdownFilter),
+        ('created_at', RangeDateFilter),
+    )
 
     def link_to_daily_report(self, obj):
         """
@@ -187,9 +290,16 @@ class QCRecordAdmin(admin.ModelAdmin):
     link_to_daily_report.admin_order_field = "daily_report"
 
 @admin.register(MetadataRecord)
-class MetadataRecordAdmin(admin.ModelAdmin):
+class MetadataRecordAdmin(PremiumAdmin):
     list_display = ('link_to_daily_report', 'created_by', 'name', 'created_at')
     search_fields =('name', 'daily_report__year', 'created_by__username')
+    search_help_text = "Search by employee, year, or username"
+    list_filter = (
+        RelatedReportYearDropdownFilter,
+        ('daily_report__location', ChoicesDropdownFilter),
+        ('created_by', RelatedDropdownFilter),
+        ('created_at', RangeDateFilter),
+    )
 
     def link_to_daily_report(self, obj):
         """
