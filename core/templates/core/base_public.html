@@ -279,9 +279,80 @@
     }
     .group:hover .brand-logo { transform: scale(1.06); }
 
+    /* Toast */
+    #toast-stack {
+      position: fixed; top: 1.1rem; right: 1.1rem; z-index: 9999;
+      display: flex; flex-direction: column; gap: 0.65rem;
+      width: min(380px, calc(100vw - 1.5rem));
+      pointer-events: none;
+    }
+    .toast {
+      pointer-events: auto;
+      display: flex; align-items: flex-start; gap: 0.75rem;
+      padding: 0.95rem 1rem;
+      border-radius: 1rem;
+      background: rgba(18,24,38,0.92);
+      border: 1px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+      color: #fff;
+      transform: translateX(110%);
+      opacity: 0;
+      transition: transform 0.35s cubic-bezier(.22,1,.36,1), opacity 0.35s ease;
+    }
+    .toast.show { transform: translateX(0); opacity: 1; }
+    .toast.hide { transform: translateX(110%); opacity: 0; }
+    .toast-success { border-color: rgba(34,197,94,0.35); }
+    .toast-error { border-color: rgba(239,68,68,0.4); }
+    .toast-warning { border-color: rgba(234,179,8,0.4); }
+    .toast-info { border-color: rgba(194,165,109,0.4); }
+    .toast-icon {
+      width: 2rem; height: 2rem; border-radius: 0.65rem;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .toast-success .toast-icon { background: rgba(34,197,94,0.15); color: #4ade80; }
+    .toast-error .toast-icon { background: rgba(239,68,68,0.15); color: #f87171; }
+    .toast-warning .toast-icon { background: rgba(234,179,8,0.15); color: #facc15; }
+    .toast-info .toast-icon { background: rgba(194,165,109,0.15); color: #C2A56D; }
+    .toast-body { flex: 1; min-width: 0; }
+    .toast-title { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.55; margin-bottom: 0.15rem; }
+    .toast-msg { font-size: 0.9rem; line-height: 1.4; font-weight: 500; }
+    .toast-close {
+      background: transparent; border: 0; color: rgba(255,255,255,0.45);
+      cursor: pointer; padding: 0; line-height: 1;
+    }
+    .toast-close:hover { color: #fff; }
+
+    .nav-dropdown { position: relative; }
+    .nav-dropdown-menu {
+      position: absolute; top: calc(100% + 0.75rem); left: 50%; transform: translateX(-50%) translateY(6px);
+      min-width: 220px; padding: 0.5rem;
+      border-radius: 1rem;
+      background: rgba(18,24,38,0.96);
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.45);
+      opacity: 0; visibility: hidden; pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+      z-index: 60;
+    }
+    .nav-dropdown:hover .nav-dropdown-menu,
+    .nav-dropdown:focus-within .nav-dropdown-menu,
+    .nav-dropdown.open .nav-dropdown-menu {
+      opacity: 1; visibility: visible; pointer-events: auto; transform: translateX(-50%) translateY(0);
+    }
+    .nav-dropdown-menu a {
+      display: flex; align-items: center; gap: 0.55rem;
+      padding: 0.7rem 0.85rem; border-radius: 0.7rem;
+      color: rgba(255,255,255,0.75); font-size: 0.86rem; font-weight: 600;
+      text-decoration: none; transition: background 0.15s ease, color 0.15s ease;
+    }
+    .nav-dropdown-menu a:hover { background: rgba(255,255,255,0.06); color: #fff; }
+    .nav-dropdown-menu .material-symbols-outlined { font-size: 1.1rem; color: #C2A56D; }
+
     @media (prefers-reduced-motion: reduce) {
       .reveal { opacity: 1; transform: none; transition: none; }
       .animate-floaty, .animate-marquee, .animate-pulseGlow { animation: none !important; }
+      .toast { transition: none; }
     }
     {% block extra_css %}{% endblock %}
   </style>
@@ -303,10 +374,29 @@
       <a class="nav-link {% if active_nav == 'services' %}is-active{% endif %}" href="{% url 'services' %}">Services</a>
       <a class="nav-link {% if active_nav == 'process' %}is-active{% endif %}" href="{% url 'process' %}">Process</a>
       <a class="nav-link {% if active_nav == 'contact' %}is-active{% endif %}" href="{% url 'contact' %}">Contact</a>
+      {% if user.is_authenticated %}
+      <div class="nav-dropdown">
+        <button type="button" class="nav-link inline-flex items-center gap-1" id="portalMenuBtn" aria-haspopup="true">
+          Portal <span class="material-symbols-outlined text-base">expand_more</span>
+        </button>
+        <div class="nav-dropdown-menu" role="menu">
+          <a href="{% url 'add_daily_report' %}"><span class="material-symbols-outlined">edit_note</span> Add Daily Report</a>
+          <a href="{% url 'add_daily_report_bulk' %}"><span class="material-symbols-outlined">playlist_add</span> Bulk Report Entry</a>
+          <a href="{% url 'update_report_search' %}"><span class="material-symbols-outlined">sync</span> Update Report</a>
+          <a href="{% url 'report_list' %}"><span class="material-symbols-outlined">assessment</span> My Reports</a>
+          {% if user.is_staff or user.is_superuser %}
+          <a href="/admin/"><span class="material-symbols-outlined">admin_panel_settings</span> Admin Panel</a>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
     </nav>
     <div class="hidden lg:flex items-center gap-3">
       {% if user.is_authenticated %}
-        <a class="btn-outline !py-2.5 !px-5" href="{% url 'logout' %}">Logout</a>
+        {% if user.is_staff or user.is_superuser %}
+          <a class="btn-outline !py-2.5 !px-4" href="/admin/">Admin</a>
+        {% endif %}
+        <a class="btn-solid !py-2.5 !px-5" href="{% url 'logout' %}">Logout</a>
       {% else %}
         <a class="btn-solid !py-2.5 !px-5" href="{% url 'login' %}">Login</a>
       {% endif %}
@@ -322,6 +412,14 @@
     <a class="block py-3 font-semibold {% if active_nav == 'process' %}text-white{% else %}text-white/55{% endif %}" href="{% url 'process' %}">Process</a>
     <a class="block py-3 font-semibold {% if active_nav == 'contact' %}text-white{% else %}text-white/55{% endif %}" href="{% url 'contact' %}">Contact</a>
     {% if user.is_authenticated %}
+      <p class="pt-3 pb-1 text-[11px] font-bold tracking-[0.14em] uppercase text-brass">Staff Portal</p>
+      <a class="block py-2.5 font-semibold text-white/70" href="{% url 'add_daily_report' %}">Add Daily Report</a>
+      <a class="block py-2.5 font-semibold text-white/70" href="{% url 'add_daily_report_bulk' %}">Bulk Report Entry</a>
+      <a class="block py-2.5 font-semibold text-white/70" href="{% url 'update_report_search' %}">Update Report</a>
+      <a class="block py-2.5 font-semibold text-white/70" href="{% url 'report_list' %}">My Reports</a>
+      {% if user.is_staff or user.is_superuser %}
+      <a class="block py-2.5 font-semibold text-white/70" href="/admin/">Admin Panel</a>
+      {% endif %}
       <a class="block py-3 font-semibold text-brass" href="{% url 'logout' %}">Logout</a>
     {% else %}
       <a class="block py-3 font-semibold text-brass" href="{% url 'login' %}">Login</a>
@@ -330,14 +428,15 @@
 </header>
 {% endif %}
 
+<div id="toast-stack" aria-live="polite" aria-atomic="true"></div>
 {% if messages %}
-<div class="site-wrap px-5 md:px-8 pt-4 space-y-2 w-full">
-  {% for message in messages %}
-  <div class="glass rounded-2xl px-4 py-3 text-sm {% if message.tags == 'error' %}!border-red-400/40 text-red-300{% else %}text-white{% endif %}">
-    {{ message }}
-  </div>
-  {% endfor %}
-</div>
+<script id="django-toasts" type="application/json">
+[
+{% for message in messages %}
+  {"level": "{{ message.tags|default:'info'|escapejs }}", "text": "{{ message|escapejs }}"}{% if not forloop.last %},{% endif %}
+{% endfor %}
+]
+</script>
 {% endif %}
 
 <main class="flex-grow">
@@ -394,6 +493,15 @@
         mobileMenu.classList.contains('hidden') ? 'menu' : 'close';
     });
   }
+
+  const portalMenuBtn = document.getElementById('portalMenuBtn');
+  if (portalMenuBtn) {
+    portalMenuBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      portalMenuBtn.closest('.nav-dropdown')?.classList.toggle('open');
+    });
+  }
+
   const reveals = document.querySelectorAll('.reveal');
   if (reveals.length && 'IntersectionObserver' in window) {
     const io = new IntersectionObserver((entries) => {
@@ -403,6 +511,70 @@
   } else {
     reveals.forEach((el) => el.classList.add('visible'));
   }
+
+  /* Toast system */
+  (function () {
+    const stack = document.getElementById('toast-stack');
+    if (!stack) return;
+
+    const ICONS = {
+      success: 'check_circle',
+      error: 'error',
+      warning: 'warning',
+      info: 'info',
+      debug: 'bug_report',
+    };
+    const TITLES = {
+      success: 'Success',
+      error: 'Error',
+      warning: 'Warning',
+      info: 'Info',
+      debug: 'Debug',
+    };
+
+    function normalizeLevel(tags) {
+      const t = (tags || 'info').toLowerCase();
+      if (t.includes('error')) return 'error';
+      if (t.includes('success')) return 'success';
+      if (t.includes('warning')) return 'warning';
+      if (t.includes('debug')) return 'debug';
+      return 'info';
+    }
+
+    window.showToast = function (text, level) {
+      const type = normalizeLevel(level);
+      const el = document.createElement('div');
+      el.className = `toast toast-${type}`;
+      el.innerHTML = `
+        <div class="toast-icon"><span class="material-symbols-outlined text-[1.15rem]">${ICONS[type] || ICONS.info}</span></div>
+        <div class="toast-body">
+          <div class="toast-title">${TITLES[type] || 'Info'}</div>
+          <div class="toast-msg"></div>
+        </div>
+        <button type="button" class="toast-close" aria-label="Dismiss"><span class="material-symbols-outlined text-base">close</span></button>
+      `;
+      el.querySelector('.toast-msg').textContent = text;
+      const close = () => {
+        el.classList.remove('show');
+        el.classList.add('hide');
+        setTimeout(() => el.remove(), 320);
+      };
+      el.querySelector('.toast-close').addEventListener('click', close);
+      stack.appendChild(el);
+      requestAnimationFrame(() => el.classList.add('show'));
+      setTimeout(close, 4500);
+    };
+
+    const raw = document.getElementById('django-toasts');
+    if (raw) {
+      try {
+        const items = JSON.parse(raw.textContent || '[]');
+        items.forEach((item, i) => {
+          setTimeout(() => window.showToast(item.text, item.level), i * 120);
+        });
+      } catch (e) { /* ignore */ }
+    }
+  })();
 </script>
 {% block extra_js %}{% endblock %}
 </body>

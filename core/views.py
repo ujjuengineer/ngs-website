@@ -177,8 +177,10 @@ def contact(request):
 
 # ── AUTH: LOGIN ──
 def login_view(request):
-    # Already logged in → go home
+    # Already logged in → send admin to admin panel, others home
     if request.user.is_authenticated:
+        if request.user.is_staff or request.user.is_superuser:
+            return redirect('/admin/')
         return redirect('home')
 
     if request.method == 'POST':
@@ -188,11 +190,24 @@ def login_view(request):
 
         if user is not None:
             login(request, user)
-            # Redirect to the page they were trying to access, or home
-            next_url = request.GET.get('next', '/')
-            return redirect(next_url)
-        else:
-            messages.error(request, 'Invalid username or password. Please try again.')
+            display_name = user.get_full_name().strip() or user.username
+
+            # Prefer an explicit safe next URL when present
+            next_url = request.GET.get('next', '').strip()
+            if next_url.startswith('/') and not next_url.startswith('//'):
+                messages.success(request, f'Welcome back, {display_name}! Login successful.')
+                return redirect(next_url)
+
+            # Admin / staff with admin access → Django admin
+            if user.is_staff or user.is_superuser:
+                messages.success(request, f'Welcome, {display_name}! Opening admin panel.')
+                return redirect('/admin/')
+
+            # Regular staff / scanners → public site with portal nav
+            messages.success(request, f'Welcome back, {display_name}! Login successful.')
+            return redirect('home')
+
+        messages.error(request, 'Invalid username or password. Please try again.')
 
     return render(request, 'core/login.html', {
         'active_nav': 'login',
