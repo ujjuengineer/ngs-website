@@ -101,20 +101,32 @@
         setTimeout(openDrawer, 60);
     }
 
-    // Close any open <details class="ngs-dr-export"> menu when clicking outside
-    // or pressing Escape — mirrors the earlier Alpine dropdown UX.
+    // Close any open header <details> dropdown when clicking outside / Esc.
+    // Also accordion: only one dropdown open at a time.
     function bindNativeDetailsAutoClose() {
+        var selector = "details.ngs-dr-dd, details.ngs-dr-export";
+
         document.addEventListener("click", function (evt) {
-            document.querySelectorAll("details.ngs-dr-export[open]").forEach(function (el) {
+            document.querySelectorAll(selector + "[open]").forEach(function (el) {
                 if (!el.contains(evt.target)) {
                     el.removeAttribute("open");
                 }
             });
         });
+
         document.addEventListener("keydown", function (evt) {
             if (evt.key !== "Escape") return;
-            document.querySelectorAll("details.ngs-dr-export[open]").forEach(function (el) {
+            document.querySelectorAll(selector + "[open]").forEach(function (el) {
                 el.removeAttribute("open");
+            });
+        });
+
+        document.querySelectorAll(selector).forEach(function (el) {
+            el.addEventListener("toggle", function () {
+                if (!el.open) return;
+                document.querySelectorAll(selector + "[open]").forEach(function (other) {
+                    if (other !== el) other.removeAttribute("open");
+                });
             });
         });
     }

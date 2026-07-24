@@ -565,6 +565,31 @@ class DailyReportAdmin(PremiumAdmin):
             {"label": "Metadata", "done": meta_done, "pct": _pct(meta_done), "icon": "bookmark_added"},
         ]
         extra_context["dr_district_chips"] = district_chips
+        # Dropdown options for all three districts (counts from filtered set when possible)
+        chip_map = {c["code"]: c for c in district_chips}
+        # Prefer unfiltered totals for the district picker so users always see all options
+        try:
+            base_qs = self.get_queryset(request)
+            all_counts = {
+                row["district"]: row["count"]
+                for row in base_qs.exclude(district="")
+                .values("district")
+                .annotate(count=models.Count("id"))
+            }
+        except Exception:
+            all_counts = {c["code"]: c["count"] for c in district_chips}
+
+        district_options = []
+        for code, label in DailyReport.DISTRICT_CHOICES:
+            district_options.append({
+                "code": code,
+                "label": label,
+                "count": all_counts.get(code, 0),
+                "active": request.GET.get("district__exact") == code,
+                "url": self._param_url(request, patch={"district__exact": code}),
+            })
+        extra_context["dr_district_options"] = district_options
+        extra_context["dr_district_all_url"] = self._param_url(request, drop=["district__exact"])
         extra_context["dr_add_url"] = reverse("admin:core_dailyreport_add")
         extra_context["dr_total"] = total
 
