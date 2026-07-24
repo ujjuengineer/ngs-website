@@ -443,32 +443,35 @@ class DailyReportAdmin(PremiumAdmin):
     page_cell.short_description = "Page"
     page_cell.admin_order_field = "num_of_page"
 
-    def _stage_badge(self, done, letter):
+    def _stage_badge(self, done, icon, label):
         cls = "ngs-dr-stage ngs-dr-stage-done" if done else "ngs-dr-stage ngs-dr-stage-todo"
         return format_html(
-            '<span class="{}" title="{}"><span class="ngs-dr-stage-dot"></span>{}</span>',
+            '<span class="{}" title="{} — {}">'
+            '<span class="material-symbols-outlined ngs-dr-stage-icon" aria-hidden="true">{}</span>'
+            '</span>',
             cls,
-            "Completed" if done else "Pending",
-            letter,
+            label,
+            "Done" if done else "Pending",
+            icon,
         )
 
     def pdf_badge(self, obj):
-        return self._stage_badge(obj.pdf_deed, "PDF")
+        return self._stage_badge(obj.pdf_deed, "docs", "PDF")
     pdf_badge.short_description = "PDF"
     pdf_badge.admin_order_field = "pdf_deed"
 
     def indexing_badge(self, obj):
-        return self._stage_badge(obj.indexing, "IDX")
+        return self._stage_badge(obj.indexing, "list", "Indexing")
     indexing_badge.short_description = "Indexing"
     indexing_badge.admin_order_field = "indexing"
 
     def uploading_badge(self, obj):
-        return self._stage_badge(obj.uploading, "UP")
+        return self._stage_badge(obj.uploading, "database_upload", "Uploading")
     uploading_badge.short_description = "Uploading"
     uploading_badge.admin_order_field = "uploading"
 
     def qc_badge(self, obj):
-        return self._stage_badge(obj.QC, "QC")
+        return self._stage_badge(obj.QC, "list_alt_check", "QC")
     qc_badge.short_description = "QC"
     qc_badge.admin_order_field = "QC"
 
