@@ -5,7 +5,11 @@
 
 {% block extra_css %}
 .login-shell {
-  min-height: calc(100vh - 200px);
+  min-height: calc(100vh - 160px);
+  padding-bottom: max(2rem, env(safe-area-inset-bottom));
+}
+@media (max-width: 480px) {
+  .login-shell { padding-top: 2rem; padding-bottom: 2rem; }
 }
 .auth-input {
   width: 100%;
@@ -36,19 +40,19 @@
 {% endblock %}
 
 {% block content %}
-<section class="login-shell relative flex items-center justify-center px-5 py-16 overflow-hidden">
+<section class="login-shell relative flex items-center justify-center px-4 sm:px-5 py-10 sm:py-16 overflow-hidden">
   <div class="absolute inset-0 bg-gradient-to-br from-ink via-[#0e1524] to-[#1a2740]"></div>
   <div class="orb w-[28rem] h-[28rem] bg-brass/20 top-10 -left-20 animate-floaty"></div>
   <div class="orb w-80 h-80 bg-sky-400/15 bottom-0 right-0" style="animation-delay:1s"></div>
 
   <div class="relative w-full max-w-md reveal">
-    <div class="glass-dark rounded-3xl p-8 md:p-10">
-      <div class="text-center mb-10">
+    <div class="glass-dark rounded-2xl md:rounded-3xl p-6 sm:p-8 md:p-10">
+      <div class="text-center mb-8 sm:mb-10">
         <a href="{% url 'home' %}" class="inline-flex items-center gap-3 mb-6">
           <img class="brand-logo !w-12 !h-12" src="{% static 'core/images/logo.jpeg' %}" alt="NGS logo" width="48" height="48" />
           <span class="font-display text-2xl font-bold text-white">NGS</span>
         </a>
-        <h1 class="font-display text-3xl font-bold text-white mb-2">Staff Access</h1>
+        <h1 class="font-display text-2xl sm:text-3xl font-bold text-white mb-2">Staff Access</h1>
         <p class="text-sm text-white/45">Secure authentication portal</p>
       </div>
 

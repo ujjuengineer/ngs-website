@@ -4,7 +4,7 @@
 
 {% block content %}
 <!-- HERO -->
-<section class="relative min-h-[88vh] flex items-end md:items-center overflow-hidden">
+<section class="relative min-h-[78vh] sm:min-h-[85vh] md:min-h-[88vh] flex items-end md:items-center overflow-hidden">
   <div class="absolute inset-0">
     <img class="w-full h-full object-cover scale-105" alt="Institutional digitization"
          src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdT2EXoQ4W2O0UHQkdTsajaLUUamR8TPgzyNxweGJHftYg7iMB1BcMPIrHWG2xb-4yUXGhdKPeu661zXpheVJImAtROcQ-WRfr2JjflaD3ahUYkCwtbD50DOqPcqgFTilu9G253SQTsWUuF1gnJTrG2Ml9TtbxCtUsJSve0_U0VaSD58gAuU6eA0EHwlPvE-71_so1Myyd8oFu852Pf-wvYhWqH36zvYJVlAbIxRzQY2bxRMjnsL0GgmWBfgTDl749FBZhTHpNb4k" />
@@ -13,19 +13,19 @@
     <div class="orb w-96 h-96 bg-sky-400/20 bottom-0 right-0" style="animation-delay:1.2s"></div>
   </div>
 
-  <div class="relative site-wrap px-5 md:px-8 pb-16 pt-28 md:py-28 w-full">
+  <div class="relative site-wrap px-4 sm:px-5 md:px-8 pb-12 pt-24 sm:pb-16 sm:pt-28 md:py-28 w-full">
     <div class="max-w-3xl">
-      <div class="label-pill !bg-white/10 !text-brass-soft !border-white/15 mb-6 reveal">
+      <div class="label-pill !bg-white/10 !text-brass-soft !border-white/15 mb-4 sm:mb-6 reveal">
         <span class="dot"></span> Patna · Bihar · Institutional Services
       </div>
-      <p class="text-brass font-semibold tracking-[0.18em] uppercase text-xs mb-4 reveal reveal-delay-1">Narasimha Global Service &amp; Solution</p>
-      <h1 class="font-display text-4xl sm:text-5xl md:text-6xl lg:text-[4.25rem] leading-[1.05] text-white font-bold mb-6 reveal reveal-delay-1">
+      <p class="text-brass font-semibold tracking-[0.14em] sm:tracking-[0.18em] uppercase text-[0.65rem] sm:text-xs mb-3 sm:mb-4 reveal reveal-delay-1">Narasimha Global Service &amp; Solution</p>
+      <h1 class="font-display text-[2rem] leading-tight sm:text-5xl md:text-6xl lg:text-[4.25rem] lg:leading-[1.05] text-white font-bold mb-4 sm:mb-6 reveal reveal-delay-1">
         Bihar's Digital<br class="hidden sm:block" /> Transformation Partner
       </h1>
-      <p class="text-lg md:text-xl text-white/65 max-w-xl mb-10 reveal reveal-delay-2">
+      <p class="text-base sm:text-lg md:text-xl text-white/65 max-w-xl mb-7 sm:mb-10 reveal reveal-delay-2">
         Document digitization, skilled manpower, and IT solutions built for government-grade reliability.
       </p>
-      <div class="flex flex-wrap gap-3 reveal reveal-delay-3">
+      <div class="flex flex-wrap gap-3 reveal reveal-delay-3 btn-row sm:flex-row">
         <a class="btn-solid !bg-white !text-ink hover:!shadow-xl" href="{% url 'services' %}">Explore Services</a>
         <a class="btn-glass" href="{% url 'contact' %}">Contact Us</a>
       </div>
@@ -54,41 +54,41 @@
 <!-- About teaser + bento -->
 <section class="section-pad">
   <div class="site-wrap">
-    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-5 sm:gap-6 mb-8 sm:mb-12">
       <div class="max-w-2xl reveal">
         <span class="label-pill mb-4"><span class="dot"></span> Who we are</span>
-        <h2 class="font-display text-3xl md:text-5xl font-bold text-white leading-tight">Modernizing records for institutions that cannot afford error.</h2>
+        <h2 class="font-display text-2xl sm:text-3xl md:text-5xl font-bold text-white leading-tight">Modernizing records for institutions that cannot afford error.</h2>
       </div>
-      <a class="btn-outline shrink-0 reveal reveal-delay-1" href="{% url 'about' %}">About NGS <span class="material-symbols-outlined text-base">arrow_forward</span></a>
+      <a class="btn-outline shrink-0 reveal reveal-delay-1 w-full sm:w-auto" href="{% url 'about' %}">About NGS <span class="material-symbols-outlined text-base">arrow_forward</span></a>
     </div>
 
     <div class="bento">
-      <div class="glass-panel rounded-3xl p-8 md:p-10 bento-lg min-h-[280px] reveal">
-        <span class="material-symbols-outlined text-4xl text-white mb-6">scanner</span>
-        <h3 class="font-display text-2xl md:text-3xl font-bold text-white mb-3">Document Digitization</h3>
-        <p class="text-white/55 leading-relaxed mb-8 max-w-md">High-resolution scanning, searchable PDFs, and QC for legacy government registers and land records.</p>
+      <div class="glass-panel rounded-2xl md:rounded-3xl p-5 sm:p-8 md:p-10 bento-lg min-h-0 sm:min-h-[280px] reveal">
+        <span class="material-symbols-outlined text-3xl sm:text-4xl text-white mb-4 sm:mb-6">scanner</span>
+        <h3 class="font-display text-xl sm:text-2xl md:text-3xl font-bold text-white mb-3">Document Digitization</h3>
+        <p class="text-sm sm:text-base text-white/55 leading-relaxed mb-6 sm:mb-8 max-w-md">High-resolution scanning, searchable PDFs, and QC for legacy government registers and land records.</p>
         <a href="{% url 'services' %}" class="inline-flex items-center gap-2 text-sm font-bold text-brass hover:gap-3 transition-all">Learn more <span class="material-symbols-outlined text-sm">arrow_forward</span></a>
       </div>
-      <div class="glass-panel rounded-3xl p-8 bento-md min-h-[280px] reveal reveal-delay-1 flex flex-col justify-between bg-gradient-to-br from-ink to-ink-mid !border-white/10 text-white hover:!border-brass/40">
+      <div class="glass-panel rounded-2xl md:rounded-3xl p-5 sm:p-8 bento-md min-h-0 sm:min-h-[280px] reveal reveal-delay-1 flex flex-col justify-between bg-gradient-to-br from-ink to-ink-mid !border-white/10 text-white hover:!border-brass/40">
         <div>
-          <span class="material-symbols-outlined text-4xl text-brass mb-6">group</span>
-          <h3 class="font-display text-2xl font-bold mb-3">Manpower Supply</h3>
-          <p class="text-white/60 leading-relaxed">Trained operators and technicians deployed across Bihar offices.</p>
+          <span class="material-symbols-outlined text-3xl sm:text-4xl text-brass mb-4 sm:mb-6">group</span>
+          <h3 class="font-display text-xl sm:text-2xl font-bold mb-3">Manpower Supply</h3>
+          <p class="text-sm sm:text-base text-white/60 leading-relaxed">Trained operators and technicians deployed across Bihar offices.</p>
         </div>
-        <a href="{% url 'services' %}" class="inline-flex items-center gap-2 text-sm font-bold text-brass-soft">Explore <span class="material-symbols-outlined text-sm">arrow_forward</span></a>
+        <a href="{% url 'services' %}" class="inline-flex items-center gap-2 text-sm font-bold text-brass-soft mt-6">Explore <span class="material-symbols-outlined text-sm">arrow_forward</span></a>
       </div>
-      <div class="glass-panel rounded-3xl p-7 bento-third reveal reveal-delay-2">
+      <div class="glass-panel rounded-2xl md:rounded-3xl p-5 sm:p-7 bento-third reveal reveal-delay-2">
         <span class="material-symbols-outlined text-3xl text-white mb-4">dns</span>
-        <h3 class="font-display text-xl font-bold text-white mb-2">IT Solutions</h3>
+        <h3 class="font-display text-lg sm:text-xl font-bold text-white mb-2">IT Solutions</h3>
         <p class="text-sm text-white/55">Networks, hardware, and ongoing support.</p>
       </div>
-      <div class="glass-panel rounded-3xl p-7 bento-third reveal reveal-delay-3 flex flex-col justify-center items-center text-center">
-        <p class="font-display text-4xl font-bold text-white">10+</p>
+      <div class="glass-panel rounded-2xl md:rounded-3xl p-5 sm:p-7 bento-third reveal reveal-delay-3 flex flex-col justify-center items-center text-center">
+        <p class="font-display text-3xl sm:text-4xl font-bold text-white">10+</p>
         <p class="text-xs font-bold tracking-[0.14em] uppercase text-white/45 mt-2">Districts</p>
       </div>
-      <div class="glass-panel rounded-3xl p-7 bento-third reveal reveal-delay-4 flex flex-col justify-center">
+      <div class="glass-panel rounded-2xl md:rounded-3xl p-5 sm:p-7 bento-third reveal reveal-delay-4 flex flex-col justify-center">
         <p class="text-[11px] font-bold tracking-[0.12em] uppercase text-brass mb-2">Workflow</p>
-        <p class="font-display text-lg font-bold text-white leading-snug">Paper → Scan → PDF → Metadata → Portal</p>
+        <p class="font-display text-base sm:text-lg font-bold text-white leading-snug">Paper → Scan → PDF → Metadata → Portal</p>
       </div>
     </div>
   </div>
@@ -97,20 +97,20 @@
 <!-- Process preview -->
 <section class="section-pad pt-0">
   <div class="site-wrap">
-    <div class="glass rounded-[2rem] p-8 md:p-12 relative overflow-hidden reveal">
+    <div class="glass rounded-[1.25rem] md:rounded-[2rem] p-5 sm:p-8 md:p-12 relative overflow-hidden reveal">
       <div class="orb w-64 h-64 bg-brass/20 -top-20 -right-10"></div>
-      <div class="relative flex flex-col lg:flex-row lg:items-center gap-10">
+      <div class="relative flex flex-col lg:flex-row lg:items-center gap-8 lg:gap-10">
         <div class="lg:w-2/5">
           <span class="label-pill mb-4"><span class="dot"></span> Process</span>
-          <h2 class="font-display text-3xl md:text-4xl font-bold text-white mb-4">From Paper to Portal</h2>
-          <p class="text-white/55 mb-6">A five-step, auditable pipeline designed for high-stakes archives.</p>
+          <h2 class="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 sm:mb-4">From Paper to Portal</h2>
+          <p class="text-white/55 mb-5 sm:mb-6 text-sm sm:text-base">A five-step, auditable pipeline designed for high-stakes archives.</p>
           <a class="btn-solid" href="{% url 'process' %}">View process</a>
         </div>
-        <div class="lg:w-3/5 grid grid-cols-2 sm:grid-cols-5 gap-3">
+        <div class="lg:w-3/5 grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3">
           {% for step, label in process_steps %}
-          <div class="rounded-2xl bg-white/5 border border-white/10 p-4 text-center hover:-translate-y-1 transition-transform duration-300">
-            <p class="text-[10px] font-bold tracking-[0.16em] text-brass mb-2">{{ step }}</p>
-            <p class="text-xs font-bold text-white leading-snug">{{ label }}</p>
+          <div class="rounded-xl sm:rounded-2xl bg-white/5 border border-white/10 p-3 sm:p-4 text-center hover:-translate-y-1 transition-transform duration-300">
+            <p class="text-[10px] font-bold tracking-[0.16em] text-brass mb-1 sm:mb-2">{{ step }}</p>
+            <p class="text-[11px] sm:text-xs font-bold text-white leading-snug">{{ label }}</p>
           </div>
           {% endfor %}
         </div>
@@ -122,22 +122,22 @@
 <!-- Bento gallery -->
 <section class="section-pad pt-0">
   <div class="site-wrap">
-    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-5 sm:gap-6 mb-8 sm:mb-10">
       <div class="max-w-2xl reveal">
         <span class="label-pill mb-4"><span class="dot"></span> Gallery</span>
-        <h2 class="font-display text-3xl md:text-5xl font-bold text-white leading-tight">Inside the NGS workflow</h2>
-        <p class="text-white/55 mt-4 max-w-xl">From secure collection floors to scanning labs and portal delivery — a visual look at how we digitize institutional archives.</p>
+        <h2 class="font-display text-2xl sm:text-3xl md:text-5xl font-bold text-white leading-tight">Inside the NGS workflow</h2>
+        <p class="text-sm sm:text-base text-white/55 mt-3 sm:mt-4 max-w-xl">From secure collection floors to scanning labs and portal delivery — a visual look at how we digitize institutional archives.</p>
       </div>
     </div>
 
     <div class="bento">
       {% for tile in gallery %}
-      <div class="bento-tile {{ tile.span }} reveal {% if forloop.counter0 > 0 and forloop.counter0 < 5 %}reveal-delay-{{ forloop.counter0 }}{% endif %}" {% if tile.tall %}style="min-height: 320px"{% endif %}>
+      <div class="bento-tile {{ tile.span }} reveal {% if forloop.counter0 > 0 and forloop.counter0 < 5 %}reveal-delay-{{ forloop.counter0 }}{% endif %}" style="min-height: {% if tile.tall %}240px{% else %}200px{% endif %}">
         <img src="{{ tile.src }}" alt="{{ tile.alt }}" loading="lazy" />
         <div class="tile-overlay">
           <div>
             <p class="text-[10px] font-bold tracking-[0.14em] uppercase text-brass mb-1">{{ tile.tag }}</p>
-            <p class="font-display text-lg font-bold text-white">{{ tile.title }}</p>
+            <p class="font-display text-base sm:text-lg font-bold text-white">{{ tile.title }}</p>
           </div>
         </div>
       </div>
@@ -149,13 +149,15 @@
 <!-- CTA -->
 <section class="section-pad pt-0">
   <div class="site-wrap">
-    <div class="relative rounded-[2rem] overflow-hidden reveal">
+    <div class="relative rounded-[1.25rem] md:rounded-[2rem] overflow-hidden reveal">
       <div class="absolute inset-0 bg-gradient-to-br from-ink via-ink-mid to-[#24304a]"></div>
       <div class="orb w-80 h-80 bg-brass/25 top-0 right-10"></div>
-      <div class="relative px-8 py-16 md:px-14 md:py-20 text-center">
-        <h2 class="font-display text-3xl md:text-5xl font-bold text-white mb-4">Ready to modernize your archives?</h2>
-        <p class="text-white/60 max-w-xl mx-auto mb-8">Tell us about your department or project — we'll map the right digitization and staffing plan.</p>
-        <a class="btn-glass !border-brass/50 hover:!bg-brass/20" href="{% url 'contact' %}">Get in touch</a>
+      <div class="relative px-5 py-12 sm:px-8 sm:py-16 md:px-14 md:py-20 text-center">
+        <h2 class="font-display text-2xl sm:text-3xl md:text-5xl font-bold text-white mb-4">Ready to modernize your archives?</h2>
+        <p class="text-white/60 max-w-xl mx-auto mb-8 text-sm sm:text-base">Tell us about your department or project — we'll map the right digitization and staffing plan.</p>
+        <div class="btn-row inline-flex flex-wrap justify-center gap-3 w-full sm:w-auto">
+          <a class="btn-glass !border-brass/50 hover:!bg-brass/20" href="{% url 'contact' %}">Get in touch</a>
+        </div>
       </div>
     </div>
   </div>

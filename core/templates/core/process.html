@@ -12,38 +12,56 @@
   background: linear-gradient(180deg, transparent, rgba(194,165,109,0.5), transparent);
   transform: translateX(-50%);
 }
-@media (max-width: 767px) { .process-rail { display: none; } }
+@media (max-width: 767px) {
+  .process-rail { display: none; }
+  .process-step-card { text-align: left !important; }
+  .process-mobile-icon {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 999px;
+    background: rgba(194,165,109,0.12);
+    border: 1px solid rgba(194,165,109,0.3);
+    margin-bottom: 0.85rem;
+  }
+}
+.process-mobile-icon { display: none; }
 {% endblock %}
 
 {% block content %}
-<section class="section-pad text-center relative">
+<section class="section-pad text-center relative !pt-10 sm:!pt-16">
   <div class="orb w-96 h-96 bg-brass/15 top-0 left-1/2 -translate-x-1/2"></div>
   <div class="site-wrap relative max-w-3xl mx-auto reveal">
     <span class="label-pill mb-5"><span class="dot"></span> Workflow</span>
-    <h1 class="font-display text-4xl md:text-6xl font-bold text-white mb-5">From Paper to Portal</h1>
-    <p class="text-lg text-white/55">A meticulous, secure, auditable digitization process for high-stakes institutional archives.</p>
+    <h1 class="font-display text-[2rem] sm:text-4xl md:text-6xl font-bold text-white mb-4 sm:mb-5 leading-tight">From Paper to Portal</h1>
+    <p class="text-base sm:text-lg text-white/55">A meticulous, secure, and fully auditable digitization process for high-stakes institutional archives.</p>
   </div>
 </section>
 
 <section class="section-pad pt-0">
   <div class="site-wrap relative">
     <div class="process-rail hidden md:block"></div>
-    <div class="space-y-10 md:space-y-16">
+    <div class="space-y-8 md:space-y-16">
       {% for step in steps %}
-      <div class="relative grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12 items-center reveal {% if forloop.counter|divisibleby:2 %}{% endif %}">
-        <div class="{% if forloop.counter|divisibleby:2 %}md:order-2{% endif %} glass-panel rounded-3xl p-8 {% if forloop.counter|divisibleby:2 %}md:text-left{% else %}md:text-right{% endif %}">
+      <div class="relative grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-12 items-center reveal">
+        <div class="{% if forloop.counter|divisibleby:2 %}md:order-2 md:text-left{% else %}md:text-right{% endif %} process-step-card glass-panel rounded-2xl md:rounded-3xl p-5 sm:p-8 w-full relative z-10">
+          <div class="process-mobile-icon text-brass">
+            <span class="material-symbols-outlined">{{ step.icon }}</span>
+          </div>
           <p class="text-[11px] font-bold tracking-[0.16em] uppercase text-brass mb-2">Step {{ step.num }}</p>
-          <h2 class="font-display text-2xl md:text-3xl font-bold text-white mb-3">{{ step.title }}</h2>
-          <p class="text-white/55 leading-relaxed">{{ step.desc }}</p>
+          <h2 class="font-display text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2 sm:mb-3">{{ step.title }}</h2>
+          <p class="text-sm sm:text-base text-white/55 leading-relaxed">{{ step.desc }}</p>
         </div>
         <div class="hidden md:flex absolute left-1/2 -translate-x-1/2 w-12 h-12 rounded-full glass items-center justify-center z-10 border-brass/30 shadow-lift">
           <span class="material-symbols-outlined text-white">{{ step.icon }}</span>
         </div>
-        <div class="{% if forloop.counter|divisibleby:2 %}md:order-1{% endif %} rounded-3xl overflow-hidden min-h-[220px] border border-white/60 shadow-glass group">
+        <div class="{% if forloop.counter|divisibleby:2 %}md:order-1{% endif %} rounded-2xl md:rounded-3xl overflow-hidden min-h-[180px] sm:min-h-[220px] border border-white/10 shadow-glass group">
           {% if step.image %}
-          <img class="w-full h-56 md:h-64 object-cover grayscale group-hover:grayscale-0 transition-all duration-500" alt="{{ step.title }}" src="{{ step.image }}" />
+          <img class="w-full h-48 sm:h-56 md:h-64 object-cover grayscale group-hover:grayscale-0 transition-all duration-500" alt="{{ step.title }}" src="{{ step.image }}" loading="lazy" />
           {% else %}
-          <div class="h-56 md:h-64 bg-gradient-to-br from-ink-soft to-ink-mid flex flex-col items-center justify-center text-white/40 border border-white/10">
+          <div class="h-48 sm:h-56 md:h-64 bg-gradient-to-br from-ink-soft to-ink-mid flex flex-col items-center justify-center text-white/40 border border-white/10">
             <span class="material-symbols-outlined text-5xl mb-2">{{ step.icon }}</span>
             <span class="text-[11px] font-bold tracking-[0.14em] uppercase">{{ step.badge }}</span>
           </div>
@@ -57,13 +75,13 @@
 
 <section class="section-pad pt-0">
   <div class="site-wrap">
-    <div class="relative rounded-[2rem] overflow-hidden text-center reveal">
+    <div class="relative rounded-[1.25rem] md:rounded-[2rem] overflow-hidden text-center reveal">
       <div class="absolute inset-0 bg-gradient-to-br from-ink via-ink-mid to-[#2a3548]"></div>
       <div class="orb w-72 h-72 bg-brass/25 top-0 right-10"></div>
-      <div class="relative px-8 py-16">
-        <h2 class="font-display text-3xl md:text-4xl font-bold text-white mb-4">Ready to digitize your archives?</h2>
-        <p class="text-white/60 mb-8 max-w-lg mx-auto">Request a customized assessment and secure quotation.</p>
-        <div class="flex flex-wrap justify-center gap-3">
+      <div class="relative px-5 py-12 sm:px-8 sm:py-16">
+        <h2 class="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">Ready to digitize your archives?</h2>
+        <p class="text-white/60 mb-8 max-w-lg mx-auto text-sm sm:text-base">Request a customized assessment and secure quotation.</p>
+        <div class="flex flex-col sm:flex-row justify-center gap-3 btn-row">
           <a class="btn-glass !border-brass/40" href="{% url 'contact' %}">Get a quote</a>
           <a class="btn-glass" href="{% url 'contact' %}">Contact us</a>
         </div>

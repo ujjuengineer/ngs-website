@@ -26,8 +26,11 @@ body { min-height: 100vh; background: var(--ngs-bg); color: var(--ngs-text); fon
 .result-field { background: #f8fafc; border-radius: 9px; padding: 12px 14px; height: 100%; }
 .result-field small { display: block; color: var(--ngs-muted); font-weight: 700; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 4px; }
 .errorlist { color: #b42318; font-size: .8rem; list-style: none; margin: 5px 0 0; padding: 0; }
+.table-wrap, .table-responsive { -webkit-overflow-scrolling: touch; }
 @media (max-width: 576px) {
-  .portal-shell { padding-top: 18px; }
-  .portal-hero { padding: 20px; }
-  .portal-card .card-body { padding: 20px; }
+  .portal-shell { padding-top: 18px; padding-left: 12px; padding-right: 12px; }
+  .portal-hero { padding: 18px; }
+  .portal-card .card-body { padding: 16px; }
+  .btn-ngs { width: 100%; }
+  .portal-nav .navbar-brand { font-size: 0.95rem; }
 }
