@@ -33,6 +33,21 @@
   </div>
   {% endif %}
 
+  {% if dr_district_chips %}
+  <div class="ngs-dr-chips">
+    <span class="ngs-dr-chips-label">By district</span>
+    <div class="ngs-dr-chips-row">
+      {% for chip in dr_district_chips %}
+      <a class="ngs-dr-chip" href="?district={{ chip.code }}" style="--i:{{ forloop.counter0 }}">
+        <span class="ngs-dr-chip-name">{{ chip.label }}</span>
+        <span class="ngs-dr-chip-count">{{ chip.count }}</span>
+        <span class="ngs-dr-chip-pct">{{ chip.pct }}%</span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
   {% if dr_pipeline %}
   <div class="ngs-dr-pipeline">
     <div class="ngs-dr-pipeline-head">

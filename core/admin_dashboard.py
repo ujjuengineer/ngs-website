@@ -26,7 +26,6 @@ def _top_n_with_other(rows, label_key, value_key, n=6, other_label="Other"):
 
 def dashboard_callback(request, context):
     reports = DailyReport.objects.all()
-    location_labels = dict(DailyReport.LOCATION_CHOICES)
 
     total_reports = reports.count()
     agg = reports.aggregate(
@@ -46,17 +45,20 @@ def dashboard_callback(request, context):
         ("Pending", reports.filter(pdf_deed=False).count()),
     ]
 
-    location_rows = [
-        {
-            "label": location_labels.get(row["location"], row["location"].title()),
-            "count": row["count"],
-        }
-        for row in reports.values("location")
+    district_labels = dict(DailyReport.DISTRICT_CHOICES)
+    district_rows = list(
+        reports.exclude(district="")
+        .values("district")
         .annotate(count=Count("id"))
         .order_by("-count")
-    ]
-    loc_labels, loc_counts = _top_n_with_other(location_rows, "label", "count", n=6)
-    chart_locations = {"labels": loc_labels, "counts": loc_counts}
+    )
+    chart_districts = {
+        "labels": [
+            district_labels.get(row["district"], row["district"].title())
+            for row in district_rows
+        ],
+        "counts": [row["count"] for row in district_rows],
+    }
 
     thirty_days_ago = timezone.localdate() - timedelta(days=29)
     timeline_rows = list(
@@ -98,7 +100,7 @@ def dashboard_callback(request, context):
 
     unread_messages = ContactMessage.objects.filter(is_read=False).count()
     total_certificates = CompanyCertificate.objects.count()
-    active_locations = reports.values("location").distinct().count()
+    active_districts = reports.exclude(district="").values("district").distinct().count()
     done_meta = reports.filter(metadata=True).count()
     completion_pct = round((done_meta / total_reports) * 100) if total_reports else 0
 
@@ -124,8 +126,8 @@ def dashboard_callback(request, context):
                     "icon": "folder_open",
                 },
                 {
-                    "label": "Locations",
-                    "value": _fmt_int(active_locations),
+                    "label": "Districts",
+                    "value": _fmt_int(active_districts),
                     "hint": "active",
                     "icon": "location_on",
                 },
@@ -146,7 +148,7 @@ def dashboard_callback(request, context):
                 "labels": [stage for stage, _ in workflow_stages],
                 "values": [count for _, count in workflow_stages],
             },
-            "chart_locations": chart_locations,
+            "chart_districts": chart_districts,
             "chart_timeline": chart_timeline,
             "chart_employees": chart_employees,
             "chart_years": chart_years,

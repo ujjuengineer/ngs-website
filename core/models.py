@@ -52,6 +52,24 @@ class CompanyCertificate(models.Model):
         return f"{self.certificate_number} - {self.recipient_name}"
     
 
+DISTRICT_CHOICES = [
+    ("GAYA", "Gaya"),
+    ("NALANDA", "Nalanda"),
+    ("DARBHANGA", "Darbhanga"),
+]
+
+LOCATION_TO_DISTRICT = {
+    "SHERGHATI": "GAYA", "TEKARI": "GAYA", "AURANGABAD": "GAYA",
+    "JAHANABAD": "GAYA", "NAWADA": "GAYA",
+    "NALANDA": "NALANDA", "HILSA": "NALANDA",
+    "DARBHANGA": "DARBHANGA", "BAHERA": "DARBHANGA", "KAMTAUL": "DARBHANGA",
+    "BENIPATTI": "DARBHANGA", "PHULPARAS": "DARBHANGA",
+    "JHANJHARPUR": "DARBHANGA", "JAINAGAR": "DARBHANGA", "KHAJAULI": "DARBHANGA",
+    "SAMASTIPUR": "DARBHANGA", "ROSARA": "DARBHANGA",
+    "DALSINGHSARAI": "DARBHANGA", "KISHANPUR": "DARBHANGA",
+}
+
+
 class DailyReport(models.Model):
     LOCATION_CHOICES = [
         ('SHERGHATI', 'Sherghati'),
@@ -75,8 +93,15 @@ class DailyReport(models.Model):
         ('KHAJAULI', 'Khajauli')
     ]
 
+    DISTRICT_CHOICES = DISTRICT_CHOICES
+    LOCATION_TO_DISTRICT = LOCATION_TO_DISTRICT
+
     date = models.DateField(default=timezone.now, verbose_name="Report Date")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Created At', null=True, blank=True)
+    district = models.CharField(
+        max_length=20, choices=DISTRICT_CHOICES,
+        verbose_name="District", blank=True,
+    )
     location = models.CharField(max_length=50, choices=LOCATION_CHOICES, verbose_name="Location")
     name = models.CharField(max_length=255, verbose_name="Employee Name")
     year = models.CharField(max_length=9, verbose_name="Year")
@@ -105,8 +130,10 @@ class DailyReport(models.Model):
     def save(self, *args, **kwargs):
         if self.name:
             self.name = self.name.upper()
-        if not self.pk: 
+        if not self.pk:
             self.scanning = True
+        if self.location:
+            self.district = LOCATION_TO_DISTRICT.get(self.location, self.district or "")
         super().save(*args, **kwargs)
 
     def __str__(self):

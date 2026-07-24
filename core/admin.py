@@ -228,6 +228,7 @@ class DailyReportAdmin(PremiumAdmin):
     )
     list_display_links = ('name',)
     list_filter = (
+        ('district', ChoicesDropdownFilter),
         ('location', ChoicesDropdownFilter),
         ReportYearDropdownFilter,
         'pdf_deed',
@@ -236,8 +237,10 @@ class DailyReportAdmin(PremiumAdmin):
         'QC',
         'metadata',
     )
-    search_fields = ('name', 'year', 'volume_num')
-    search_help_text = "Search by employee, year, or volume number"
+    search_fields = ('name', 'year', 'volume_num', 'district', 'location')
+    search_help_text = "Search by employee, year, volume, district, or location"
+
+    readonly_fields = ('district',)
 
     # Embed the inline tables nicely at the bottom of the edit layout
     inlines = [PDFRecordInline, IndexingRecordInline, UploadingRecordInline, QCRecordInline, MetadataRecordInline]
@@ -274,25 +277,29 @@ class DailyReportAdmin(PremiumAdmin):
     serial_no.short_description = "Sl no"
 
     def district_badge(self, obj):
-        label = obj.get_location_display() if obj.location else "—"
+        label = obj.get_district_display() if obj.district else "—"
         return format_html(
             '<span class="ngs-dr-district">{}</span>',
             label,
         )
     district_badge.short_description = "District"
-    district_badge.admin_order_field = "location"
+    district_badge.admin_order_field = "district"
 
     def archive_location(self, obj):
+        town = obj.get_location_display() if obj.location else "—"
         year = obj.year or "—"
         volume = obj.volume_num or "—"
         return format_html(
-            '<div class="ngs-dr-loc"><span class="ngs-dr-loc-year">{}</span>'
-            '<span class="ngs-dr-loc-vol">Vol {}</span></div>',
+            '<div class="ngs-dr-loc">'
+            '<span class="ngs-dr-loc-year">{}</span>'
+            '<span class="ngs-dr-loc-vol">{} · Vol {}</span>'
+            '</div>',
+            town,
             year,
             volume,
         )
     archive_location.short_description = "Location"
-    archive_location.admin_order_field = "year"
+    archive_location.admin_order_field = "location"
 
     def deed_cell(self, obj):
         val = obj.num_of_deed
@@ -362,7 +369,7 @@ class DailyReportAdmin(PremiumAdmin):
         )
         pages = agg["pages"] or 0
         deeds = agg["deeds"] or 0
-        districts = qs.values("location").distinct().count()
+        districts = qs.exclude(district="").values("district").distinct().count()
         pdf_done = qs.filter(pdf_deed=True).count()
         idx_done = qs.filter(indexing=True).count()
         up_done = qs.filter(uploading=True).count()
@@ -371,6 +378,23 @@ class DailyReportAdmin(PremiumAdmin):
 
         def _pct(part):
             return round((part / total) * 100) if total else 0
+
+        district_label_map = dict(DailyReport.DISTRICT_CHOICES)
+        district_rows = (
+            qs.exclude(district="")
+            .values("district")
+            .annotate(count=models.Count("id"))
+            .order_by("-count")
+        )
+        district_chips = [
+            {
+                "code": row["district"],
+                "label": district_label_map.get(row["district"], row["district"].title()),
+                "count": row["count"],
+                "pct": _pct(row["count"]),
+            }
+            for row in district_rows
+        ]
 
         extra_context["dr_kpis"] = [
             {"label": "Reports", "value": f"{total:,}", "hint": "volumes", "icon": "description"},
@@ -387,6 +411,7 @@ class DailyReportAdmin(PremiumAdmin):
             {"label": "QC", "done": qc_done, "pct": _pct(qc_done), "icon": "task_alt"},
             {"label": "Metadata", "done": meta_done, "pct": _pct(meta_done), "icon": "bookmark_added"},
         ]
+        extra_context["dr_district_chips"] = district_chips
         extra_context["dr_add_url"] = reverse("admin:core_dailyreport_add")
         extra_context["dr_total"] = total
 

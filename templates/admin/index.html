@@ -48,10 +48,10 @@
 
     <article class="ngs-card ngs-tile" style="--i:1">
       <div class="ngs-card-head">
-        <h2 class="ngs-card-title">Locations</h2>
-        <span class="ngs-card-badge">Pie</span>
+        <h2 class="ngs-card-title">Districts</h2>
+        <span class="ngs-card-badge">Donut</span>
       </div>
-      <div id="chart-locations" class="ngs-plot"></div>
+      <div id="chart-districts" class="ngs-plot"></div>
     </article>
 
     <article class="ngs-card ngs-tile" style="--i:2">
@@ -82,7 +82,7 @@
 </div>
 
 {{ chart_workflow|json_script:"ngs-chart-workflow" }}
-{{ chart_locations|json_script:"ngs-chart-locations" }}
+{{ chart_districts|json_script:"ngs-chart-districts" }}
 {{ chart_timeline|json_script:"ngs-chart-timeline" }}
 {{ chart_employees|json_script:"ngs-chart-employees" }}
 {{ chart_years|json_script:"ngs-chart-years" }}
@@ -203,11 +203,11 @@
       emptyMsg("chart-workflow", "No data");
     }
 
-    var locations = readData("ngs-chart-locations");
-    if (locations && locations.labels.length) {
-      Plotly.react("chart-locations", [pieTrace(locations.labels, locations.counts, 0)], pieLayout(base), cfg);
+    var districts = readData("ngs-chart-districts");
+    if (districts && districts.labels.length) {
+      Plotly.react("chart-districts", [pieTrace(districts.labels, districts.counts, 0.58)], pieLayout(base), cfg);
     } else {
-      emptyMsg("chart-locations", "No data");
+      emptyMsg("chart-districts", "No data");
     }
 
     var employees = readData("ngs-chart-employees");
@@ -295,7 +295,7 @@
   }
 
   function resizePlots() {
-    ["chart-workflow", "chart-locations", "chart-timeline", "chart-years", "chart-employees"].forEach(function (id) {
+    ["chart-workflow", "chart-districts", "chart-timeline", "chart-years", "chart-employees"].forEach(function (id) {
       var el = document.getElementById(id);
       if (el && el.classList && el.classList.contains("js-plotly-plot")) {
         Plotly.Plots.resize(el);
