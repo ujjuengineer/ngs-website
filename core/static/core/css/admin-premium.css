@@ -409,20 +409,18 @@ html, body {
         grid-auto-rows: minmax(100px, auto);
     }
 
-    /* 1 Workflow | 2 Location */
-    .ngs-bento-charts > .ngs-tile:nth-child(1) { grid-column: span 7; }
-    .ngs-bento-charts > .ngs-tile:nth-child(2) { grid-column: span 5; }
-
-    /* 3 Contributors (tall) | 4 Timeline | 5 Years beside tall */
+    /* Row 1: 3 donut/pie cards */
+    .ngs-bento-charts > .ngs-tile:nth-child(1),
+    .ngs-bento-charts > .ngs-tile:nth-child(2),
     .ngs-bento-charts > .ngs-tile:nth-child(3) {
-        grid-column: span 5;
-        grid-row: span 2;
+        grid-column: span 4;
     }
-    .ngs-bento-charts > .ngs-tile:nth-child(4) { grid-column: span 7; }
-    .ngs-bento-charts > .ngs-tile:nth-child(5) { grid-column: span 7; }
 
-    /* 6 Recent actions full width */
-    .ngs-bento-charts > .ngs-tile:nth-child(6) { grid-column: span 12; }
+    /* Row 2–3: full-width line charts */
+    .ngs-bento-charts > .ngs-tile:nth-child(4),
+    .ngs-bento-charts > .ngs-tile:nth-child(5) {
+        grid-column: span 12;
+    }
 }
 
 .ngs-tile {
@@ -445,26 +443,6 @@ html, body {
     text-align: center;
     font-size: 0.85rem;
     color: var(--ngs-muted);
-}
-
-/* Recent actions inside bento card — flatten Unfold history chrome */
-.ngs-activity-wrap {
-    max-height: 280px;
-    overflow: auto;
-    -webkit-overflow-scrolling: touch;
-}
-
-.ngs-activity-wrap > * {
-    margin: 0 !important;
-    padding: 0 !important;
-    border: 0 !important;
-    box-shadow: none !important;
-    background: transparent !important;
-}
-
-.ngs-activity-wrap h2,
-.ngs-activity-wrap .text-font-important-light {
-    display: none;
 }
 
 @media (max-width: 640px) {
