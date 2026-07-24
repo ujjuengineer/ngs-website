@@ -185,3 +185,28 @@ html, body {
         transition-duration: .01ms !important;
     }
 }
+
+/* ---------- Admin dashboard (Plotly) ---------- */
+.ngs-admin-dashboard .ngs-dash-kpi,
+.ngs-admin-dashboard .ngs-dash-chart {
+    transition: box-shadow .25s ease, transform .25s ease;
+}
+
+.ngs-admin-dashboard .ngs-dash-kpi:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px -14px rgba(22, 163, 74, .35);
+}
+
+.ngs-admin-dashboard .ngs-plot {
+    width: 100%;
+    min-height: 280px;
+}
+
+@media (max-width: 640px) {
+    .ngs-admin-dashboard .ngs-plot {
+        min-height: 260px;
+    }
+    .ngs-admin-dashboard .ngs-dash-kpi .text-2xl {
+        font-size: 1.35rem;
+    }
+}

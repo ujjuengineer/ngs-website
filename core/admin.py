@@ -14,6 +14,8 @@ from .utils import sync_workflow_records
 from django.urls import reverse
 from django.utils.html import format_html
 
+admin.site.index_title = "Dashboard"
+
 
 class PremiumAdmin(ModelAdmin):
     """Shared responsive list controls for all admin pages."""

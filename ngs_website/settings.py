@@ -40,7 +40,7 @@ ROOT_URLCONF = 'ngs_website.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -128,4 +128,5 @@ UNFOLD = {
         "show_search": True,
         "show_all_applications": True,
     },
+    "DASHBOARD_CALLBACK": "core.admin_dashboard.dashboard_callback",
 }
