@@ -571,6 +571,113 @@ html, body {
     color: #fff;
 }
 
+.ngs-dr-btn-ghost {
+    color: var(--dr-text);
+    background: var(--dr-card-bg);
+    border: 1px solid var(--dr-card-border);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    cursor: pointer;
+    position: relative;
+}
+
+.ngs-dr-btn-ghost:hover {
+    transform: translateY(-1px);
+    border-color: rgba(34, 197, 94, 0.45);
+    background: var(--dr-accent-dim);
+    color: var(--dr-text);
+}
+
+.ngs-dr-btn-ghost.is-active {
+    color: var(--dr-accent);
+    border-color: rgba(34, 197, 94, 0.55);
+    background: var(--dr-accent-soft);
+}
+
+.ngs-dr-btn-ghost .material-symbols-outlined {
+    color: var(--dr-accent);
+}
+
+.ngs-dr-btn-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.35rem;
+    height: 1.35rem;
+    padding: 0 0.4rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #16a34a, #15803d);
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    margin-left: 0.2rem;
+    box-shadow: 0 4px 10px -4px rgba(22, 163, 74, 0.6);
+}
+
+/* Hide Unfold's default toolbar Filters trigger + its Apply button.
+ * The hero button is the single entry point; auto-submit removes the need
+ * for an Apply button in the drawer. */
+#filter-form > button[type="submit"] {
+    display: none !important;
+}
+
+/* Give the off-canvas drawer a friendlier look on the daily-report page */
+#changelist-filter {
+    animation: dr-drawer-fade 0.2s ease both;
+}
+
+#changelist-filter > div {
+    max-width: 22rem;
+    width: min(90vw, 22rem);
+    border-radius: 1rem !important;
+    box-shadow: 0 30px 60px -20px rgba(15, 23, 42, 0.35);
+}
+
+#changelist-filter h3 {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.10), rgba(22, 163, 74, 0.02));
+    border-bottom: 1px solid rgba(34, 197, 94, 0.2) !important;
+    letter-spacing: 0.01em;
+    font-size: 0.85rem !important;
+    text-transform: uppercase;
+}
+
+#filter-form label,
+#changelist-filter .filter-form label,
+#changelist-filter h4 {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--dr-muted);
+    margin-top: 0.75rem;
+}
+
+#filter-form select,
+#filter-form input[type="text"],
+#filter-form input[type="date"],
+#filter-form input[type="number"] {
+    width: 100%;
+    padding: 0.5rem 0.65rem !important;
+    border-radius: 0.55rem !important;
+    border: 1px solid var(--dr-card-border) !important;
+    background: var(--dr-card-bg) !important;
+    color: var(--dr-text) !important;
+    font-size: 0.78rem !important;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+#filter-form select:focus,
+#filter-form input:focus {
+    outline: none;
+    border-color: rgba(34, 197, 94, 0.6) !important;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18) !important;
+}
+
+@keyframes dr-drawer-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
 /* KPI strip */
 .ngs-dr-kpi-strip {
     display: grid;

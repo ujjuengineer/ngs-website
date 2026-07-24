@@ -237,6 +237,9 @@ class DailyReportAdmin(PremiumAdmin):
         'QC',
         'metadata',
     )
+    # Open filters in an off-canvas drawer (opened via the hero button)
+    list_filter_sheet = True
+    list_filter_submit = True
     search_fields = ('name', 'year', 'volume_num', 'district', 'location')
     search_help_text = "Search by employee, year, volume, district, or location"
 
@@ -249,6 +252,7 @@ class DailyReportAdmin(PremiumAdmin):
 
     class Media:
         css = {"all": ("core/css/admin-premium.css",)}
+        js = ("core/js/admin-filters-drawer.js",)
 
     # ── Custom columns ─────────────────────────────────────────
     def get_queryset(self, request):
@@ -414,6 +418,13 @@ class DailyReportAdmin(PremiumAdmin):
         extra_context["dr_district_chips"] = district_chips
         extra_context["dr_add_url"] = reverse("admin:core_dailyreport_add")
         extra_context["dr_total"] = total
+
+        # Count active filter params (excluding pagination / ordering / search)
+        _skip = {"p", "o", "q", "all", "e", "_changelist_filters"}
+        extra_context["dr_active_filters"] = sum(
+            1 for key, value in request.GET.items()
+            if key not in _skip and value not in ("", None)
+        )
 
         return super().changelist_view(request, extra_context)
 

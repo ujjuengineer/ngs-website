@@ -11,6 +11,19 @@
       </p>
     </div>
     <div class="ngs-dr-hero-cta">
+      <button
+        id="ngs-dr-filter-btn"
+        type="button"
+        class="ngs-dr-btn ngs-dr-btn-ghost {% if dr_active_filters %}is-active{% endif %}"
+        data-ngs-drawer-trigger
+        x-on:click="filterOpen = true"
+      >
+        <span class="material-symbols-outlined">tune</span>
+        <span class="ngs-dr-btn-label">{% trans "Filters" %}</span>
+        {% if dr_active_filters %}
+        <span class="ngs-dr-btn-count">{{ dr_active_filters }}</span>
+        {% endif %}
+      </button>
       <a class="ngs-dr-btn ngs-dr-btn-primary" href="{{ dr_add_url }}">
         <span class="material-symbols-outlined">add</span>
         {% trans "New report" %}
