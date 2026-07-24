@@ -33,11 +33,33 @@
     }
 
     function openDrawer() {
+        var container = document.querySelector(
+            '#changelist [x-data*="filterOpen"], .changelist-form-container'
+        );
+        if (container && window.Alpine && typeof Alpine.$data === "function") {
+            try {
+                Alpine.$data(container).filterOpen = true;
+                return;
+            } catch (err) {
+                /* fall through */
+            }
+        }
+        // Fallback: click any in-page trigger that still has Alpine binding
+        var btn = document.querySelector('[x-on\\:click="filterOpen = true"]');
+        if (btn) {
+            btn.click();
+        }
+    }
+
+    function bindHeaderFilterButton() {
         var btn = document.getElementById("ngs-dr-filter-btn");
         if (!btn) {
             return;
         }
-        btn.click();
+        btn.addEventListener("click", function (evt) {
+            evt.preventDefault();
+            openDrawer();
+        });
     }
 
     function bindAutoSubmit() {
@@ -134,6 +156,7 @@
     ready(function () {
         hideDefaultFilterTriggers();
         bindAutoSubmit();
+        bindHeaderFilterButton();
         maybeReopenDrawer();
         bindNativeDetailsAutoClose();
     });

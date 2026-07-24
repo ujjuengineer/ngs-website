@@ -1,0 +1,134 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls %}
+
+{% block title %}Daily Reports | {{ site_title|default:_("Django site admin") }}{% endblock %}
+
+{% block content_title %}
+  Daily Reports
+{% endblock %}
+
+{% block content_subtitle %}
+  {% if cl %}
+  <span class="ngs-dr-top-count">
+    · {{ cl.result_count }} result{{ cl.result_count|pluralize }}
+    {% if cl.full_result_count != cl.result_count %}
+      <a href="?{% if cl.is_popup %}_popup=1{% endif %}">(show all)</a>
+    {% endif %}
+  </span>
+  {% endif %}
+{% endblock %}
+
+{# Top bar: Filters drawer + Export + New only #}
+{% block nav-global-side %}
+  <div class="ngs-dr-topbar object-tools" id="ngs-dr-topbar">
+    <button
+      id="ngs-dr-filter-btn"
+      type="button"
+      class="ngs-dr-btn ngs-dr-btn-ghost {% if dr_active_filters %}is-active{% endif %}"
+      data-ngs-drawer-trigger
+    >
+      <span class="material-symbols-outlined">tune</span>
+      <span class="ngs-dr-btn-label">{% trans "Filters" %}</span>
+      {% if dr_active_filters %}
+      <span class="ngs-dr-btn-count">{{ dr_active_filters }}</span>
+      {% endif %}
+    </button>
+
+    <details class="ngs-dr-export ngs-dr-dd">
+      <summary class="ngs-dr-btn ngs-dr-btn-ghost" aria-haspopup="menu">
+        <span class="material-symbols-outlined">download</span>
+        <span class="ngs-dr-btn-label">{% trans "Export" %}</span>
+        <span class="material-symbols-outlined ngs-dr-btn-caret">expand_more</span>
+      </summary>
+      <div class="ngs-dr-menu" role="menu">
+        <a class="ngs-dr-menu-item" href="{% firstof dr_export_csv_url '/admin/core/dailyreport/export/csv/' %}" role="menuitem">
+          <span class="material-symbols-outlined">description</span>
+          <span><strong>CSV</strong></span>
+        </a>
+        <a class="ngs-dr-menu-item" href="{% firstof dr_export_xlsx_url '/admin/core/dailyreport/export/xlsx/' %}" role="menuitem">
+          <span class="material-symbols-outlined">grid_on</span>
+          <span><strong>Excel (.xlsx)</strong></span>
+        </a>
+      </div>
+    </details>
+
+    {% if has_add_permission %}
+    <a class="ngs-dr-btn ngs-dr-btn-primary" href="{{ dr_add_url }}">
+      <span class="material-symbols-outlined">add</span>
+      <span class="ngs-dr-btn-label">{% trans "New" %}</span>
+    </a>
+    {% endif %}
+  </div>
+{% endblock %}
+
+{# Quick filters inside the search / actions toolbar #}
+{% block filters %}
+  <div class="ngs-dr-toolbar-filters" aria-label="Quick filters">
+    {% if dr_range_presets %}
+    <details class="ngs-dr-dd">
+      <summary class="ngs-dr-tb-btn">
+        <span class="material-symbols-outlined">event</span>
+        <span>
+          {% for preset in dr_range_presets %}{% if preset.active %}{{ preset.label }}{% endif %}{% endfor %}
+        </span>
+        <span class="material-symbols-outlined ngs-dr-btn-caret">expand_more</span>
+      </summary>
+      <div class="ngs-dr-menu ngs-dr-menu-sm" role="menu">
+        {% for preset in dr_range_presets %}
+        <a class="ngs-dr-menu-item {% if preset.active %}is-active{% endif %}" href="{{ preset.url }}" role="menuitem">
+          <span>{{ preset.label }}</span>
+          {% if preset.active %}<span class="material-symbols-outlined">check</span>{% endif %}
+        </a>
+        {% endfor %}
+      </div>
+    </details>
+    {% endif %}
+
+    {% if dr_district_options %}
+    <details class="ngs-dr-dd">
+      <summary class="ngs-dr-tb-btn">
+        <span class="material-symbols-outlined">location_on</span>
+        <span>
+          {% for d in dr_district_options %}{% if d.active %}{{ d.label }}{% endif %}{% endfor %}
+          {% if not request.GET.district__exact %}District{% endif %}
+        </span>
+        <span class="material-symbols-outlined ngs-dr-btn-caret">expand_more</span>
+      </summary>
+      <div class="ngs-dr-menu ngs-dr-menu-sm" role="menu">
+        <a class="ngs-dr-menu-item {% if not request.GET.district__exact %}is-active{% endif %}" href="{{ dr_district_all_url }}" role="menuitem">
+          <span>All districts</span>
+          {% if not request.GET.district__exact %}<span class="material-symbols-outlined">check</span>{% endif %}
+        </a>
+        {% for d in dr_district_options %}
+        <a class="ngs-dr-menu-item {% if d.active %}is-active{% endif %}" href="{{ d.url }}" role="menuitem">
+          <span>{{ d.label }} <em class="ngs-dr-menu-count">{{ d.count }}</em></span>
+          {% if d.active %}<span class="material-symbols-outlined">check</span>{% endif %}
+        </a>
+        {% endfor %}
+      </div>
+    </details>
+    {% endif %}
+
+    {% if dr_stage_toggles %}
+    <div class="ngs-dr-tb-stages" role="group" aria-label="Stage filters">
+      {% for stage in dr_stage_toggles %}
+      <a
+        class="ngs-dr-tb-stage {% if stage.active %}is-active{% endif %}"
+        href="{{ stage.url }}"
+        title="{% if stage.active %}Clear {{ stage.label }} filter{% else %}Show {{ stage.label }} done only{% endif %}"
+      >
+        <span class="material-symbols-outlined">{{ stage.icon }}</span>
+      </a>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if dr_active_filters %}
+    <a class="ngs-dr-tb-clear" href="{{ dr_clear_url }}" title="Clear all filters">
+      <span class="material-symbols-outlined">filter_alt_off</span>
+    </a>
+    {% endif %}
+  </div>
+{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}

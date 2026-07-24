@@ -328,6 +328,7 @@ class MetadataRecordInline(TabularInline):
 # --- Main DailyReport Admin ---
 @admin.register(DailyReport)
 class DailyReportAdmin(PremiumAdmin):
+    change_list_template = "admin/core/dailyreport_change_list.html"
     list_before_template = "admin/core/dailyreport_list_header.html"
     list_fullwidth = True
     list_display = (
@@ -408,7 +409,7 @@ class DailyReportAdmin(PremiumAdmin):
             '<span class="ngs-dr-district">{}</span>',
             label,
         )
-    district_badge.short_description = "District"
+    district_badge.short_description = "Dist"
     district_badge.admin_order_field = "district"
 
     def archive_location(self, obj):
@@ -462,12 +463,12 @@ class DailyReportAdmin(PremiumAdmin):
 
     def indexing_badge(self, obj):
         return self._stage_badge(obj.indexing, "list", "Indexing")
-    indexing_badge.short_description = "Indexing"
+    indexing_badge.short_description = "Idx"
     indexing_badge.admin_order_field = "indexing"
 
     def uploading_badge(self, obj):
         return self._stage_badge(obj.uploading, "database_upload", "Uploading")
-    uploading_badge.short_description = "Uploading"
+    uploading_badge.short_description = "Up"
     uploading_badge.admin_order_field = "uploading"
 
     def qc_badge(self, obj):
@@ -495,14 +496,14 @@ class DailyReportAdmin(PremiumAdmin):
             '</div>',
             tone=tone, done=done, total=total, pct=pct,
         )
-    progress_cell.short_description = "Progress"
+    progress_cell.short_description = "%"
 
     def edit_button(self, obj):
-        """Compact edit pill."""
+        """Compact icon-only edit control."""
         url = reverse('admin:core_dailyreport_change', args=[obj.pk])
         return format_html(
-            '<a href="{}" class="ngs-dr-edit">'
-            '<span class="material-symbols-outlined">edit</span>Edit</a>',
+            '<a href="{}" class="ngs-dr-edit" title="Edit">'
+            '<span class="material-symbols-outlined">edit</span></a>',
             url,
         )
     edit_button.short_description = ""
@@ -609,6 +610,9 @@ class DailyReportAdmin(PremiumAdmin):
         # Quick date-range presets that keep other filters intact
         extra_context["dr_range_presets"] = self._build_range_presets(request)
 
+        # Stage quick-toggles for the search toolbar (PDF / Indexing / Uploading / QC)
+        extra_context["dr_stage_toggles"] = self._build_stage_toggles(request)
+
         # Clear-all URL preserves ordering only (drops filters + search + pagination)
         keep = {}
         if request.GET.get("o"):
@@ -701,6 +705,30 @@ class DailyReportAdmin(PremiumAdmin):
             preset("30 days", days=29),
             preset("This year", since=year_start),
         ]
+
+    def _build_stage_toggles(self, request):
+        """Icon toggles: click = filter Done; click again = clear that filter."""
+        stages = [
+            ("pdf_deed__exact", "PDF", "docs"),
+            ("indexing__exact", "Indexing", "list"),
+            ("uploading__exact", "Uploading", "database_upload"),
+            ("QC__exact", "QC", "list_alt_check"),
+        ]
+        toggles = []
+        for key, label, icon in stages:
+            active = request.GET.get(key) == "1"
+            if active:
+                url = self._param_url(request, drop=[key])
+            else:
+                url = self._param_url(request, patch={key: "1"})
+            toggles.append({
+                "key": key,
+                "label": label,
+                "icon": icon,
+                "active": active,
+                "url": url,
+            })
+        return toggles
 
     # ── Bulk export actions (selected rows) ────────────────────
     @admin.action(description="Export selected reports as CSV")

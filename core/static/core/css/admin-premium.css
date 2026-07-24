@@ -480,10 +480,276 @@ html, body {
     --dr-accent-dim: rgba(34, 197, 94, 0.1);
 }
 
-/* Hide Unfold's default "Select Daily Report to change" title — our hero replaces it */
-body.app-core.model-dailyreport #content > h1,
-body.app-core.model-dailyreport .content h1:first-child {
+/* ── Top bar merge: controls live in Unfold header ── */
+.ngs-dr-topbar {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-left: 0.75rem;
+}
+
+.ngs-dr-top-count {
+    font-weight: 500;
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-left: 0.15rem;
+}
+
+html.dark .ngs-dr-top-count {
+    color: #f1f5f9 !important;
+}
+
+.ngs-dr-top-count a {
+    color: #4ade80;
+    text-decoration: none;
+    margin-left: 0.25rem;
+}
+
+/* Dark mode: header title + topbar controls stay white / readable */
+html.dark body.app-core.model-dailyreport #header-inner h1,
+html.dark body.app-core.model-dailyreport #header-inner h1 span,
+html.dark body.app-core.model-dailyreport #header-inner .tracking-tight,
+.dark body.app-core.model-dailyreport #header-inner h1,
+.dark body.app-core.model-dailyreport #header-inner h1 span {
+    color: #ffffff !important;
+}
+
+html.dark body.app-core.model-dailyreport .ngs-dr-topbar .ngs-dr-btn-ghost,
+html.dark body.app-core.model-dailyreport .ngs-dr-topbar .ngs-dr-btn-ghost .ngs-dr-btn-label,
+.dark body.app-core.model-dailyreport .ngs-dr-topbar .ngs-dr-btn-ghost {
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+html.dark body.app-core.model-dailyreport .ngs-dr-topbar .ngs-dr-btn-ghost .material-symbols-outlined,
+.dark body.app-core.model-dailyreport .ngs-dr-topbar .ngs-dr-btn-ghost .material-symbols-outlined {
+    color: #86efac !important;
+}
+
+html.dark body.app-core.model-dailyreport .ngs-dr-topbar .ngs-dr-btn-ghost.is-active,
+.dark body.app-core.model-dailyreport .ngs-dr-topbar .ngs-dr-btn-ghost.is-active {
+    color: #ffffff !important;
+    background: rgba(34, 197, 94, 0.22);
+    border-color: rgba(74, 222, 128, 0.45);
+}
+
+/* Table body text stays white in dark mode */
+html.dark body.app-core.model-dailyreport #result_list td,
+html.dark body.app-core.model-dailyreport #result_list td a,
+html.dark body.app-core.model-dailyreport #result_list .ngs-dr-loc-year,
+html.dark body.app-core.model-dailyreport #result_list .ngs-dr-num,
+html.dark body.app-core.model-dailyreport #result_list .ngs-dr-progress-pct,
+.dark body.app-core.model-dailyreport #result_list td,
+.dark body.app-core.model-dailyreport #result_list td a {
+    color: #ffffff !important;
+}
+
+html.dark body.app-core.model-dailyreport #result_list thead th,
+html.dark body.app-core.model-dailyreport #result_list thead th a,
+.dark body.app-core.model-dailyreport #result_list thead th,
+.dark body.app-core.model-dailyreport #result_list thead th a {
+    color: #ffffff !important;
+}
+
+html.dark body.app-core.model-dailyreport .ngs-dr-kpi-value,
+html.dark body.app-core.model-dailyreport .ngs-dr-pipe-name,
+html.dark body.app-core.model-dailyreport .ngs-dr-pipe-pct,
+.dark body.app-core.model-dailyreport .ngs-dr-kpi-value {
+    color: #ffffff !important;
+}
+
+/* Keep green accents (don't force white on status icons / badges) */
+html.dark body.app-core.model-dailyreport #result_list .ngs-dr-stage-done .ngs-dr-stage-icon,
+html.dark body.app-core.model-dailyreport #result_list .ngs-dr-district,
+html.dark body.app-core.model-dailyreport #result_list .ngs-dr-loc-vol,
+.dark body.app-core.model-dailyreport #result_list .ngs-dr-stage-done .ngs-dr-stage-icon,
+.dark body.app-core.model-dailyreport #result_list .ngs-dr-district {
+    color: #86efac !important;
+}
+
+html.dark body.app-core.model-dailyreport #result_list .ngs-dr-stage-todo .ngs-dr-stage-icon,
+.dark body.app-core.model-dailyreport #result_list .ngs-dr-stage-todo .ngs-dr-stage-icon {
+    color: #64748b !important;
+}
+
+html.dark body.app-core.model-dailyreport #result_list .ngs-dr-loc-vol,
+.dark body.app-core.model-dailyreport #result_list .ngs-dr-loc-vol {
+    color: #cbd5e1 !important;
+}
+
+.ngs-dr-console--embedded {
+    margin-top: 0;
+}
+
+/* Topbar sits in a tight 64px header — keep buttons compact */
+#header-inner .ngs-dr-btn,
+.ngs-dr-topbar .ngs-dr-btn {
+    padding: 0.35rem 0.55rem;
+    font-size: 0.72rem;
+    border-radius: 0.45rem;
+}
+
+#header-inner .ngs-dr-btn .material-symbols-outlined,
+.ngs-dr-topbar .ngs-dr-btn .material-symbols-outlined {
+    font-size: 0.95rem;
+}
+
+#header-inner .ngs-dr-menu,
+.ngs-dr-topbar .ngs-dr-menu {
+    z-index: 80;
+}
+
+/* ── Search toolbar quick filters ── */
+.ngs-dr-toolbar-filters {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-left: auto;
+}
+
+.ngs-dr-tb-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.4rem 0.65rem;
+    border-radius: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #0f172a;
+    background: #fff;
+    border: 1px solid rgba(15, 23, 42, 0.12);
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.ngs-dr-tb-btn::-webkit-details-marker { display: none; }
+.ngs-dr-tb-btn::marker { display: none; }
+
+.ngs-dr-tb-btn .material-symbols-outlined {
+    font-size: 1rem;
+    color: #16a34a;
+}
+
+html.dark .ngs-dr-tb-btn {
+    color: #ffffff;
+    background: rgba(15, 23, 42, 0.65);
+    border-color: rgba(255, 255, 255, 0.14);
+}
+
+html.dark .ngs-dr-tb-btn .material-symbols-outlined {
+    color: #86efac;
+}
+
+.ngs-dr-tb-stages {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem;
+    border-radius: 0.55rem;
+    background: rgba(15, 23, 42, 0.04);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+html.dark .ngs-dr-tb-stages {
+    background: rgba(0, 0, 0, 0.25);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.ngs-dr-tb-stage {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.85rem;
+    height: 1.85rem;
+    border-radius: 0.4rem;
+    color: #64748b;
+    background: transparent;
+    border: 1px solid transparent;
+    text-decoration: none;
+    opacity: 0.55;
+    filter: grayscale(1);
+    transition: opacity 0.15s ease, background 0.15s ease, filter 0.15s ease;
+}
+
+.ngs-dr-tb-stage .material-symbols-outlined {
+    font-size: 16px !important;
+    line-height: 1;
+}
+
+.ngs-dr-tb-stage:hover {
+    opacity: 0.85;
+    background: rgba(34, 197, 94, 0.1);
+    color: #16a34a;
+    filter: none;
+}
+
+.ngs-dr-tb-stage.is-active {
+    opacity: 1;
+    filter: none;
+    color: #16a34a;
+    background: rgba(34, 197, 94, 0.18);
+    border-color: rgba(34, 197, 94, 0.4);
+}
+
+html.dark .ngs-dr-tb-stage {
+    color: #94a3b8;
+}
+
+html.dark .ngs-dr-tb-stage.is-active {
+    color: #4ade80;
+    background: rgba(34, 197, 94, 0.22);
+    border-color: rgba(74, 222, 128, 0.45);
+}
+
+.ngs-dr-tb-clear {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.85rem;
+    height: 1.85rem;
+    border-radius: 0.4rem;
+    color: #f87171;
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.28);
+    text-decoration: none;
+}
+
+.ngs-dr-tb-clear .material-symbols-outlined {
+    font-size: 16px !important;
+}
+
+.ngs-dr-tb-clear:hover {
+    background: rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+}
+
+/* Keep toolbar one row on desktop */
+body.app-core.model-dailyreport #changelist-form > .bg-gray-50 {
+    align-items: center !important;
+    gap: 0.55rem !important;
+    padding: 0.55rem 0.7rem !important;
+}
+
+@media (max-width: 900px) {
+    .ngs-dr-toolbar-filters {
+        width: 100%;
+        margin-left: 0;
+    }
+}
+
+/* Hide leftover default Unfold "add" if any slips through */
+body.app-core.model-dailyreport .object-tools > a.addlink {
     display: none !important;
+}
+
+/* Tighten header bottom margin on this page */
+body.app-core.model-dailyreport #main > .border-b {
+    margin-bottom: 0.75rem !important;
 }
 
 /* Compact the search / actions toolbar */
@@ -1401,102 +1667,112 @@ body.app-core.model-dailyreport #changelist .dark\:bg-gray-800 {
 .dark .ngs-dr-progress-mid .ngs-dr-progress-pct { color: #fcd34d; }
 .dark .ngs-dr-progress-lo .ngs-dr-progress-pct { color: #fca5a5; }
 
-/* Stage icons — full color when done, decolored when pending */
+/* Stage icons — fixed small tiles (never blow up) */
 .ngs-dr-stage {
-    display: inline-flex;
+    display: inline-flex !important;
     align-items: center;
     justify-content: center;
-    width: 2rem;
-    height: 2rem;
-    border-radius: 0.55rem;
+    width: 1.65rem !important;
+    height: 1.65rem !important;
+    min-width: 1.65rem !important;
+    max-width: 1.65rem !important;
+    padding: 0 !important;
+    margin: 0;
+    border-radius: 0.4rem;
     border: 1px solid transparent;
     line-height: 1;
-    transition: transform 0.15s ease, background 0.2s ease, filter 0.2s ease;
+    overflow: hidden;
+    box-sizing: border-box;
+    vertical-align: middle;
 }
 
+body.app-core.model-dailyreport #result_list .ngs-dr-stage-icon.material-symbols-outlined,
+body.app-core.model-dailyreport #result_list .ngs-dr-stage .material-symbols-outlined,
 .ngs-dr-stage-icon {
-    font-size: 1.2rem !important;
-    font-variation-settings: "FILL" 0, "wght" 500, "GRAD" 0, "opsz" 24;
-    line-height: 1;
+    font-size: 16px !important;
+    width: 16px !important;
+    height: 16px !important;
+    line-height: 16px !important;
+    max-width: 16px !important;
+    max-height: 16px !important;
+    overflow: hidden !important;
+    display: block !important;
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 20;
 }
 
-.ngs-dr-stage-dot { display: none; }
+.ngs-dr-stage-dot { display: none !important; }
 
-/* Done = full brand color */
 .ngs-dr-stage-done {
     color: #16a34a;
-    background: rgba(34, 197, 94, 0.18);
-    border-color: rgba(34, 197, 94, 0.4);
-    box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.08);
+    background: rgba(34, 197, 94, 0.15);
+    border-color: rgba(34, 197, 94, 0.35);
+    box-shadow: none;
 }
 
 .ngs-dr-stage-done .ngs-dr-stage-icon {
-    font-variation-settings: "FILL" 1, "wght" 500, "GRAD" 0, "opsz" 24;
-    color: #16a34a;
+    font-variation-settings: "FILL" 1, "wght" 500, "GRAD" 0, "opsz" 20;
+    color: #16a34a !important;
 }
 
+html.dark .ngs-dr-stage-done,
 .dark .ngs-dr-stage-done {
     color: #4ade80;
-    background: rgba(34, 197, 94, 0.22);
-    border-color: rgba(74, 222, 128, 0.45);
+    background: rgba(34, 197, 94, 0.2);
+    border-color: rgba(74, 222, 128, 0.4);
 }
 
+html.dark .ngs-dr-stage-done .ngs-dr-stage-icon,
 .dark .ngs-dr-stage-done .ngs-dr-stage-icon {
-    color: #4ade80;
+    color: #4ade80 !important;
 }
 
-/* Pending = decolored / greyed out */
 .ngs-dr-stage-todo {
-    color: #94a3b8;
-    background: rgba(148, 163, 184, 0.1);
-    border-color: rgba(148, 163, 184, 0.22);
-    filter: grayscale(1);
-    opacity: 0.55;
-}
-
-.ngs-dr-stage-todo .ngs-dr-stage-icon {
-    color: #94a3b8;
-}
-
-.dark .ngs-dr-stage-todo {
     color: #64748b;
-    background: rgba(100, 116, 139, 0.12);
-    border-color: rgba(100, 116, 139, 0.25);
+    background: rgba(100, 116, 139, 0.1);
+    border-color: rgba(100, 116, 139, 0.2);
+    filter: grayscale(1);
     opacity: 0.45;
 }
 
-.dark .ngs-dr-stage-todo .ngs-dr-stage-icon {
-    color: #64748b;
+.ngs-dr-stage-todo .ngs-dr-stage-icon {
+    color: #64748b !important;
+}
+
+html.dark .ngs-dr-stage-todo,
+.dark .ngs-dr-stage-todo {
+    opacity: 0.4;
 }
 
 .ngs-dr-stage:hover {
-    transform: scale(1.06);
+    transform: none;
 }
 
+/* Edit = compact icon button */
 .ngs-dr-edit {
     display: inline-flex;
     align-items: center;
-    gap: 0.25rem;
-    padding: 0.32rem 0.7rem;
-    border-radius: 0.55rem;
-    font-size: 0.72rem;
-    font-weight: 700;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    border-radius: 0.4rem;
+    font-size: 0 !important;
     color: #fff !important;
-    background: linear-gradient(135deg, #16a34a, #15803d);
+    background: #16a34a;
     text-decoration: none;
-    box-shadow: 0 6px 14px -8px rgba(22, 163, 74, 0.55);
-    transition: transform 0.15s ease, box-shadow 0.2s ease;
-    white-space: nowrap;
+    box-shadow: none;
+    border: none;
 }
 
 .ngs-dr-edit:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 10px 18px -10px rgba(22, 163, 74, 0.7);
+    transform: none;
+    background: #15803d;
     color: #fff !important;
 }
 
 .ngs-dr-edit .material-symbols-outlined {
-    font-size: 0.9rem;
+    font-size: 15px !important;
+    line-height: 1;
 }
 
 /* Slightly tighter table on the daily-report list for the extra columns */
@@ -1505,25 +1781,16 @@ body.app-core.model-dailyreport #result_list td {
     padding-top: 0.45rem;
     padding-bottom: 0.45rem;
     font-size: 0.82rem;
-    color: #e2e8f0;
-}
-
-body.app-core.model-dailyreport:not(.dark) #result_list th,
-body.app-core.model-dailyreport:not(.dark) #result_list td,
-html:not(.dark) body.app-core.model-dailyreport #result_list th,
-html:not(.dark) body.app-core.model-dailyreport #result_list td {
-    color: #0f172a;
 }
 
 body.app-core.model-dailyreport #result_list th {
     letter-spacing: 0.03em;
     text-transform: uppercase;
-    font-size: 0.7rem;
+    font-size: 0.72rem;
     font-weight: 700;
-    color: #94a3b8 !important;
 }
 
-/* Table polish: alternating rows + hover highlight + sticky header */
+/* Table polish: alternating rows + hover + sticky header */
 body.app-core.model-dailyreport #result_list {
     border-collapse: separate;
     border-spacing: 0;
@@ -1533,29 +1800,103 @@ body.app-core.model-dailyreport #result_list thead th {
     position: sticky;
     top: 0;
     z-index: 3;
-    background: rgba(255, 255, 255, 0.96);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 
-body.app-core.model-dailyreport.dark #result_list thead th,
-body.dark.app-core.model-dailyreport #result_list thead th {
-    background: rgba(11, 18, 32, 0.94);
-    border-bottom-color: rgba(255, 255, 255, 0.08);
+/* Light mode header */
+html:not(.dark) body.app-core.model-dailyreport #result_list thead th {
+    background: #f8fafc !important;
+    color: #334155 !important;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.1);
 }
 
-body.app-core.model-dailyreport #result_list tbody tr {
-    transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+html:not(.dark) body.app-core.model-dailyreport #result_list td {
+    color: #0f172a;
 }
 
-body.app-core.model-dailyreport #result_list tbody tr:nth-child(even) td {
+/* Dark mode header — solid dark, readable labels (Unfold puts .dark on <html>) */
+html.dark body.app-core.model-dailyreport #result_list thead th,
+.dark body.app-core.model-dailyreport #result_list thead th {
+    background: #0f172a !important;
+    color: #e2e8f0 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+html.dark body.app-core.model-dailyreport #result_list thead th a,
+.dark body.app-core.model-dailyreport #result_list thead th a {
+    color: #e2e8f0 !important;
+}
+
+html.dark body.app-core.model-dailyreport #result_list td,
+.dark body.app-core.model-dailyreport #result_list td {
+    color: #f1f5f9;
+}
+
+html.dark body.app-core.model-dailyreport #result_list tbody tr:nth-child(even) td,
+.dark body.app-core.model-dailyreport #result_list tbody tr:nth-child(even) td {
     background: rgba(148, 163, 184, 0.06);
 }
 
+html:not(.dark) body.app-core.model-dailyreport #result_list tbody tr:nth-child(even) td {
+    background: rgba(148, 163, 184, 0.06);
+}
+
+body.app-core.model-dailyreport #result_list tbody tr {
+    transition: background-color 0.15s ease;
+}
+
 body.app-core.model-dailyreport #result_list tbody tr:hover td {
-    background: rgba(34, 197, 94, 0.06) !important;
-    box-shadow: inset 3px 0 0 0 var(--dr-accent, #16a34a);
+    background: rgba(34, 197, 94, 0.08) !important;
+    box-shadow: inset 3px 0 0 0 #16a34a;
+}
+
+/* Selected / highlighted rows must stay readable (light text on green tint) */
+html.dark body.app-core.model-dailyreport #result_list tbody tr.selected td,
+html.dark body.app-core.model-dailyreport #result_list tbody tr.selected:hover td,
+.dark body.app-core.model-dailyreport #result_list tbody tr.selected td {
+    background: rgba(22, 163, 74, 0.22) !important;
+    color: #f8fafc !important;
+    box-shadow: inset 3px 0 0 0 #22c55e;
+}
+
+html.dark body.app-core.model-dailyreport #result_list tbody tr.selected td a,
+html.dark body.app-core.model-dailyreport #result_list tbody tr.selected .ngs-dr-loc-year,
+html.dark body.app-core.model-dailyreport #result_list tbody tr.selected .ngs-dr-num,
+html.dark body.app-core.model-dailyreport #result_list tbody tr.selected .ngs-dr-progress-pct,
+.dark body.app-core.model-dailyreport #result_list tbody tr.selected td a,
+.dark body.app-core.model-dailyreport #result_list tbody tr.selected .ngs-dr-loc-year,
+.dark body.app-core.model-dailyreport #result_list tbody tr.selected .ngs-dr-num {
+    color: #f8fafc !important;
+}
+
+html.dark body.app-core.model-dailyreport #result_list tbody tr.selected .ngs-dr-loc-vol,
+.dark body.app-core.model-dailyreport #result_list tbody tr.selected .ngs-dr-loc-vol {
+    color: #cbd5e1 !important;
+}
+
+/* Keep stage colors intact inside selected rows */
+html.dark body.app-core.model-dailyreport #result_list tbody tr.selected .ngs-dr-stage-done .ngs-dr-stage-icon,
+.dark body.app-core.model-dailyreport #result_list tbody tr.selected .ngs-dr-stage-done .ngs-dr-stage-icon {
+    color: #4ade80 !important;
+}
+
+body.app-core.model-dailyreport #result_list td {
+    vertical-align: middle !important;
+    overflow: hidden;
+    max-width: 12rem;
+}
+
+body.app-core.model-dailyreport #result_list td .field-pdf_badge,
+body.app-core.model-dailyreport #result_list td.field-pdf_badge,
+body.app-core.model-dailyreport #result_list .field-pdf_badge,
+body.app-core.model-dailyreport #result_list .field-indexing_badge,
+body.app-core.model-dailyreport #result_list .field-uploading_badge,
+body.app-core.model-dailyreport #result_list .field-qc_badge {
+    width: 2.2rem;
+    max-width: 2.2rem;
+    text-align: center;
+    overflow: hidden;
 }
 
 /* ─ Empty state ────────────────────────────────────── */
