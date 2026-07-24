@@ -1,0 +1,129 @@
+{% extends "core/base_public.html" %}
+
+{% block title %}Process | From Paper to Portal — NGS{% endblock %}
+
+{% block extra_css %}
+.process-line {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background-color: #c7c6cd;
+  transform: translateX(-50%);
+  z-index: 0;
+}
+@media (max-width: 767px) {
+  .process-line { display: none; }
+}
+{% endblock %}
+
+{% block content %}
+<section class="pt-24 pb-16 px-margin-mobile md:px-margin-desktop max-w-max-width mx-auto">
+  <div class="text-center max-w-3xl mx-auto reveal">
+    <h1 class="font-display text-display-lg-mobile md:text-display-lg text-ink-deep mb-6">From Paper to Portal</h1>
+    <p class="text-body-lg text-on-surface-variant">
+      A meticulous, secure, and fully auditable digitization process designed for high-stakes institutional archives.
+    </p>
+  </div>
+</section>
+
+<section class="py-16 px-margin-mobile md:px-margin-desktop bg-linen-white border-y border-outline-variant">
+  <div class="max-w-max-width mx-auto relative">
+    <div class="process-line hidden md:block"></div>
+    <div class="space-y-16 md:space-y-24">
+
+      <div class="relative flex flex-col md:flex-row items-center md:justify-between group reveal">
+        <div class="md:w-[45%] text-left md:text-right md:pr-12 mb-8 md:mb-0 w-full relative z-10">
+          <h3 class="text-label-caps text-brass-muted mb-2">Step 01</h3>
+          <h2 class="font-display text-headline-md text-ink-deep mb-4">Document Collection</h2>
+          <p class="text-body-md text-on-surface-variant">Secure intake of physical materials. Every batch is logged with a unique identifier for chain-of-custody tracking.</p>
+        </div>
+        <div class="absolute left-0 md:left-1/2 md:-translate-x-1/2 w-12 h-12 bg-linen-white border border-outline-variant rounded-full flex items-center justify-center z-10 group-hover:border-brass-muted transition-colors hidden md:flex">
+          <span class="material-symbols-outlined text-ink-deep">inventory_2</span>
+        </div>
+        <div class="md:w-[45%] md:pl-12 w-full relative z-10">
+          <img class="w-full h-64 object-cover border border-outline-variant grayscale opacity-90 hover:grayscale-0 transition-all duration-500" alt="Document storage"
+               src="https://lh3.googleusercontent.com/aida-public/AB6AXuDfeDmruG-ctQKAlcfOaE-vK4x73qGnBCOJZu3NMSdOye2unDPXnpiONZmvNzn2sdSkb1iK79yb5fQlhnjujLWzxaf7xnOZxd4npTOS7B9XCjjjfdRFEKA8bAVk_1UKvsNkm_tSccGvJYNWxmLf-5k2V7uM6qyEbEZjGPsO-3tztbtvP8iMVitIXN_VUy0Cm4zck62Lhy4-SMrsE_YAtNCV14MCjvHnk4K_UDWZmgkiejqwLj5VtqxnRm-eNlK1j2seOpi4YEdV5G4" />
+        </div>
+      </div>
+
+      <div class="relative flex flex-col md:flex-row-reverse items-center md:justify-between group reveal">
+        <div class="md:w-[45%] text-left md:pl-12 mb-8 md:mb-0 w-full relative z-10">
+          <h3 class="text-label-caps text-brass-muted mb-2">Step 02</h3>
+          <h2 class="font-display text-headline-md text-ink-deep mb-4">High-Fidelity Scanning</h2>
+          <p class="text-body-md text-on-surface-variant">Industrial-grade optical equipment captures documents at archival resolution. Fragile materials use non-destructive flatbed scanners.</p>
+        </div>
+        <div class="absolute left-0 md:left-1/2 md:-translate-x-1/2 w-12 h-12 bg-linen-white border border-outline-variant rounded-full flex items-center justify-center z-10 group-hover:border-brass-muted transition-colors hidden md:flex">
+          <span class="material-symbols-outlined text-ink-deep">document_scanner</span>
+        </div>
+        <div class="md:w-[45%] md:pr-12 w-full relative z-10">
+          <img class="w-full h-64 object-cover border border-outline-variant grayscale opacity-90 hover:grayscale-0 transition-all duration-500" alt="Document scanning"
+               src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDWqhgejIs1igG6X6QGBZDOqxS5YMOqrEswnSfKLSSrtKU-vZ3t6bd_5nSkUcCVqLz6gzyivVogAA8t_95grAaI5TM1CKy4sEQBKOY35hkeAukpH1lcv-YiwK9tvAsqlEDsy5jtY9J849rseBf2fY_dkoFLetJ7cILbGTpwirQF-2jaSEF_PbNHIpvnCwXgCGwIu1EQ4UVl0elflLvUwKPggN-nKCepfIprPwHDkbHuDFWYYDeyF3GZOAivY9l3rtfPfYD8SOmhkg" />
+        </div>
+      </div>
+
+      <div class="relative flex flex-col md:flex-row items-center md:justify-between group reveal">
+        <div class="md:w-[45%] text-left md:text-right md:pr-12 mb-8 md:mb-0 w-full relative z-10">
+          <h3 class="text-label-caps text-brass-muted mb-2">Step 03</h3>
+          <h2 class="font-display text-headline-md text-ink-deep mb-4">PDF Creation &amp; OCR</h2>
+          <p class="text-body-md text-on-surface-variant">Images convert to PDF/A for long-term preservation. OCR makes text fully searchable.</p>
+        </div>
+        <div class="absolute left-0 md:left-1/2 md:-translate-x-1/2 w-12 h-12 bg-linen-white border border-outline-variant rounded-full flex items-center justify-center z-10 group-hover:border-brass-muted transition-colors hidden md:flex">
+          <span class="material-symbols-outlined text-ink-deep">picture_as_pdf</span>
+        </div>
+        <div class="md:w-[45%] md:pl-12 w-full relative z-10">
+          <div class="w-full h-64 bg-paper-grey border border-outline-variant flex items-center justify-center p-8">
+            <div class="w-full h-full border border-dashed border-outline-variant flex flex-col items-center justify-center text-on-surface-variant bg-linen-white">
+              <span class="material-symbols-outlined text-4xl mb-2">text_snippet</span>
+              <span class="text-label-caps">OCR PROCESSING</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="relative flex flex-col md:flex-row-reverse items-center md:justify-between group reveal">
+        <div class="md:w-[45%] text-left md:pl-12 mb-8 md:mb-0 w-full relative z-10">
+          <h3 class="text-label-caps text-brass-muted mb-2">Step 04</h3>
+          <h2 class="font-display text-headline-md text-ink-deep mb-4">Metadata Extraction</h2>
+          <p class="text-body-md text-on-surface-variant">Key data points are extracted and validated so documents can be accurately indexed and retrieved.</p>
+        </div>
+        <div class="absolute left-0 md:left-1/2 md:-translate-x-1/2 w-12 h-12 bg-linen-white border border-outline-variant rounded-full flex items-center justify-center z-10 group-hover:border-brass-muted transition-colors hidden md:flex">
+          <span class="material-symbols-outlined text-ink-deep">data_object</span>
+        </div>
+        <div class="md:w-[45%] md:pr-12 w-full relative z-10">
+          <img class="w-full h-64 object-cover border border-outline-variant" alt="Metadata extraction"
+               src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3BxVwZ0Kokdbwi7l0i3p-Wg7qsCwVLT58qvG-oZ3lomnAGeGKufmPY1s50pfCYiG8ul03seb1KtZSQFoc6MSEPshdEbkNjxnx0I20U9y26Z9ekkhYhsXVu2yAM28jPheOw54enI2emW8l7gTnmxEA1EXgAkhqW5L6Qh9MeXje-8CXnomUyBYvdPAhhbJOU52Y2i2YpkLv7dX7lnX30GL0_WzVgg8nJFy3fduF2UrL4C_d_17zRYm0PuerlXoBhtzuY9OuVBG2sjc" />
+        </div>
+      </div>
+
+      <div class="relative flex flex-col md:flex-row items-center md:justify-between group reveal">
+        <div class="md:w-[45%] text-left md:text-right md:pr-12 mb-8 md:mb-0 w-full relative z-10">
+          <h3 class="text-label-caps text-brass-muted mb-2">Step 05</h3>
+          <h2 class="font-display text-headline-md text-ink-deep mb-4">Secure Portal Upload</h2>
+          <p class="text-body-md text-on-surface-variant">Finalized assets and metadata transfer securely to the designated government portal or DMS.</p>
+        </div>
+        <div class="absolute left-0 md:left-1/2 md:-translate-x-1/2 w-12 h-12 bg-linen-white border border-outline-variant rounded-full flex items-center justify-center z-10 group-hover:border-brass-muted transition-colors hidden md:flex">
+          <span class="material-symbols-outlined text-ink-deep">cloud_upload</span>
+        </div>
+        <div class="md:w-[45%] md:pl-12 w-full relative z-10">
+          <img class="w-full h-64 object-cover border border-outline-variant" alt="Portal upload"
+               src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRUi61UufxyOwAE6SI2mVeA_Dccf1GbbER8XHMWiRFEYEuHiQan3XLkROwXRRA3vWCCns2dW6ZeQnFR3ndQlODJFvg3VbQ74U18nRE1MeDcamlz-H5lkW9wBR4YnAlJFrf8nXk4jZK0s7lyxwrR7SiyQ5uT0IPA4jg7ML82ZVj070RJ5C3DTxnHwm-JYy95BVhVxHgCIrxi2rA49K-4xss0Ti1kG8CMjxlzPbGP9d3EwT4uqMRYzL-OG-8rIPqkk1iy1r5yrT97Eo" />
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="py-24 px-margin-mobile md:px-margin-desktop bg-paper-grey">
+  <div class="max-w-3xl mx-auto text-center reveal">
+    <h2 class="font-display text-headline-lg text-ink-deep mb-6">Ready to digitize your archives?</h2>
+    <p class="text-body-md text-on-surface-variant mb-10">Contact our specialists for a customized assessment and secure quotation.</p>
+    <div class="flex flex-col sm:flex-row justify-center gap-4">
+      <a class="bg-ink-deep text-linen-white text-label-caps px-8 py-4 uppercase tracking-widest hover:opacity-90" href="{% url 'contact' %}">Get a Quote</a>
+      <a class="border border-ink-deep text-ink-deep text-label-caps px-8 py-4 uppercase tracking-widest hover:bg-linen-white" href="{% url 'contact' %}">Contact Us</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

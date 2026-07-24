@@ -23,12 +23,32 @@ import datetime
 from itertools import chain
 
 
-# ── HOME ──
+# ── PUBLIC PAGES ──
 def home(request):
-    return render(request, 'core/home.html')
+    return render(request, 'core/home.html', {
+        'active_nav': 'home',
+        'process_steps': [
+            ('01', 'Collection'),
+            ('02', 'Scanning'),
+            ('03', 'PDF & OCR'),
+            ('04', 'Metadata'),
+            ('05', 'Portal Upload'),
+        ],
+    })
 
 
-# ── CONTACT ──
+def about(request):
+    return render(request, 'core/about.html', {'active_nav': 'about'})
+
+
+def services(request):
+    return render(request, 'core/services.html', {'active_nav': 'services'})
+
+
+def process(request):
+    return render(request, 'core/process.html', {'active_nav': 'process'})
+
+
 def contact(request):
     if request.method == 'POST':
         name = request.POST.get('name', '').strip()
@@ -45,8 +65,8 @@ def contact(request):
             messages.success(request, 'Thank you! Your message has been received. We will contact you shortly.')
         else:
             messages.error(request, 'Please fill in all required fields.')
-        return redirect('home')
-    return redirect('home')
+        return redirect('contact')
+    return render(request, 'core/contact.html', {'active_nav': 'contact'})
 
 
 # ── AUTH: LOGIN ──
@@ -68,7 +88,10 @@ def login_view(request):
         else:
             messages.error(request, 'Invalid username or password. Please try again.')
 
-    return render(request, 'core/login.html')
+    return render(request, 'core/login.html', {
+        'active_nav': 'login',
+        'hide_site_nav': True,
+    })
 
 
 # ── AUTH: LOGOUT ──

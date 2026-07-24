@@ -6,6 +6,9 @@ from core import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
+    path('about/', views.about, name='about'),
+    path('services/', views.services, name='services'),
+    path('process/', views.process, name='process'),
     path('contact/', views.contact, name='contact'),
 
     # ── AUTH ──

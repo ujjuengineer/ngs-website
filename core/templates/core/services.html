@@ -1,0 +1,94 @@
+{% extends "core/base_public.html" %}
+
+{% block title %}Services | NGS{% endblock %}
+
+{% block content %}
+<section class="w-full bg-linen-white border-b border-outline-variant py-20 px-margin-mobile md:px-margin-desktop">
+  <div class="max-w-max-width mx-auto reveal">
+    <h1 class="font-display text-display-lg-mobile md:text-display-lg text-on-surface mb-6 max-w-4xl">
+      Institutional Excellence in Operational Support
+    </h1>
+    <p class="text-body-lg text-on-surface-variant max-w-2xl">
+      High-stakes operational infrastructure — from meticulous document digitization to specialized manpower and resilient IT solutions for government and enterprise.
+    </p>
+  </div>
+</section>
+
+<div class="max-w-max-width mx-auto py-24 px-margin-mobile md:px-margin-desktop space-y-32">
+  <section class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-center reveal">
+    <div class="lg:col-span-6 lg:order-2">
+      <div class="w-full aspect-[4/3] border border-outline-variant overflow-hidden">
+        <img class="object-cover w-full h-full" alt="Document digitization facility"
+             src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtPDI0wFjeuB5iva7FgWkY84zfgUhdPOs-k9ZqUy_PwlO6fDEVFGKypnyqTc4lfqlsFGIfyXWVbc4aj9uSL3WSCtO9lpc08euk5ynfy75BhkBdBrQz9uOpTiZUM3tpdj1JGsBo-h1uIzanTvY2pKRC0g6mTfd7a4IPlp9OC1XaONLIQM31VdIGOWS0ni9BdV8wnBwsTWZ404oKwmNiEhhadnJP1Pcx6z0MaqnhszpiIMBGwBULdrd2wjgmRMzm1yTr0FzbsH8XU6c" />
+      </div>
+    </div>
+    <div class="lg:col-span-6 lg:order-1 lg:pr-12">
+      <h2 class="font-display text-headline-lg text-on-surface mb-4">Document Digitization</h2>
+      <p class="text-body-lg text-on-surface-variant mb-8">
+        Transforming legacy paper records into secure, accessible digital assets with fidelity, high-volume capacity, and rigorous quality control.
+      </p>
+      <h3 class="text-label-caps text-on-surface-variant uppercase mb-4">Key Outcomes</h3>
+      <ul class="space-y-3 text-body-md text-on-surface mb-10">
+        <li class="flex items-start"><span class="material-symbols-outlined text-brass-muted mr-3 mt-0.5" style="font-variation-settings:'FILL' 1">check_circle</span> High-fidelity scanning of delicate legacy records</li>
+        <li class="flex items-start"><span class="material-symbols-outlined text-brass-muted mr-3 mt-0.5" style="font-variation-settings:'FILL' 1">check_circle</span> Multi-stage Quality Control (QC) protocols</li>
+        <li class="flex items-start"><span class="material-symbols-outlined text-brass-muted mr-3 mt-0.5" style="font-variation-settings:'FILL' 1">check_circle</span> Secure data indexing and retrieval systems</li>
+      </ul>
+      <a class="inline-flex items-center px-6 py-3 bg-ink-deep text-linen-white text-body-md hover:opacity-90" href="{% url 'contact' %}">
+        Contact for Digitization <span class="material-symbols-outlined ml-2">arrow_forward</span>
+      </a>
+    </div>
+  </section>
+
+  <hr class="border-t border-outline-variant max-w-4xl mx-auto" />
+
+  <section class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-center reveal">
+    <div class="lg:col-span-6">
+      <div class="w-full aspect-[4/3] border border-outline-variant overflow-hidden">
+        <img class="object-cover w-full h-full" alt="Skilled staff in office"
+             src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKOSR77azr8Pf6mVDU6Sn_khr9DW9gxXjAzH5goke5rf8oSllw5yBWF0da8q2-MCh_-62fUd_ypgK7sYC1fTGMJJ24szQSBGfw67n62kXk_cyoPfQ7Hsg4CS-h3fPLpQqcL6q0VOgS2qkDUHEKxkWb4IFct8tdgsb7IvoWqBgipoXQfex4IMMTg-W4BM234LhcoX5zv6ot-XTYle-uepGmDYD9ZCHfdp7FtEyIK_tgxfa27PyCluqgRDGnR8BB6rosi9y1oqyQFF4" />
+      </div>
+    </div>
+    <div class="lg:col-span-6 lg:pl-12">
+      <h2 class="font-display text-headline-lg text-on-surface mb-4">Skilled Manpower Supply</h2>
+      <p class="text-body-lg text-on-surface-variant mb-8">
+        Deploying vetted data entry operators, scanning technicians, and IT professionals where government and private offices need them.
+      </p>
+      <h3 class="text-label-caps text-on-surface-variant uppercase mb-4">Key Outcomes</h3>
+      <ul class="space-y-3 text-body-md text-on-surface mb-10">
+        <li class="flex items-start"><span class="material-symbols-outlined text-brass-muted mr-3 mt-0.5" style="font-variation-settings:'FILL' 1">check_circle</span> Rapid deployment of vetted specialists</li>
+        <li class="flex items-start"><span class="material-symbols-outlined text-brass-muted mr-3 mt-0.5" style="font-variation-settings:'FILL' 1">check_circle</span> IT staff for immediate operational integration</li>
+        <li class="flex items-start"><span class="material-symbols-outlined text-brass-muted mr-3 mt-0.5" style="font-variation-settings:'FILL' 1">check_circle</span> Flexible scaling to meet project demands</li>
+      </ul>
+      <a class="inline-flex items-center px-6 py-3 border border-ink-deep text-ink-deep hover:text-brass-muted text-body-md" href="{% url 'contact' %}">
+        Request Personnel <span class="material-symbols-outlined ml-2">arrow_forward</span>
+      </a>
+    </div>
+  </section>
+
+  <hr class="border-t border-outline-variant max-w-4xl mx-auto" />
+
+  <section class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-center reveal">
+    <div class="lg:col-span-6 lg:order-2">
+      <div class="w-full aspect-[4/3] border border-outline-variant overflow-hidden">
+        <img class="object-cover w-full h-full" alt="IT infrastructure"
+             src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxpaeJCIqf6DKV8_e7lmmXLpU8M-4o4Begd-ffzsdBBgsHxJfML2HdWKrqmEVhsVMhBmnf40RCvnTbGRaFAmtBtgG9g26MZ9Tyg2e7rnfDgczsCHCkGGcu1wvTOPCRJIS0srBOKiZ8yVdDibHBtkTW28GcbjlA3YoYzdC9oOfO2c_NlcnR4Ner56ZQ-xPCFYXBgIm6p5Y0RzoFP2hANGk0U6YhtMI7vf91QoI9X5RmLprxiIVpCtuRDwlFs2JlCKRbGLCeNPrJrfY" />
+      </div>
+    </div>
+    <div class="lg:col-span-6 lg:order-1 lg:pr-12">
+      <h2 class="font-display text-headline-lg text-on-surface mb-4">IT Solutions &amp; Support</h2>
+      <p class="text-body-lg text-on-surface-variant mb-8">
+        Software support, hardware setup, network configuration, and ongoing technical assistance tailored to institutional requirements.
+      </p>
+      <h3 class="text-label-caps text-on-surface-variant uppercase mb-4">Key Outcomes</h3>
+      <ul class="space-y-3 text-body-md text-on-surface mb-10">
+        <li class="flex items-start"><span class="material-symbols-outlined text-brass-muted mr-3 mt-0.5" style="font-variation-settings:'FILL' 1">check_circle</span> End-to-end software integration and support</li>
+        <li class="flex items-start"><span class="material-symbols-outlined text-brass-muted mr-3 mt-0.5" style="font-variation-settings:'FILL' 1">check_circle</span> Secure network architecture and maintenance</li>
+        <li class="flex items-start"><span class="material-symbols-outlined text-brass-muted mr-3 mt-0.5" style="font-variation-settings:'FILL' 1">check_circle</span> Reliable enterprise hardware procurement</li>
+      </ul>
+      <a class="inline-flex items-center px-6 py-3 bg-ink-deep text-linen-white text-body-md hover:opacity-90" href="{% url 'contact' %}">
+        Consult IT Experts <span class="material-symbols-outlined ml-2">arrow_forward</span>
+      </a>
+    </div>
+  </section>
+</div>
+{% endblock %}

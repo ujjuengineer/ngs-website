@@ -1,0 +1,206 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Narasimha Global Service &amp; Solution (NGS){% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}Narasimha Global empowers government and businesses with skilled manpower and IT solutions. Document digitization and digital transformation — Patna, Bihar.{% endblock %}" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Public+Sans:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            "linen-white": "#FFFFFF",
+            "on-surface": "#0d1c2f",
+            "on-surface-variant": "#46464c",
+            "ink-deep": "#0B1020",
+            "primary": "#000000",
+            "brass-muted": "#C2A56D",
+            "paper-grey": "#F8FAFC",
+            "outline": "#76767d",
+            "outline-variant": "#c7c6cd",
+            "primary-container": "#161b2b",
+            "primary-fixed-dim": "#c1c5dc",
+            "surface-container-low": "#eff4ff",
+            "on-primary-container": "#7f8398",
+          },
+          borderRadius: {
+            DEFAULT: "0.125rem",
+            lg: "0.25rem",
+            xl: "0.5rem",
+          },
+          spacing: {
+            "margin-desktop": "80px",
+            "margin-mobile": "20px",
+            gutter: "32px",
+            "max-width": "1280px",
+          },
+          fontFamily: {
+            display: ["Playfair Display", "serif"],
+            body: ["Public Sans", "sans-serif"],
+          },
+          fontSize: {
+            "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+            "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+            "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
+            "label-caps": ["12px", { lineHeight: "16px", letterSpacing: "0.08em", fontWeight: "600" }],
+            "headline-sm": ["24px", { lineHeight: "32px", fontWeight: "600" }],
+            "headline-md": ["32px", { lineHeight: "40px", fontWeight: "600" }],
+            "headline-lg": ["40px", { lineHeight: "48px", fontWeight: "600" }],
+            "display-lg-mobile": ["36px", { lineHeight: "44px", letterSpacing: "-0.01em", fontWeight: "700" }],
+            "display-lg": ["56px", { lineHeight: "64px", letterSpacing: "-0.02em", fontWeight: "700" }],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body {
+      background-color: #F8FAFC;
+      color: #0d1c2f;
+      font-family: "Public Sans", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .font-display { font-family: "Playfair Display", serif; }
+    .material-symbols-outlined {
+      font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+    }
+    .btn-primary {
+      background: linear-gradient(180deg, #0B1020 0%, #161b2b 100%);
+      border: 1px solid #0B1020;
+      transition: all 0.2s ease-in-out;
+    }
+    .btn-primary:hover { background: #161b2b; }
+    .btn-secondary {
+      border: 1px solid #0B1020;
+      transition: all 0.2s ease-in-out;
+    }
+    .btn-secondary:hover { background-color: rgba(194, 165, 109, 0.05); }
+    .subtle-outline { border: 1px solid rgba(11, 16, 32, 0.1); }
+    .editorial-section { padding: 80px 0; }
+    @media (min-width: 1280px) {
+      .editorial-section { padding: 120px 0; }
+    }
+    .nav-link-active {
+      color: #000;
+      border-bottom: 2px solid #000;
+      opacity: 0.85;
+    }
+    .reveal {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+    {% block extra_css %}{% endblock %}
+  </style>
+</head>
+<body class="flex flex-col min-h-screen antialiased">
+{% if not hide_site_nav %}
+<header class="bg-linen-white border-b border-outline-variant w-full h-20 sticky top-0 z-50">
+  <div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop max-w-max-width mx-auto h-full">
+    <a class="font-display text-headline-sm font-bold text-primary" href="{% url 'home' %}">NGS</a>
+    <nav class="hidden md:flex items-center gap-8 h-full font-body text-body-md">
+      <a class="h-full flex items-center {% if active_nav == 'home' %}nav-link-active{% else %}text-on-surface-variant hover:text-primary{% endif %} transition-colors" href="{% url 'home' %}">Home</a>
+      <a class="h-full flex items-center {% if active_nav == 'about' %}nav-link-active{% else %}text-on-surface-variant hover:text-primary{% endif %} transition-colors" href="{% url 'about' %}">About Us</a>
+      <a class="h-full flex items-center {% if active_nav == 'services' %}nav-link-active{% else %}text-on-surface-variant hover:text-primary{% endif %} transition-colors" href="{% url 'services' %}">Services</a>
+      <a class="h-full flex items-center {% if active_nav == 'process' %}nav-link-active{% else %}text-on-surface-variant hover:text-primary{% endif %} transition-colors" href="{% url 'process' %}">Process</a>
+      <a class="h-full flex items-center {% if active_nav == 'contact' %}nav-link-active{% else %}text-on-surface-variant hover:text-primary{% endif %} transition-colors" href="{% url 'contact' %}">Contact Us</a>
+    </nav>
+    <div class="hidden md:flex items-center gap-3">
+      {% if user.is_authenticated %}
+        <a class="btn-secondary text-brass-muted px-6 py-2 text-label-caps uppercase tracking-wider rounded" href="{% url 'logout' %}">Logout</a>
+      {% else %}
+        <a class="btn-secondary text-brass-muted px-6 py-2 text-label-caps uppercase tracking-wider rounded" href="{% url 'login' %}">Login</a>
+      {% endif %}
+    </div>
+    <button id="mobileMenuBtn" type="button" class="md:hidden text-ink-deep p-2" aria-label="Open menu">
+      <span class="material-symbols-outlined">menu</span>
+    </button>
+  </div>
+  <div id="mobileMenu" class="hidden md:hidden border-t border-outline-variant bg-linen-white px-margin-mobile py-4 space-y-1">
+    <a class="block py-3 text-body-md {% if active_nav == 'home' %}text-primary font-semibold{% else %}text-on-surface-variant{% endif %}" href="{% url 'home' %}">Home</a>
+    <a class="block py-3 text-body-md {% if active_nav == 'about' %}text-primary font-semibold{% else %}text-on-surface-variant{% endif %}" href="{% url 'about' %}">About Us</a>
+    <a class="block py-3 text-body-md {% if active_nav == 'services' %}text-primary font-semibold{% else %}text-on-surface-variant{% endif %}" href="{% url 'services' %}">Services</a>
+    <a class="block py-3 text-body-md {% if active_nav == 'process' %}text-primary font-semibold{% else %}text-on-surface-variant{% endif %}" href="{% url 'process' %}">Process</a>
+    <a class="block py-3 text-body-md {% if active_nav == 'contact' %}text-primary font-semibold{% else %}text-on-surface-variant{% endif %}" href="{% url 'contact' %}">Contact Us</a>
+    {% if user.is_authenticated %}
+      <a class="block py-3 text-body-md text-brass-muted" href="{% url 'logout' %}">Logout</a>
+    {% else %}
+      <a class="block py-3 text-body-md text-brass-muted" href="{% url 'login' %}">Login</a>
+    {% endif %}
+  </div>
+</header>
+{% endif %}
+
+{% if messages %}
+<div class="px-margin-mobile md:px-margin-desktop max-w-max-width mx-auto w-full pt-4 space-y-2">
+  {% for message in messages %}
+  <div class="border px-4 py-3 text-body-sm {% if message.tags == 'error' %}border-red-300 bg-red-50 text-red-800{% else %}border-outline-variant bg-linen-white text-on-surface{% endif %}">
+    {{ message }}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<main class="flex-grow">
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="bg-linen-white border-t border-outline-variant w-full py-16 mt-auto">
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-mobile md:px-margin-desktop max-w-max-width mx-auto">
+    <div class="md:col-span-2">
+      <div class="font-display text-headline-sm font-bold text-primary mb-4">NGS</div>
+      <p class="text-body-sm text-on-surface-variant max-w-md mb-4">
+        Narasimha Global Service &amp; Solution Pvt. Ltd. — document digitization, manpower supply, and IT solutions for institutional excellence from Patna, Bihar.
+      </p>
+      <p class="text-body-sm text-on-surface-variant">© {% now "Y" %} Narasimha Global Service &amp; Solution (NGS). All rights reserved.</p>
+    </div>
+    <div>
+      <h4 class="text-label-caps text-ink-deep uppercase mb-4">Navigation</h4>
+      <ul class="space-y-3 text-body-sm">
+        <li><a class="text-on-surface-variant hover:text-primary hover:underline" href="{% url 'home' %}">Home</a></li>
+        <li><a class="text-on-surface-variant hover:text-primary hover:underline" href="{% url 'about' %}">About Us</a></li>
+        <li><a class="text-on-surface-variant hover:text-primary hover:underline" href="{% url 'services' %}">Services</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="text-label-caps text-ink-deep uppercase mb-4">&nbsp;</h4>
+      <ul class="space-y-3 text-body-sm">
+        <li><a class="text-on-surface-variant hover:text-primary hover:underline" href="{% url 'process' %}">Process</a></li>
+        <li><a class="text-on-surface-variant hover:text-primary hover:underline" href="{% url 'contact' %}">Contact Us</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  if (mobileMenuBtn && mobileMenu) {
+    mobileMenuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+      mobileMenuBtn.querySelector('.material-symbols-outlined').textContent =
+        mobileMenu.classList.contains('hidden') ? 'menu' : 'close';
+    });
+  }
+  const reveals = document.querySelectorAll('.reveal');
+  if (reveals.length && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.12 });
+    reveals.forEach((el) => io.observe(el));
+  } else {
+    reveals.forEach((el) => el.classList.add('visible'));
+  }
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>
