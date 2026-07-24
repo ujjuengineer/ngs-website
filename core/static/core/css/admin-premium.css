@@ -186,27 +186,291 @@ html, body {
     }
 }
 
-/* ---------- Admin dashboard (Plotly) ---------- */
-.ngs-admin-dashboard .ngs-dash-kpi,
-.ngs-admin-dashboard .ngs-dash-chart {
-    transition: box-shadow .25s ease, transform .25s ease;
+/* ============================================================
+   NGS Admin — Bento dashboard
+   ============================================================ */
+
+.ngs-admin-dashboard {
+    --ngs-gap: 0.85rem;
+    --ngs-radius: 1rem;
+    --ngs-card-bg: #ffffff;
+    --ngs-card-border: rgba(0, 0, 0, 0.08);
+    --ngs-muted: #6b7280;
+    --ngs-text: #111827;
+    --ngs-accent: #16a34a;
+    --ngs-accent-soft: rgba(34, 197, 94, 0.12);
 }
 
-.ngs-admin-dashboard .ngs-dash-kpi:hover {
+.dark .ngs-admin-dashboard {
+    --ngs-card-bg: #0f172a;
+    --ngs-card-border: rgba(255, 255, 255, 0.08);
+    --ngs-muted: #9ca3af;
+    --ngs-text: #f3f4f6;
+    --ngs-accent-soft: rgba(34, 197, 94, 0.16);
+}
+
+/* Header */
+.ngs-dash-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+}
+
+.ngs-dash-eyebrow {
+    margin: 0 0 0.25rem;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ngs-accent);
+}
+
+.ngs-dash-title {
+    margin: 0;
+    font-size: 1.65rem;
+    font-weight: 700;
+    color: var(--ngs-text);
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+}
+
+.ngs-dash-sub {
+    margin: 0.35rem 0 0;
+    font-size: 0.85rem;
+    color: var(--ngs-muted);
+}
+
+.ngs-dash-live {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--ngs-accent);
+    background: var(--ngs-accent-soft);
+    border: 1px solid rgba(34, 197, 94, 0.25);
+}
+
+.ngs-dash-live-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.25);
+    animation: ngs-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes ngs-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.55; transform: scale(0.85); }
+}
+
+/* Shared card */
+.ngs-card {
+    background: var(--ngs-card-bg);
+    border: 1px solid var(--ngs-card-border);
+    border-radius: var(--ngs-radius);
+    padding: 1rem 1.1rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    transition: transform 0.2s ease, box-shadow 0.25s ease, border-color 0.2s ease;
+    overflow: hidden;
+    min-width: 0;
+}
+
+.ngs-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 28px -14px rgba(22, 163, 74, .35);
+    box-shadow: 0 14px 32px -16px rgba(22, 163, 74, 0.35);
+    border-color: rgba(34, 197, 94, 0.28);
 }
 
-.ngs-admin-dashboard .ngs-plot {
+.ngs-card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.65rem;
+}
+
+.ngs-card-title {
+    margin: 0;
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--ngs-text);
+}
+
+.ngs-card-desc {
+    margin: 0.2rem 0 0;
+    font-size: 0.72rem;
+    color: var(--ngs-muted);
+}
+
+.ngs-card-badge {
+    flex-shrink: 0;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.28rem 0.55rem;
+    border-radius: 999px;
+    color: var(--ngs-accent);
+    background: var(--ngs-accent-soft);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+/* KPI bento */
+.ngs-bento-kpi {
+    display: grid;
+    gap: var(--ngs-gap);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-bottom: var(--ngs-gap);
+}
+
+@media (min-width: 768px) {
+    .ngs-bento-kpi {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1280px) {
+    .ngs-bento-kpi {
+        grid-template-columns: 1.35fr repeat(5, minmax(0, 1fr));
+    }
+}
+
+.ngs-kpi-top {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.65rem;
+}
+
+.ngs-kpi-icon {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.65rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem !important;
+    color: var(--ngs-accent);
+    background: var(--ngs-accent-soft);
+}
+
+.ngs-kpi-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ngs-muted);
+    line-height: 1.2;
+}
+
+.ngs-kpi-value {
+    margin: 0;
+    font-size: 1.55rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--ngs-text);
+    line-height: 1.1;
+}
+
+.ngs-kpi-hint {
+    margin: 0.35rem 0 0;
+    font-size: 0.7rem;
+    color: var(--ngs-muted);
+}
+
+.ngs-kpi-hero {
+    background:
+        linear-gradient(145deg, rgba(34, 197, 94, 0.14), transparent 55%),
+        var(--ngs-card-bg);
+}
+
+.ngs-kpi-hero .ngs-kpi-value {
+    font-size: 1.85rem;
+}
+
+/* Chart bento grid */
+.ngs-bento-charts {
+    display: grid;
+    gap: var(--ngs-gap);
+    grid-template-columns: 1fr;
+}
+
+@media (min-width: 900px) {
+    .ngs-bento-charts {
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        grid-auto-flow: dense;
+        grid-auto-rows: minmax(100px, auto);
+    }
+
+    /* 1 Workflow | 2 Location */
+    .ngs-bento-charts > .ngs-tile:nth-child(1) { grid-column: span 7; }
+    .ngs-bento-charts > .ngs-tile:nth-child(2) { grid-column: span 5; }
+
+    /* 3 Contributors (tall) | 4 Timeline | 5 Years beside tall */
+    .ngs-bento-charts > .ngs-tile:nth-child(3) {
+        grid-column: span 5;
+        grid-row: span 2;
+    }
+    .ngs-bento-charts > .ngs-tile:nth-child(4) { grid-column: span 7; }
+    .ngs-bento-charts > .ngs-tile:nth-child(5) { grid-column: span 7; }
+
+    /* 6 Recent actions full width */
+    .ngs-bento-charts > .ngs-tile:nth-child(6) { grid-column: span 12; }
+}
+
+.ngs-tile {
+    display: flex;
+    flex-direction: column;
+}
+
+.ngs-plot {
     width: 100%;
-    min-height: 280px;
+    flex: 1;
+    min-height: 260px;
+}
+
+.ngs-plot-md { min-height: 280px; }
+.ngs-plot-lg { min-height: 460px; }
+
+.ngs-empty {
+    margin: 0;
+    padding: 2.5rem 1rem;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--ngs-muted);
+}
+
+/* Recent actions inside bento card — flatten Unfold history chrome */
+.ngs-activity-wrap {
+    max-height: 280px;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.ngs-activity-wrap > * {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+.ngs-activity-wrap h2,
+.ngs-activity-wrap .text-font-important-light {
+    display: none;
 }
 
 @media (max-width: 640px) {
-    .ngs-admin-dashboard .ngs-plot {
-        min-height: 260px;
-    }
-    .ngs-admin-dashboard .ngs-dash-kpi .text-2xl {
-        font-size: 1.35rem;
-    }
+    .ngs-dash-title { font-size: 1.35rem; }
+    .ngs-kpi-value { font-size: 1.3rem; }
+    .ngs-kpi-hero .ngs-kpi-value { font-size: 1.5rem; }
+    .ngs-plot-md, .ngs-plot-lg { min-height: 240px; }
+    .ngs-card { padding: 0.85rem; }
 }
