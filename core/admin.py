@@ -207,7 +207,21 @@ class MetadataRecordInline(TabularInline):
 # --- Main DailyReport Admin ---
 @admin.register(DailyReport)
 class DailyReportAdmin(PremiumAdmin):
-    list_display = ('id', 'year', 'volume_num', 'location', 'name', 'pdf_deed', 'indexing', 'uploading', 'QC', 'metadata', 'created_at')
+    list_display = (
+        'id',
+        'year',
+        'volume_num',
+        'location',
+        'name',
+        'pdf_deed',
+        'indexing',
+        'uploading',
+        'QC',
+        'metadata',
+        'created_at',
+        'edit_button',
+    )
+    list_display_links = ('id', 'name')
     list_filter = (
         ('location', ChoicesDropdownFilter),
         ReportYearDropdownFilter,
@@ -223,6 +237,17 @@ class DailyReportAdmin(PremiumAdmin):
     
     # Embed the inline tables nicely at the bottom of the edit layout
     inlines = [PDFRecordInline, IndexingRecordInline, UploadingRecordInline, QCRecordInline, MetadataRecordInline]
+
+    def edit_button(self, obj):
+        """Visible Edit button so admins can fix typos / spelling mistakes."""
+        url = reverse('admin:core_dailyreport_change', args=[obj.pk])
+        return format_html(
+            '<a href="{}" style="display:inline-block;background:#15803d;color:#fff;'
+            'padding:4px 12px;border-radius:6px;font-size:12px;font-weight:600;'
+            'text-decoration:none;white-space:nowrap;">Edit</a>',
+            url,
+        )
+    edit_button.short_description = "Edit"
 
     def save_model(self, request, obj, form, change):
         """
