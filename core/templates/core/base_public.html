@@ -6,6 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{% block title %}Narasimha Global Service &amp; Solution (NGS){% endblock %}</title>
   <meta name="description" content="{% block meta_description %}Narasimha Global empowers government and businesses with skilled manpower and IT solutions. Document digitization and digital transformation — Patna, Bihar.{% endblock %}" />
+  <link rel="icon" href="{% static 'core/images/favicon.ico' %}" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'core/images/favicon-32.png' %}" />
+  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'core/images/favicon-16.png' %}" />
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'core/images/apple-touch-icon.png' %}" />
+  <link rel="manifest" href="{% static 'core/site.webmanifest' %}" />
+  <meta name="theme-color" content="#070B14" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -63,14 +69,17 @@
     :root {
       --ink: #070B14;
       --brass: #C2A56D;
+      --surface: #0c111c;
+      --text: rgba(244,246,250,0.92);
+      --muted: rgba(244,246,250,0.55);
     }
     * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; color-scheme: dark; }
     body {
       margin: 0;
       font-family: Manrope, sans-serif;
-      color: #0d1c2f;
-      background: #F4F6FA;
+      color: var(--text);
+      background: #070B14;
       -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
     }
@@ -79,48 +88,62 @@
       font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
     }
 
-    /* Ambient mesh */
+    /* Ambient mesh — dark */
     .page-bg {
       position: fixed; inset: 0; z-index: -2; pointer-events: none;
       background:
-        radial-gradient(900px 500px at 10% -10%, rgba(194,165,109,0.18), transparent 55%),
-        radial-gradient(700px 480px at 95% 5%, rgba(56,120,180,0.12), transparent 50%),
-        radial-gradient(600px 400px at 70% 90%, rgba(7,11,20,0.06), transparent 55%),
-        #F4F6FA;
+        radial-gradient(900px 500px at 8% -8%, rgba(194,165,109,0.16), transparent 55%),
+        radial-gradient(700px 480px at 95% 8%, rgba(56,120,180,0.14), transparent 50%),
+        radial-gradient(600px 400px at 60% 100%, rgba(194,165,109,0.08), transparent 55%),
+        #070B14;
     }
     .noise {
-      position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0.035;
+      position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0.045;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
       background-size: 180px;
     }
 
-    /* Glass surfaces */
+    /* Glass surfaces — dark */
     .glass {
-      background: rgba(255,255,255,0.55);
-      border: 1px solid rgba(255,255,255,0.65);
-      box-shadow: 0 8px 32px rgba(7,11,20,0.08), inset 0 1px 0 rgba(255,255,255,0.7);
-      backdrop-filter: blur(18px) saturate(1.35);
-      -webkit-backdrop-filter: blur(18px) saturate(1.35);
+      background: rgba(18,24,38,0.72);
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.08);
+      backdrop-filter: blur(18px) saturate(1.25);
+      -webkit-backdrop-filter: blur(18px) saturate(1.25);
     }
     .glass-dark {
-      background: rgba(7,11,20,0.55);
+      background: rgba(7,11,20,0.72);
       border: 1px solid rgba(255,255,255,0.12);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.1);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.1);
       backdrop-filter: blur(20px) saturate(1.2);
       -webkit-backdrop-filter: blur(20px) saturate(1.2);
     }
     .glass-panel {
-      background: linear-gradient(145deg, rgba(255,255,255,0.72), rgba(255,255,255,0.38));
-      border: 1px solid rgba(255,255,255,0.7);
-      box-shadow: 0 12px 40px rgba(7,11,20,0.08), inset 0 1px 0 rgba(255,255,255,0.85);
+      background: linear-gradient(145deg, rgba(26,34,51,0.88), rgba(18,24,38,0.72));
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.08);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
+      color: var(--text);
       transition: transform 0.35s cubic-bezier(.22,1,.36,1), box-shadow 0.35s ease, border-color 0.35s ease;
     }
     .glass-panel:hover {
       transform: translateY(-4px);
-      box-shadow: 0 24px 48px rgba(7,11,20,0.12), inset 0 1px 0 rgba(255,255,255,0.9);
-      border-color: rgba(194,165,109,0.45);
+      box-shadow: 0 24px 48px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.12);
+      border-color: rgba(194,165,109,0.4);
+    }
+    .map-frame {
+      border-radius: 1.5rem;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+    }
+    .map-frame iframe {
+      width: 100%;
+      height: 420px;
+      border: 0;
+      filter: invert(90%) hue-rotate(180deg) brightness(0.95) contrast(0.9);
+      display: block;
     }
 
     .bento {
@@ -143,52 +166,52 @@
       display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
       padding: 0.9rem 1.5rem;
       border-radius: 999px;
-      background: linear-gradient(135deg, #070B14, #1A2233);
-      color: #fff;
+      background: linear-gradient(135deg, #C2A56D, #a88b4e);
+      color: #070B14;
       font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
-      border: 1px solid transparent;
+      border: 1px solid rgba(194,165,109,0.4);
       transition: transform 0.25s ease, box-shadow 0.25s ease;
     }
-    .btn-solid:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(7,11,20,0.28); }
+    .btn-solid:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(194,165,109,0.28); }
     .btn-glass {
       display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
       padding: 0.9rem 1.5rem;
       border-radius: 999px;
-      background: rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.08);
       color: #fff;
       font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
-      border: 1px solid rgba(255,255,255,0.28);
+      border: 1px solid rgba(255,255,255,0.22);
       backdrop-filter: blur(12px);
       transition: background 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
     }
-    .btn-glass:hover { background: rgba(255,255,255,0.2); border-color: rgba(194,165,109,0.6); transform: translateY(-2px); }
+    .btn-glass:hover { background: rgba(255,255,255,0.14); border-color: rgba(194,165,109,0.6); transform: translateY(-2px); }
     .btn-outline {
       display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
       padding: 0.9rem 1.5rem;
       border-radius: 999px;
       background: transparent;
-      color: var(--ink);
+      color: rgba(244,246,250,0.88);
       font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
-      border: 1px solid rgba(7,11,20,0.18);
+      border: 1px solid rgba(255,255,255,0.18);
       transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease;
     }
-    .btn-outline:hover { border-color: var(--brass); background: rgba(194,165,109,0.08); transform: translateY(-2px); }
+    .btn-outline:hover { border-color: var(--brass); background: rgba(194,165,109,0.1); transform: translateY(-2px); }
 
     .nav-glass {
-      background: rgba(255,255,255,0.62);
-      border-bottom: 1px solid rgba(255,255,255,0.7);
-      backdrop-filter: blur(20px) saturate(1.4);
-      -webkit-backdrop-filter: blur(20px) saturate(1.4);
-      box-shadow: 0 4px 24px rgba(7,11,20,0.04);
+      background: rgba(7,11,20,0.72);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(20px) saturate(1.3);
+      -webkit-backdrop-filter: blur(20px) saturate(1.3);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.25);
     }
     .nav-link {
       position: relative;
       font-size: 0.84rem;
       font-weight: 600;
-      color: rgba(13,28,47,0.62);
+      color: rgba(244,246,250,0.55);
       transition: color 0.2s ease;
     }
-    .nav-link:hover, .nav-link.is-active { color: var(--ink); }
+    .nav-link:hover, .nav-link.is-active { color: #fff; }
     .nav-link.is-active::after {
       content: "";
       position: absolute; left: 0; right: 0; bottom: -6px; height: 2px;
@@ -222,8 +245,8 @@
       padding: 0.35rem 0.85rem;
       border-radius: 999px;
       font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
-      color: #8a7340;
-      background: rgba(194,165,109,0.14);
+      color: #D4BC8A;
+      background: rgba(194,165,109,0.12);
       border: 1px solid rgba(194,165,109,0.28);
     }
     .label-pill .dot {
@@ -231,6 +254,30 @@
       box-shadow: 0 0 0 3px rgba(194,165,109,0.2);
       animation: pulseGlow 2.4s ease-in-out infinite;
     }
+    .bento-tile {
+      position: relative;
+      overflow: hidden;
+      border-radius: 1.5rem;
+      border: 1px solid rgba(255,255,255,0.1);
+      min-height: 220px;
+    }
+    .bento-tile img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.7s cubic-bezier(.22,1,.36,1);
+    }
+    .bento-tile:hover img { transform: scale(1.06); }
+    .bento-tile .tile-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, transparent 40%, rgba(7,11,20,0.85) 100%);
+      display: flex; align-items: flex-end; padding: 1.25rem;
+    }
+    .brand-logo {
+      width: 2.35rem; height: 2.35rem; border-radius: 0.75rem;
+      object-fit: cover; border: 1px solid rgba(194,165,109,0.45);
+      box-shadow: 0 0 0 3px rgba(194,165,109,0.12);
+      transition: transform 0.25s ease;
+    }
+    .group:hover .brand-logo { transform: scale(1.06); }
 
     @media (prefers-reduced-motion: reduce) {
       .reveal { opacity: 1; transform: none; transition: none; }
@@ -247,8 +294,8 @@
 <header class="nav-glass sticky top-0 z-50">
   <div class="site-wrap flex items-center justify-between h-[72px] px-5 md:px-8">
     <a href="{% url 'home' %}" class="flex items-center gap-3 group">
-      <span class="w-9 h-9 rounded-xl bg-ink text-white flex items-center justify-center font-display text-sm font-bold shadow-lg shadow-ink/20 group-hover:scale-105 transition-transform">N</span>
-      <span class="font-display text-xl font-bold tracking-tight text-ink">NGS</span>
+      <img class="brand-logo" src="{% static 'core/images/logo.jpeg' %}" alt="NGS logo" width="38" height="38" />
+      <span class="font-display text-xl font-bold tracking-tight text-white">NGS</span>
     </a>
     <nav class="hidden lg:flex items-center gap-8">
       <a class="nav-link {% if active_nav == 'home' %}is-active{% endif %}" href="{% url 'home' %}">Home</a>
@@ -264,16 +311,16 @@
         <a class="btn-solid !py-2.5 !px-5" href="{% url 'login' %}">Login</a>
       {% endif %}
     </div>
-    <button id="mobileMenuBtn" type="button" class="lg:hidden glass rounded-xl p-2.5 text-ink" aria-label="Menu">
+    <button id="mobileMenuBtn" type="button" class="lg:hidden glass rounded-xl p-2.5 text-white" aria-label="Menu">
       <span class="material-symbols-outlined">menu</span>
     </button>
   </div>
-  <div id="mobileMenu" class="hidden lg:hidden border-t border-white/50 px-5 py-4 space-y-1 bg-white/70 backdrop-blur-xl">
-    <a class="block py-3 font-semibold {% if active_nav == 'home' %}text-ink{% else %}text-ink/60{% endif %}" href="{% url 'home' %}">Home</a>
-    <a class="block py-3 font-semibold {% if active_nav == 'about' %}text-ink{% else %}text-ink/60{% endif %}" href="{% url 'about' %}">About</a>
-    <a class="block py-3 font-semibold {% if active_nav == 'services' %}text-ink{% else %}text-ink/60{% endif %}" href="{% url 'services' %}">Services</a>
-    <a class="block py-3 font-semibold {% if active_nav == 'process' %}text-ink{% else %}text-ink/60{% endif %}" href="{% url 'process' %}">Process</a>
-    <a class="block py-3 font-semibold {% if active_nav == 'contact' %}text-ink{% else %}text-ink/60{% endif %}" href="{% url 'contact' %}">Contact</a>
+  <div id="mobileMenu" class="hidden lg:hidden border-t border-white/10 px-5 py-4 space-y-1 bg-ink/90 backdrop-blur-xl">
+    <a class="block py-3 font-semibold {% if active_nav == 'home' %}text-white{% else %}text-white/55{% endif %}" href="{% url 'home' %}">Home</a>
+    <a class="block py-3 font-semibold {% if active_nav == 'about' %}text-white{% else %}text-white/55{% endif %}" href="{% url 'about' %}">About</a>
+    <a class="block py-3 font-semibold {% if active_nav == 'services' %}text-white{% else %}text-white/55{% endif %}" href="{% url 'services' %}">Services</a>
+    <a class="block py-3 font-semibold {% if active_nav == 'process' %}text-white{% else %}text-white/55{% endif %}" href="{% url 'process' %}">Process</a>
+    <a class="block py-3 font-semibold {% if active_nav == 'contact' %}text-white{% else %}text-white/55{% endif %}" href="{% url 'contact' %}">Contact</a>
     {% if user.is_authenticated %}
       <a class="block py-3 font-semibold text-brass" href="{% url 'logout' %}">Logout</a>
     {% else %}
@@ -286,7 +333,7 @@
 {% if messages %}
 <div class="site-wrap px-5 md:px-8 pt-4 space-y-2 w-full">
   {% for message in messages %}
-  <div class="glass rounded-2xl px-4 py-3 text-sm {% if message.tags == 'error' %}!border-red-200 text-red-800{% else %}text-ink{% endif %}">
+  <div class="glass rounded-2xl px-4 py-3 text-sm {% if message.tags == 'error' %}!border-red-400/40 text-red-300{% else %}text-white{% endif %}">
     {{ message }}
   </div>
   {% endfor %}
@@ -305,7 +352,7 @@
     <div class="grid grid-cols-1 md:grid-cols-12 gap-10">
       <div class="md:col-span-5">
         <div class="flex items-center gap-3 mb-4">
-          <span class="w-10 h-10 rounded-xl bg-white/10 border border-white/15 text-white flex items-center justify-center font-display font-bold">N</span>
+          <img class="brand-logo !w-11 !h-11" src="{% static 'core/images/logo.jpeg' %}" alt="NGS logo" width="44" height="44" />
           <span class="font-display text-2xl text-white font-bold">NGS</span>
         </div>
         <p class="text-white/55 text-sm leading-relaxed max-w-md">

@@ -1,0 +1,21 @@
+{
+  "name": "Narasimha Global Service & Solution",
+  "short_name": "NGS",
+  "description": "Bihar's Digital Transformation Partner — digitization, manpower, and IT solutions.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#070B14",
+  "theme_color": "#070B14",
+  "icons": [
+    {
+      "src": "/static/core/images/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/static/core/images/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

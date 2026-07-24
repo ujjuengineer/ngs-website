@@ -9,7 +9,7 @@
   <div class="orb w-72 h-72 bg-sky-400/15 bottom-0 left-10"></div>
   <div class="relative site-wrap px-5 md:px-8 py-20 md:py-28">
     <div class="max-w-2xl reveal">
-      <span class="label-pill !bg-white/10 !text-brass-soft !border-white/15 mb-5"><span class="dot"></span> Reach out</span>
+      <span class="label-pill mb-5"><span class="dot"></span> Reach out</span>
       <h1 class="font-display text-4xl md:text-6xl font-bold text-white mb-5">Get in touch.</h1>
       <p class="text-lg text-white/60">Government projects or B2B requirements — our team is ready to help.</p>
     </div>
@@ -21,65 +21,65 @@
     <div class="bento">
       <div class="bento-md glass-panel rounded-3xl p-8 flex flex-col justify-between reveal">
         <div>
-          <h2 class="font-display text-2xl font-bold text-ink mb-8">Contact information</h2>
+          <h2 class="font-display text-2xl font-bold text-white mb-8">Contact information</h2>
           <div class="space-y-7">
             <div class="flex gap-4">
               <span class="w-11 h-11 rounded-2xl bg-brass/15 text-brass flex items-center justify-center shrink-0"><span class="material-symbols-outlined">location_on</span></span>
               <div>
-                <p class="text-[11px] font-bold tracking-[0.12em] uppercase text-ink/40 mb-1">Headquarters</p>
-                <p class="font-semibold text-ink">Patna, Bihar, India</p>
+                <p class="text-[11px] font-bold tracking-[0.12em] uppercase text-white/40 mb-1">Headquarters</p>
+                <p class="font-semibold text-white">Patna, Bihar, India</p>
               </div>
             </div>
             <div class="flex gap-4">
               <span class="w-11 h-11 rounded-2xl bg-brass/15 text-brass flex items-center justify-center shrink-0"><span class="material-symbols-outlined">mail</span></span>
               <div>
-                <p class="text-[11px] font-bold tracking-[0.12em] uppercase text-ink/40 mb-1">Email</p>
-                <a class="font-semibold text-ink hover:text-brass" href="mailto:info@narasimhaglobal.com">info@narasimhaglobal.com</a>
+                <p class="text-[11px] font-bold tracking-[0.12em] uppercase text-white/40 mb-1">Email</p>
+                <a class="font-semibold text-white hover:text-brass" href="mailto:info@narasimhaglobal.com">info@narasimhaglobal.com</a>
               </div>
             </div>
             <div class="flex gap-4">
               <span class="w-11 h-11 rounded-2xl bg-brass/15 text-brass flex items-center justify-center shrink-0"><span class="material-symbols-outlined">call</span></span>
               <div>
-                <p class="text-[11px] font-bold tracking-[0.12em] uppercase text-ink/40 mb-1">Phone</p>
-                <a class="font-semibold text-ink hover:text-brass" href="tel:+919341554887">+91 9341554887</a>
+                <p class="text-[11px] font-bold tracking-[0.12em] uppercase text-white/40 mb-1">Phone</p>
+                <a class="font-semibold text-white hover:text-brass" href="tel:+919341554887">+91 9341554887</a>
               </div>
             </div>
           </div>
         </div>
-        <div class="mt-10 pt-6 border-t border-ink/10 flex gap-4">
-          <span class="w-11 h-11 rounded-2xl bg-ink/5 text-ink flex items-center justify-center shrink-0"><span class="material-symbols-outlined">schedule</span></span>
+        <div class="mt-10 pt-6 border-t border-white/10 flex gap-4">
+          <span class="w-11 h-11 rounded-2xl bg-white/5 text-white flex items-center justify-center shrink-0"><span class="material-symbols-outlined">schedule</span></span>
           <div>
-            <p class="text-[11px] font-bold tracking-[0.12em] uppercase text-ink/40 mb-1">Hours</p>
-            <p class="font-semibold text-ink">Mon–Sat · 9:00 AM – 6:00 PM IST</p>
+            <p class="text-[11px] font-bold tracking-[0.12em] uppercase text-white/40 mb-1">Hours</p>
+            <p class="font-semibold text-white">Mon–Sat · 9:00 AM – 6:00 PM IST</p>
           </div>
         </div>
       </div>
 
       <div class="bento-wide glass-panel rounded-3xl p-8 md:p-10 reveal reveal-delay-1">
-        <h2 class="font-display text-2xl font-bold text-ink mb-8">Send a message</h2>
+        <h2 class="font-display text-2xl font-bold text-white mb-8">Send a message</h2>
         <form method="POST" action="{% url 'contact' %}" class="space-y-5">
           {% csrf_token %}
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
-              <label class="block text-xs font-bold tracking-wide uppercase text-ink/45 mb-2" for="name">Full name *</label>
-              <input class="w-full rounded-2xl border border-ink/10 bg-white/60 px-4 py-3.5 text-ink focus:outline-none focus:ring-2 focus:ring-brass/40 focus:border-brass/40 transition" id="name" name="name" type="text" required />
+              <label class="block text-xs font-bold tracking-wide uppercase text-white/45 mb-2" for="name">Full name *</label>
+              <input class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3.5 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-brass/40 focus:border-brass/40 transition" id="name" name="name" type="text" required />
             </div>
             <div>
-              <label class="block text-xs font-bold tracking-wide uppercase text-ink/45 mb-2" for="phone">Phone</label>
-              <input class="w-full rounded-2xl border border-ink/10 bg-white/60 px-4 py-3.5 text-ink focus:outline-none focus:ring-2 focus:ring-brass/40 focus:border-brass/40 transition" id="phone" name="phone" type="tel" />
+              <label class="block text-xs font-bold tracking-wide uppercase text-white/45 mb-2" for="phone">Phone</label>
+              <input class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-brass/40 focus:border-brass/40 transition" id="phone" name="phone" type="tel" />
             </div>
           </div>
           <div>
-            <label class="block text-xs font-bold tracking-wide uppercase text-ink/45 mb-2" for="email">Email *</label>
-            <input class="w-full rounded-2xl border border-ink/10 bg-white/60 px-4 py-3.5 text-ink focus:outline-none focus:ring-2 focus:ring-brass/40 focus:border-brass/40 transition" id="email" name="email" type="email" required />
+            <label class="block text-xs font-bold tracking-wide uppercase text-white/45 mb-2" for="email">Email *</label>
+            <input class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-brass/40 focus:border-brass/40 transition" id="email" name="email" type="email" required />
           </div>
           <div>
-            <label class="block text-xs font-bold tracking-wide uppercase text-ink/45 mb-2" for="subject">Subject *</label>
-            <input class="w-full rounded-2xl border border-ink/10 bg-white/60 px-4 py-3.5 text-ink focus:outline-none focus:ring-2 focus:ring-brass/40 focus:border-brass/40 transition" id="subject" name="subject" type="text" required />
+            <label class="block text-xs font-bold tracking-wide uppercase text-white/45 mb-2" for="subject">Subject *</label>
+            <input class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-brass/40 focus:border-brass/40 transition" id="subject" name="subject" type="text" required />
           </div>
           <div>
-            <label class="block text-xs font-bold tracking-wide uppercase text-ink/45 mb-2" for="message">Message *</label>
-            <textarea class="w-full rounded-2xl border border-ink/10 bg-white/60 px-4 py-3.5 text-ink focus:outline-none focus:ring-2 focus:ring-brass/40 focus:border-brass/40 transition resize-none" id="message" name="message" rows="5" required></textarea>
+            <label class="block text-xs font-bold tracking-wide uppercase text-white/45 mb-2" for="message">Message *</label>
+            <textarea class="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-brass/40 focus:border-brass/40 transition resize-none" id="message" name="message" rows="5" required></textarea>
           </div>
           <div class="pt-2 flex justify-end">
             <button class="btn-solid" type="submit">
@@ -89,6 +89,27 @@
           </div>
         </form>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- Dark map -->
+<section class="section-pad pt-0">
+  <div class="site-wrap reveal">
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6">
+      <div>
+        <span class="label-pill mb-3"><span class="dot"></span> Location</span>
+        <h2 class="font-display text-3xl font-bold text-white">Find us in Patna</h2>
+      </div>
+      <p class="text-sm text-white/45 max-w-sm">Narasimha Global Service &amp; Solution — serving institutions across Bihar from Patna.</p>
+    </div>
+    <div class="map-frame">
+      <iframe
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d115133.01634131288!2d85.06064120856574!3d25.608014355214312!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39f29937c52d4f05%3A0x831a0e05f607b270!2sPatna%2C%20Bihar!5e0!3m2!1sen!2sin!4v1784873719592!5m2!1sen!2sin"
+        allowfullscreen=""
+        loading="lazy"
+        referrerpolicy="strict-origin-when-cross-origin"
+        title="NGS location — Patna, Bihar"></iframe>
     </div>
   </div>
 </section>

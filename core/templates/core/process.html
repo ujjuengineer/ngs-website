@@ -20,8 +20,8 @@
   <div class="orb w-96 h-96 bg-brass/15 top-0 left-1/2 -translate-x-1/2"></div>
   <div class="site-wrap relative max-w-3xl mx-auto reveal">
     <span class="label-pill mb-5"><span class="dot"></span> Workflow</span>
-    <h1 class="font-display text-4xl md:text-6xl font-bold text-ink mb-5">From Paper to Portal</h1>
-    <p class="text-lg text-ink/55">A meticulous, secure, auditable digitization process for high-stakes institutional archives.</p>
+    <h1 class="font-display text-4xl md:text-6xl font-bold text-white mb-5">From Paper to Portal</h1>
+    <p class="text-lg text-white/55">A meticulous, secure, auditable digitization process for high-stakes institutional archives.</p>
   </div>
 </section>
 
@@ -33,17 +33,17 @@
       <div class="relative grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12 items-center reveal {% if forloop.counter|divisibleby:2 %}{% endif %}">
         <div class="{% if forloop.counter|divisibleby:2 %}md:order-2{% endif %} glass-panel rounded-3xl p-8 {% if forloop.counter|divisibleby:2 %}md:text-left{% else %}md:text-right{% endif %}">
           <p class="text-[11px] font-bold tracking-[0.16em] uppercase text-brass mb-2">Step {{ step.num }}</p>
-          <h2 class="font-display text-2xl md:text-3xl font-bold text-ink mb-3">{{ step.title }}</h2>
-          <p class="text-ink/55 leading-relaxed">{{ step.desc }}</p>
+          <h2 class="font-display text-2xl md:text-3xl font-bold text-white mb-3">{{ step.title }}</h2>
+          <p class="text-white/55 leading-relaxed">{{ step.desc }}</p>
         </div>
         <div class="hidden md:flex absolute left-1/2 -translate-x-1/2 w-12 h-12 rounded-full glass items-center justify-center z-10 border-brass/30 shadow-lift">
-          <span class="material-symbols-outlined text-ink">{{ step.icon }}</span>
+          <span class="material-symbols-outlined text-white">{{ step.icon }}</span>
         </div>
         <div class="{% if forloop.counter|divisibleby:2 %}md:order-1{% endif %} rounded-3xl overflow-hidden min-h-[220px] border border-white/60 shadow-glass group">
           {% if step.image %}
           <img class="w-full h-56 md:h-64 object-cover grayscale group-hover:grayscale-0 transition-all duration-500" alt="{{ step.title }}" src="{{ step.image }}" />
           {% else %}
-          <div class="h-56 md:h-64 bg-gradient-to-br from-white/80 to-mist flex flex-col items-center justify-center text-ink/40">
+          <div class="h-56 md:h-64 bg-gradient-to-br from-ink-soft to-ink-mid flex flex-col items-center justify-center text-white/40 border border-white/10">
             <span class="material-symbols-outlined text-5xl mb-2">{{ step.icon }}</span>
             <span class="text-[11px] font-bold tracking-[0.14em] uppercase">{{ step.badge }}</span>
           </div>
