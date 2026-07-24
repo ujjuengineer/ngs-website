@@ -117,7 +117,11 @@
         href="{{ stage.url }}"
         title="{% if stage.active %}Clear {{ stage.label }} filter{% else %}Show {{ stage.label }} done only{% endif %}"
       >
-        <span class="material-symbols-outlined">{{ stage.icon }}</span>
+        {% if stage.svg %}
+          {{ stage.svg }}
+        {% else %}
+          <span class="material-symbols-outlined">{{ stage.icon }}</span>
+        {% endif %}
       </a>
       {% endfor %}
     </div>

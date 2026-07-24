@@ -1702,6 +1702,18 @@ body.app-core.model-dailyreport #result_list .ngs-dr-stage .material-symbols-out
 
 .ngs-dr-stage-dot { display: none !important; }
 
+.ngs-dr-stage-svg {
+    width: 16px !important;
+    height: 16px !important;
+    display: block;
+    flex-shrink: 0;
+}
+
+.ngs-dr-tb-stage .ngs-dr-stage-svg {
+    width: 16px !important;
+    height: 16px !important;
+}
+
 .ngs-dr-stage-done {
     color: #16a34a;
     background: rgba(34, 197, 94, 0.15);

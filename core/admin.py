@@ -11,6 +11,7 @@ from django.http import HttpResponse
 from django.urls import path, reverse
 from django.utils import timezone
 from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 
 from unfold.admin import ModelAdmin, TabularInline
 from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
@@ -42,6 +43,19 @@ DAILY_REPORT_EXPORT_HEADERS = [
     "Metadata",
     "Created at",
 ]
+
+# Material-style document SVG for PDF stage (fill via CSS currentColor)
+PDF_STAGE_SVG = (
+    '<svg class="ngs-dr-stage-svg" xmlns="http://www.w3.org/2000/svg" '
+    'viewBox="0 -960 960 960" width="16" height="16" fill="currentColor" aria-hidden="true">'
+    '<path d="M280-80q-33 0-56.5-23.5T200-160v-640q0-33 23.5-56.5T280-880h247q16 0 '
+    '30.5 6t25.5 17l154 154q11 11 17 25.5t6 30.5v487q0 33-23.5 56.5T680-80H280Zm160-720H280v640'
+    'h400v-400H560q-50 0-85-35t-35-85v-120Zm80 0v120q0 17 11.5 28.5T560-640h120v-7L527-800h-7Z'
+    'M400-200q-17 0-28.5-11.5T360-240q0-17 11.5-28.5T400-280h80q17 0 28.5 11.5T520-240q0 17'
+    '-11.5 28.5T480-200h-80Zm0-160q-17 0-28.5-11.5T360-400q0-17 11.5-28.5T400-440h160q17 0 '
+    '28.5 11.5T600-400q0 17-11.5 28.5T560-360H400Z"/>'
+    '</svg>'
+)
 
 
 def _yn(value):
@@ -444,20 +458,27 @@ class DailyReportAdmin(PremiumAdmin):
     page_cell.short_description = "Page"
     page_cell.admin_order_field = "num_of_page"
 
-    def _stage_badge(self, done, icon, label):
+    def _stage_badge(self, done, icon, label, svg=None):
         cls = "ngs-dr-stage ngs-dr-stage-done" if done else "ngs-dr-stage ngs-dr-stage-todo"
+        title = f"{label} — {'Done' if done else 'Pending'}"
+        if svg:
+            return format_html(
+                '<span class="{}" title="{}">{}</span>',
+                cls,
+                title,
+                mark_safe(svg),
+            )
         return format_html(
-            '<span class="{}" title="{} — {}">'
+            '<span class="{}" title="{}">'
             '<span class="material-symbols-outlined ngs-dr-stage-icon" aria-hidden="true">{}</span>'
             '</span>',
             cls,
-            label,
-            "Done" if done else "Pending",
+            title,
             icon,
         )
 
     def pdf_badge(self, obj):
-        return self._stage_badge(obj.pdf_deed, "docs", "PDF")
+        return self._stage_badge(obj.pdf_deed, "docs", "PDF", svg=PDF_STAGE_SVG)
     pdf_badge.short_description = "PDF"
     pdf_badge.admin_order_field = "pdf_deed"
 
@@ -709,13 +730,13 @@ class DailyReportAdmin(PremiumAdmin):
     def _build_stage_toggles(self, request):
         """Icon toggles: click = filter Done; click again = clear that filter."""
         stages = [
-            ("pdf_deed__exact", "PDF", "docs"),
-            ("indexing__exact", "Indexing", "list"),
-            ("uploading__exact", "Uploading", "database_upload"),
-            ("QC__exact", "QC", "list_alt_check"),
+            ("pdf_deed__exact", "PDF", "docs", PDF_STAGE_SVG),
+            ("indexing__exact", "Indexing", "list", None),
+            ("uploading__exact", "Uploading", "database_upload", None),
+            ("QC__exact", "QC", "list_alt_check", None),
         ]
         toggles = []
-        for key, label, icon in stages:
+        for key, label, icon, svg in stages:
             active = request.GET.get(key) == "1"
             if active:
                 url = self._param_url(request, drop=[key])
@@ -725,6 +746,7 @@ class DailyReportAdmin(PremiumAdmin):
                 "key": key,
                 "label": label,
                 "icon": icon,
+                "svg": mark_safe(svg) if svg else None,
                 "active": active,
                 "url": url,
             })
