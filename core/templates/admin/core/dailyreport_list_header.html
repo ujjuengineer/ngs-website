@@ -1,0 +1,59 @@
+{% load i18n %}
+
+<section class="ngs-dr-console">
+  <header class="ngs-dr-hero">
+    <div class="ngs-dr-hero-copy">
+      <p class="ngs-dr-eyebrow">Core · Digitization ops</p>
+      <h1 class="ngs-dr-title">Daily Reports</h1>
+      <p class="ngs-dr-sub">
+        Volumes logged across Bihar districts &middot;
+        <strong>{{ dr_total|default:"0" }}</strong> currently visible
+      </p>
+    </div>
+    <div class="ngs-dr-hero-cta">
+      <a class="ngs-dr-btn ngs-dr-btn-primary" href="{{ dr_add_url }}">
+        <span class="material-symbols-outlined">add</span>
+        {% trans "New report" %}
+      </a>
+    </div>
+  </header>
+
+  {% if dr_kpis %}
+  <div class="ngs-dr-kpi-strip">
+    {% for kpi in dr_kpis %}
+    <article class="ngs-dr-kpi" style="--i:{{ forloop.counter0 }}">
+      <span class="ngs-dr-kpi-icon material-symbols-outlined">{{ kpi.icon }}</span>
+      <div class="ngs-dr-kpi-body">
+        <p class="ngs-dr-kpi-label">{{ kpi.label }}</p>
+        <p class="ngs-dr-kpi-value">{{ kpi.value }}</p>
+        <p class="ngs-dr-kpi-hint">{{ kpi.hint }}</p>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if dr_pipeline %}
+  <div class="ngs-dr-pipeline">
+    <div class="ngs-dr-pipeline-head">
+      <span class="ngs-dr-pipeline-title">Workflow completion</span>
+      <span class="ngs-dr-pipeline-note">% of visible reports</span>
+    </div>
+    <div class="ngs-dr-pipeline-grid">
+      {% for stage in dr_pipeline %}
+      <div class="ngs-dr-stage-card" style="--i:{{ forloop.counter0 }}">
+        <div class="ngs-dr-stage-row">
+          <span class="ngs-dr-stage-icon material-symbols-outlined">{{ stage.icon }}</span>
+          <span class="ngs-dr-stage-name">{{ stage.label }}</span>
+          <span class="ngs-dr-stage-pct">{{ stage.pct }}%</span>
+        </div>
+        <div class="ngs-dr-stage-bar">
+          <span style="width: {{ stage.pct }}%;"></span>
+        </div>
+        <p class="ngs-dr-stage-meta">{{ stage.done }} completed</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</section>

@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin, GroupAdmin as BaseGroupAdmin
 from django.contrib.auth.models import User, Group
+from django.db import models
 from unfold.admin import ModelAdmin, TabularInline
 from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
 from unfold.contrib.filters.admin import (
@@ -209,21 +210,23 @@ class MetadataRecordInline(TabularInline):
 # --- Main DailyReport Admin ---
 @admin.register(DailyReport)
 class DailyReportAdmin(PremiumAdmin):
+    list_before_template = "admin/core/dailyreport_list_header.html"
+    list_fullwidth = True
     list_display = (
-        'id',
-        'year',
-        'volume_num',
-        'location',
+        'serial_no',
+        'date',
         'name',
-        'pdf_deed',
-        'indexing',
-        'uploading',
-        'QC',
-        'metadata',
-        'created_at',
+        'district_badge',
+        'archive_location',
+        'deed_cell',
+        'page_cell',
+        'pdf_badge',
+        'indexing_badge',
+        'uploading_badge',
+        'qc_badge',
         'edit_button',
     )
-    list_display_links = ('id', 'name')
+    list_display_links = ('name',)
     list_filter = (
         ('location', ChoicesDropdownFilter),
         ReportYearDropdownFilter,
@@ -236,20 +239,158 @@ class DailyReportAdmin(PremiumAdmin):
     search_fields = ('name', 'year', 'volume_num')
     search_help_text = "Search by employee, year, or volume number"
 
-    
     # Embed the inline tables nicely at the bottom of the edit layout
     inlines = [PDFRecordInline, IndexingRecordInline, UploadingRecordInline, QCRecordInline, MetadataRecordInline]
 
+    _STAGE_LABEL = {True: "Done", False: "—"}
+
+    class Media:
+        css = {"all": ("core/css/admin-premium.css",)}
+
+    # ── Custom columns ─────────────────────────────────────────
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        # Stash the request so serial_no can compute against the current page
+        self._current_request = request
+        return qs
+
+    def serial_no(self, obj):
+        request = getattr(self, "_current_request", None)
+        page = 1
+        per_page = self.list_per_page
+        if request is not None:
+            try:
+                page = max(int(request.GET.get("p", 0)) + 1, 1)
+            except (TypeError, ValueError):
+                page = 1
+        counter = getattr(self, "_row_counter", 0) + 1
+        self._row_counter = counter
+        # Reset when a new page loads (row 1 for that page)
+        base = (page - 1) * per_page
+        return format_html(
+            '<span class="ngs-dr-sl">{}</span>',
+            base + counter if counter <= per_page else counter,
+        )
+    serial_no.short_description = "Sl no"
+
+    def district_badge(self, obj):
+        label = obj.get_location_display() if obj.location else "—"
+        return format_html(
+            '<span class="ngs-dr-district">{}</span>',
+            label,
+        )
+    district_badge.short_description = "District"
+    district_badge.admin_order_field = "location"
+
+    def archive_location(self, obj):
+        year = obj.year or "—"
+        volume = obj.volume_num or "—"
+        return format_html(
+            '<div class="ngs-dr-loc"><span class="ngs-dr-loc-year">{}</span>'
+            '<span class="ngs-dr-loc-vol">Vol {}</span></div>',
+            year,
+            volume,
+        )
+    archive_location.short_description = "Location"
+    archive_location.admin_order_field = "year"
+
+    def deed_cell(self, obj):
+        val = obj.num_of_deed
+        if val is None:
+            return format_html('<span class="ngs-dr-num ngs-dr-num-empty">—</span>')
+        return format_html('<span class="ngs-dr-num">{}</span>', f"{val:,}")
+    deed_cell.short_description = "Deed"
+    deed_cell.admin_order_field = "num_of_deed"
+
+    def page_cell(self, obj):
+        val = obj.num_of_page
+        if val is None:
+            return format_html('<span class="ngs-dr-num ngs-dr-num-empty">—</span>')
+        return format_html('<span class="ngs-dr-num">{}</span>', f"{val:,}")
+    page_cell.short_description = "Page"
+    page_cell.admin_order_field = "num_of_page"
+
+    def _stage_badge(self, done, letter):
+        cls = "ngs-dr-stage ngs-dr-stage-done" if done else "ngs-dr-stage ngs-dr-stage-todo"
+        return format_html(
+            '<span class="{}" title="{}"><span class="ngs-dr-stage-dot"></span>{}</span>',
+            cls,
+            "Completed" if done else "Pending",
+            letter,
+        )
+
+    def pdf_badge(self, obj):
+        return self._stage_badge(obj.pdf_deed, "PDF")
+    pdf_badge.short_description = "PDF"
+    pdf_badge.admin_order_field = "pdf_deed"
+
+    def indexing_badge(self, obj):
+        return self._stage_badge(obj.indexing, "IDX")
+    indexing_badge.short_description = "Indexing"
+    indexing_badge.admin_order_field = "indexing"
+
+    def uploading_badge(self, obj):
+        return self._stage_badge(obj.uploading, "UP")
+    uploading_badge.short_description = "Uploading"
+    uploading_badge.admin_order_field = "uploading"
+
+    def qc_badge(self, obj):
+        return self._stage_badge(obj.QC, "QC")
+    qc_badge.short_description = "QC"
+    qc_badge.admin_order_field = "QC"
+
     def edit_button(self, obj):
-        """Visible Edit button so admins can fix typos / spelling mistakes."""
+        """Compact edit pill."""
         url = reverse('admin:core_dailyreport_change', args=[obj.pk])
         return format_html(
-            '<a href="{}" style="display:inline-block;background:#15803d;color:#fff;'
-            'padding:4px 12px;border-radius:6px;font-size:12px;font-weight:600;'
-            'text-decoration:none;white-space:nowrap;">Edit</a>',
+            '<a href="{}" class="ngs-dr-edit">'
+            '<span class="material-symbols-outlined">edit</span>Edit</a>',
             url,
         )
-    edit_button.short_description = "Edit"
+    edit_button.short_description = ""
+
+    # ── KPI + pipeline stats for the header ────────────────────
+    def changelist_view(self, request, extra_context=None):
+        self._row_counter = 0
+        extra_context = extra_context or {}
+
+        qs = self.get_queryset(request)
+        total = qs.count()
+        agg = qs.aggregate(
+            pages=models.Sum("num_of_page"),
+            deeds=models.Sum("num_of_deed"),
+        )
+        pages = agg["pages"] or 0
+        deeds = agg["deeds"] or 0
+        districts = qs.values("location").distinct().count()
+        pdf_done = qs.filter(pdf_deed=True).count()
+        idx_done = qs.filter(indexing=True).count()
+        up_done = qs.filter(uploading=True).count()
+        qc_done = qs.filter(QC=True).count()
+        meta_done = qs.filter(metadata=True).count()
+
+        def _pct(part):
+            return round((part / total) * 100) if total else 0
+
+        extra_context["dr_kpis"] = [
+            {"label": "Reports", "value": f"{total:,}", "hint": "volumes", "icon": "description"},
+            {"label": "Pages", "value": f"{pages:,}", "hint": "scanned", "icon": "menu_book"},
+            {"label": "Deeds", "value": f"{deeds:,}", "hint": "recorded", "icon": "folder_open"},
+            {"label": "Districts", "value": f"{districts:,}", "hint": "active", "icon": "location_on"},
+            {"label": "PDF done", "value": f"{_pct(pdf_done)}%", "hint": f"{pdf_done:,} of {total:,}", "icon": "picture_as_pdf"},
+            {"label": "QC done", "value": f"{_pct(qc_done)}%", "hint": f"{qc_done:,} of {total:,}", "icon": "verified"},
+        ]
+        extra_context["dr_pipeline"] = [
+            {"label": "PDF", "done": pdf_done, "pct": _pct(pdf_done), "icon": "picture_as_pdf"},
+            {"label": "Indexing", "done": idx_done, "pct": _pct(idx_done), "icon": "toc"},
+            {"label": "Uploading", "done": up_done, "pct": _pct(up_done), "icon": "cloud_upload"},
+            {"label": "QC", "done": qc_done, "pct": _pct(qc_done), "icon": "task_alt"},
+            {"label": "Metadata", "done": meta_done, "pct": _pct(meta_done), "icon": "bookmark_added"},
+        ]
+        extra_context["dr_add_url"] = reverse("admin:core_dailyreport_add")
+        extra_context["dr_total"] = total
+
+        return super().changelist_view(request, extra_context)
 
     def save_model(self, request, obj, form, change):
         """
