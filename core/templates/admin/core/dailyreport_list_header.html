@@ -24,6 +24,39 @@
         <span class="ngs-dr-btn-count">{{ dr_active_filters }}</span>
         {% endif %}
       </button>
+      <div class="ngs-dr-export" x-data="{ exportOpen: false }" x-on:click.outside="exportOpen = false" x-on:keydown.escape.window="exportOpen = false">
+        <button
+          type="button"
+          class="ngs-dr-btn ngs-dr-btn-ghost"
+          x-on:click="exportOpen = !exportOpen"
+          :aria-expanded="exportOpen"
+          aria-haspopup="menu"
+        >
+          <span class="material-symbols-outlined">download</span>
+          <span class="ngs-dr-btn-label">{% trans "Export" %}</span>
+          <span class="material-symbols-outlined ngs-dr-btn-caret">expand_more</span>
+        </button>
+        <div class="ngs-dr-menu" x-show="exportOpen" x-transition x-cloak role="menu">
+          <p class="ngs-dr-menu-title">{% trans "Download visible rows" %}</p>
+          <a class="ngs-dr-menu-item" href="{{ dr_export_csv_url }}" role="menuitem">
+            <span class="material-symbols-outlined">description</span>
+            <span>
+              <strong>CSV</strong>
+              <span class="ngs-dr-menu-hint">Universal spreadsheet · UTF-8</span>
+            </span>
+          </a>
+          <a class="ngs-dr-menu-item" href="{{ dr_export_xlsx_url }}" role="menuitem">
+            <span class="material-symbols-outlined">grid_on</span>
+            <span>
+              <strong>Excel</strong>
+              <span class="ngs-dr-menu-hint">.xlsx · styled header</span>
+            </span>
+          </a>
+          <p class="ngs-dr-menu-foot">
+            {% if dr_active_filters %}Applies your {{ dr_active_filters }} active filter{{ dr_active_filters|pluralize }}{% else %}All {{ dr_total|default:"0" }} report{{ dr_total|pluralize }}{% endif %}
+          </p>
+        </div>
+      </div>
       <a class="ngs-dr-btn ngs-dr-btn-primary" href="{{ dr_add_url }}">
         <span class="material-symbols-outlined">add</span>
         {% trans "New report" %}

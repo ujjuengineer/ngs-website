@@ -1,7 +1,15 @@
+import csv
+from io import BytesIO
+
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin, GroupAdmin as BaseGroupAdmin
 from django.contrib.auth.models import User, Group
 from django.db import models
+from django.http import HttpResponse
+from django.urls import path, reverse
+from django.utils import timezone
+from django.utils.html import format_html
+
 from unfold.admin import ModelAdmin, TabularInline
 from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
 from unfold.contrib.filters.admin import (
@@ -12,8 +20,115 @@ from unfold.contrib.filters.admin import (
 )
 from .models import ContactMessage, CompanyCertificate, DailyReport, PDFRecord, IndexingRecord, UploadingRecord, QCRecord, MetadataRecord
 from .utils import sync_workflow_records
-from django.urls import reverse
-from django.utils.html import format_html
+
+
+# ── Daily Report export helpers ────────────────────────────
+DAILY_REPORT_EXPORT_HEADERS = [
+    "Date",
+    "Employee",
+    "District",
+    "Location",
+    "Year",
+    "Volume",
+    "Pages",
+    "Deeds",
+    "Scanning",
+    "PDF",
+    "Indexing",
+    "Uploading",
+    "QC",
+    "Metadata",
+    "Created at",
+]
+
+
+def _yn(value):
+    return "Yes" if bool(value) else "No"
+
+
+def _dr_row(report):
+    return [
+        report.date.strftime("%Y-%m-%d") if report.date else "",
+        report.name or "",
+        report.get_district_display() if report.district else "",
+        report.get_location_display() if report.location else "",
+        report.year or "",
+        report.volume_num or "",
+        report.num_of_page if report.num_of_page is not None else "",
+        report.num_of_deed if report.num_of_deed is not None else "",
+        _yn(report.scanning),
+        _yn(report.pdf_deed),
+        _yn(report.indexing),
+        _yn(report.uploading),
+        _yn(report.QC),
+        _yn(report.metadata),
+        timezone.localtime(report.created_at).strftime("%Y-%m-%d %H:%M") if report.created_at else "",
+    ]
+
+
+def _dr_iter_rows(queryset):
+    for report in queryset.iterator(chunk_size=500):
+        yield _dr_row(report)
+
+
+def _dr_filename(ext):
+    stamp = timezone.localtime().strftime("%Y%m%d-%H%M")
+    return f"daily-reports-{stamp}.{ext}"
+
+
+def export_daily_reports_csv(queryset):
+    """Stream a filtered DailyReport queryset as CSV."""
+    response = HttpResponse(content_type="text/csv; charset=utf-8")
+    response["Content-Disposition"] = f'attachment; filename="{_dr_filename("csv")}"'
+    # Excel-friendly UTF-8 BOM so Unicode names render correctly
+    response.write("\ufeff")
+    writer = csv.writer(response)
+    writer.writerow(DAILY_REPORT_EXPORT_HEADERS)
+    for row in _dr_iter_rows(queryset):
+        writer.writerow(row)
+    return response
+
+
+def export_daily_reports_xlsx(queryset):
+    """Return the filtered DailyReport queryset as an .xlsx download."""
+    from openpyxl import Workbook
+    from openpyxl.styles import Alignment, Font, PatternFill
+    from openpyxl.utils import get_column_letter
+
+    workbook = Workbook()
+    sheet = workbook.active
+    sheet.title = "Daily Reports"
+
+    header_font = Font(bold=True, color="FFFFFFFF")
+    header_fill = PatternFill("solid", fgColor="FF16A34A")
+    center = Alignment(horizontal="center", vertical="center")
+
+    sheet.append(DAILY_REPORT_EXPORT_HEADERS)
+    for col_idx, _ in enumerate(DAILY_REPORT_EXPORT_HEADERS, start=1):
+        cell = sheet.cell(row=1, column=col_idx)
+        cell.font = header_font
+        cell.fill = header_fill
+        cell.alignment = center
+
+    widths = [12, 22, 14, 16, 8, 10, 8, 8, 10, 8, 10, 12, 8, 10, 18]
+    for col_idx, width in enumerate(widths, start=1):
+        sheet.column_dimensions[get_column_letter(col_idx)].width = width
+
+    for row in _dr_iter_rows(queryset):
+        sheet.append(row)
+
+    sheet.freeze_panes = "A2"
+
+    buf = BytesIO()
+    workbook.save(buf)
+    buf.seek(0)
+
+    response = HttpResponse(
+        buf.getvalue(),
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
+    response["Content-Disposition"] = f'attachment; filename="{_dr_filename("xlsx")}"'
+    return response
 
 admin.site.index_title = "Dashboard"
 
@@ -245,6 +360,8 @@ class DailyReportAdmin(PremiumAdmin):
 
     readonly_fields = ('district',)
 
+    actions = ("export_selected_as_csv", "export_selected_as_xlsx")
+
     # Embed the inline tables nicely at the bottom of the edit layout
     inlines = [PDFRecordInline, IndexingRecordInline, UploadingRecordInline, QCRecordInline, MetadataRecordInline]
 
@@ -426,7 +543,74 @@ class DailyReportAdmin(PremiumAdmin):
             if key not in _skip and value not in ("", None)
         )
 
+        # One-click export URLs preserve the current filter + search context
+        export_qs = request.GET.urlencode()
+        base_csv = reverse("admin:core_dailyreport_export_csv")
+        base_xlsx = reverse("admin:core_dailyreport_export_xlsx")
+        extra_context["dr_export_csv_url"] = f"{base_csv}?{export_qs}" if export_qs else base_csv
+        extra_context["dr_export_xlsx_url"] = f"{base_xlsx}?{export_qs}" if export_qs else base_xlsx
+
         return super().changelist_view(request, extra_context)
+
+    # ── Bulk export actions (selected rows) ────────────────────
+    @admin.action(description="Export selected reports as CSV")
+    def export_selected_as_csv(self, request, queryset):
+        return export_daily_reports_csv(queryset)
+
+    @admin.action(description="Export selected reports as Excel (.xlsx)")
+    def export_selected_as_xlsx(self, request, queryset):
+        return export_daily_reports_xlsx(queryset)
+
+    # ── One-click filtered export (uses the current changelist filters) ──
+    def get_urls(self):
+        urls = super().get_urls()
+        info = (self.model._meta.app_label, self.model._meta.model_name)
+        custom = [
+            path(
+                "export/csv/",
+                self.admin_site.admin_view(self.export_filtered_csv_view),
+                name="%s_%s_export_csv" % info,
+            ),
+            path(
+                "export/xlsx/",
+                self.admin_site.admin_view(self.export_filtered_xlsx_view),
+                name="%s_%s_export_xlsx" % info,
+            ),
+        ]
+        return custom + urls
+
+    def _filtered_queryset_from_request(self, request):
+        """Reuse Django admin's ChangeList so exports honour every active filter/search."""
+        list_display = self.get_list_display(request)
+        list_display_links = self.get_list_display_links(request, list_display)
+        list_filter = self.get_list_filter(request)
+        search_fields = self.get_search_fields(request)
+        sortable_by = self.get_sortable_by(request)
+
+        ChangeList = self.get_changelist(request)
+        cl = ChangeList(
+            request,
+            self.model,
+            list_display,
+            list_display_links,
+            list_filter,
+            self.date_hierarchy,
+            search_fields,
+            self.list_select_related,
+            self.list_per_page,
+            self.list_max_show_all,
+            self.list_editable,
+            self,
+            sortable_by,
+            self.search_help_text,
+        )
+        return cl.get_queryset(request)
+
+    def export_filtered_csv_view(self, request):
+        return export_daily_reports_csv(self._filtered_queryset_from_request(request))
+
+    def export_filtered_xlsx_view(self, request):
+        return export_daily_reports_xlsx(self._filtered_queryset_from_request(request))
 
     def save_model(self, request, obj, form, change):
         """

@@ -614,6 +614,90 @@ html, body {
     box-shadow: 0 4px 10px -4px rgba(22, 163, 74, 0.6);
 }
 
+/* Export split-button + dropdown menu */
+.ngs-dr-export {
+    position: relative;
+    display: inline-flex;
+}
+
+.ngs-dr-btn-caret {
+    font-size: 1rem !important;
+    margin-left: -0.15rem;
+    opacity: 0.7;
+}
+
+.ngs-dr-menu {
+    position: absolute;
+    top: calc(100% + 0.55rem);
+    right: 0;
+    z-index: 40;
+    min-width: 15.5rem;
+    padding: 0.55rem;
+    border-radius: 0.85rem;
+    background: var(--dr-card-bg);
+    border: 1px solid var(--dr-card-border);
+    box-shadow: 0 24px 48px -20px rgba(15, 23, 42, 0.35);
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+[x-cloak] { display: none !important; }
+
+.ngs-dr-menu-title {
+    margin: 0.15rem 0.55rem 0.35rem;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--dr-muted);
+}
+
+.ngs-dr-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.55rem 0.6rem;
+    border-radius: 0.6rem;
+    text-decoration: none;
+    color: var(--dr-text);
+    transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.ngs-dr-menu-item:hover {
+    background: var(--dr-accent-dim);
+    transform: translateX(1px);
+    color: var(--dr-text);
+}
+
+.ngs-dr-menu-item .material-symbols-outlined {
+    color: var(--dr-accent);
+    font-size: 1.25rem;
+}
+
+.ngs-dr-menu-item strong {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.ngs-dr-menu-hint {
+    display: block;
+    font-size: 0.68rem;
+    color: var(--dr-muted);
+    margin-top: 0.05rem;
+}
+
+.ngs-dr-menu-foot {
+    margin: 0.45rem 0.55rem 0.15rem;
+    padding-top: 0.45rem;
+    border-top: 1px dashed var(--dr-card-border);
+    font-size: 0.68rem;
+    color: var(--dr-muted);
+    letter-spacing: 0.01em;
+}
+
 /* Hide Unfold's default toolbar Filters trigger + its Apply button.
  * The hero button is the single entry point; auto-submit removes the need
  * for an Apply button in the drawer. */
@@ -627,8 +711,8 @@ html, body {
 }
 
 #changelist-filter > div {
-    max-width: 22rem;
-    width: min(90vw, 22rem);
+    max-width: 44rem !important;
+    width: min(96vw, 44rem) !important;
     border-radius: 1rem !important;
     box-shadow: 0 30px 60px -20px rgba(15, 23, 42, 0.35);
 }
@@ -641,6 +725,22 @@ html, body {
     text-transform: uppercase;
 }
 
+/* Two-column grid so all filters fit width-wise without long scroll */
+#filter-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem 1rem;
+    align-items: start;
+}
+
+#filter-form > input[type="hidden"] {
+    display: none;
+}
+
+#filter-form > div {
+    margin-bottom: 0 !important;
+}
+
 #filter-form label,
 #changelist-filter .filter-form label,
 #changelist-filter h4 {
@@ -649,7 +749,7 @@ html, body {
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--dr-muted);
-    margin-top: 0.75rem;
+    margin-top: 0.15rem;
 }
 
 #filter-form select,
@@ -671,6 +771,22 @@ html, body {
     outline: none;
     border-color: rgba(34, 197, 94, 0.6) !important;
     box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18) !important;
+}
+
+@media (min-width: 900px) {
+    #filter-form {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 640px) {
+    #filter-form {
+        grid-template-columns: 1fr;
+    }
+    #changelist-filter > div {
+        width: 94vw !important;
+        max-width: 94vw !important;
+    }
 }
 
 @keyframes dr-drawer-fade {
