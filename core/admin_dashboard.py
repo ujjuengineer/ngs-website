@@ -12,6 +12,18 @@ def _fmt_int(value):
     return f"{value:,}" if value is not None else "0"
 
 
+def _top_n_with_other(rows, label_key, value_key, n=6, other_label="Other"):
+    """Keep top N slices; fold the rest into Other for cleaner pies."""
+    top = rows[:n]
+    rest = rows[n:]
+    labels = [row[label_key] for row in top]
+    values = [row[value_key] for row in top]
+    if rest:
+        labels.append(other_label)
+        values.append(sum(row[value_key] for row in rest))
+    return labels, values
+
+
 def dashboard_callback(request, context):
     reports = DailyReport.objects.all()
     location_labels = dict(DailyReport.LOCATION_CHOICES)
@@ -24,30 +36,29 @@ def dashboard_callback(request, context):
     total_pages = agg["pages"] or 0
     total_deeds = agg["deeds"] or 0
 
+    # Workflow completion rates (not raw counts that make Scanning dominate)
     workflow_stages = [
-        ("Scanning", total_reports),
-        ("PDF Deed", reports.filter(pdf_deed=True).count()),
+        ("PDF", reports.filter(pdf_deed=True).count()),
         ("Indexing", reports.filter(indexing=True).count()),
         ("Uploading", reports.filter(uploading=True).count()),
         ("QC", reports.filter(QC=True).count()),
         ("Metadata", reports.filter(metadata=True).count()),
+        ("Pending", reports.filter(pdf_deed=False).count()),
     ]
 
-    location_rows = list(
-        reports.values("location")
-        .annotate(count=Count("id"), pages=Sum("num_of_page"))
+    location_rows = [
+        {
+            "label": location_labels.get(row["location"], row["location"].title()),
+            "count": row["count"],
+        }
+        for row in reports.values("location")
+        .annotate(count=Count("id"))
         .order_by("-count")
-    )
-    chart_locations = {
-        "labels": [
-            location_labels.get(row["location"], row["location"].title())
-            for row in location_rows
-        ],
-        "counts": [row["count"] for row in location_rows],
-        "pages": [row["pages"] or 0 for row in location_rows],
-    }
+    ]
+    loc_labels, loc_counts = _top_n_with_other(location_rows, "label", "count", n=6)
+    chart_locations = {"labels": loc_labels, "counts": loc_counts}
 
-    thirty_days_ago = timezone.localdate() - timedelta(days=30)
+    thirty_days_ago = timezone.localdate() - timedelta(days=29)
     timeline_rows = list(
         reports.filter(date__gte=thirty_days_ago)
         .values("date")
@@ -60,71 +71,74 @@ def dashboard_callback(request, context):
         "pages": [row["pages"] or 0 for row in timeline_rows],
     }
 
-    employee_rows = list(
-        reports.exclude(name="")
+    employee_rows = [
+        {
+            "label": (row["name"] or "").title(),
+            "pages": row["pages"] or 0,
+        }
+        for row in reports.exclude(name="")
         .values("name")
-        .annotate(pages=Sum("num_of_page"), count=Count("id"))
-        .order_by("-pages")[:10]
-    )
-    chart_employees = {
-        "labels": [row["name"].title() for row in employee_rows],
-        "pages": [row["pages"] or 0 for row in employee_rows],
-        "counts": [row["count"] for row in employee_rows],
-    }
+        .annotate(pages=Sum("num_of_page"))
+        .order_by("-pages")[:12]
+    ]
+    emp_labels, emp_pages = _top_n_with_other(employee_rows, "label", "pages", n=6)
+    chart_employees = {"labels": emp_labels, "pages": emp_pages}
 
     year_rows = list(
         reports.exclude(year="")
         .values("year")
         .annotate(count=Count("id"), pages=Sum("num_of_page"))
-        .order_by("-year")[:8]
+        .order_by("year")[:10]
     )
     chart_years = {
-        "labels": [row["year"] for row in reversed(year_rows)],
-        "counts": [row["count"] for row in reversed(year_rows)],
-        "pages": [row["pages"] or 0 for row in reversed(year_rows)],
+        "labels": [row["year"] for row in year_rows],
+        "counts": [row["count"] for row in year_rows],
+        "pages": [row["pages"] or 0 for row in year_rows],
     }
 
     unread_messages = ContactMessage.objects.filter(is_read=False).count()
     total_certificates = CompanyCertificate.objects.count()
     active_locations = reports.values("location").distinct().count()
+    done_meta = reports.filter(metadata=True).count()
+    completion_pct = round((done_meta / total_reports) * 100) if total_reports else 0
 
     context.update(
         {
             "dashboard_kpis": [
                 {
-                    "label": "Daily Reports",
+                    "label": "Reports",
                     "value": _fmt_int(total_reports),
-                    "hint": "Total volumes logged",
+                    "hint": "volumes",
                     "icon": "description",
                 },
                 {
-                    "label": "Pages Processed",
+                    "label": "Pages",
                     "value": _fmt_int(total_pages),
-                    "hint": "Across all reports",
+                    "hint": "processed",
                     "icon": "menu_book",
                 },
                 {
-                    "label": "Deeds Recorded",
+                    "label": "Deeds",
                     "value": _fmt_int(total_deeds),
-                    "hint": "Where deed count is filled",
+                    "hint": "recorded",
                     "icon": "folder_open",
                 },
                 {
-                    "label": "Active Locations",
+                    "label": "Locations",
                     "value": _fmt_int(active_locations),
-                    "hint": "Districts with reports",
+                    "hint": "active",
                     "icon": "location_on",
                 },
                 {
-                    "label": "Certificates",
-                    "value": _fmt_int(total_certificates),
-                    "hint": "Issued company certificates",
-                    "icon": "verified",
+                    "label": "Complete",
+                    "value": f"{completion_pct}%",
+                    "hint": "to metadata",
+                    "icon": "task_alt",
                 },
                 {
-                    "label": "Unread Messages",
+                    "label": "Inbox",
                     "value": _fmt_int(unread_messages),
-                    "hint": "Contact form inquiries",
+                    "hint": f"{total_certificates} certs",
                     "icon": "mail",
                 },
             ],

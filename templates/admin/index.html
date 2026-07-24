@@ -12,86 +12,70 @@
 {% endblock %}
 
 {% block content %}
-<div class="ngs-admin-dashboard">
+<div class="ngs-admin-dashboard ngs-dash-dense">
 
   <header class="ngs-dash-header">
-    <div>
-      <p class="ngs-dash-eyebrow">NGS Operations</p>
+    <div class="ngs-dash-header-left">
       <h1 class="ngs-dash-title">Dashboard</h1>
-      <p class="ngs-dash-sub">Live digitization metrics across Bihar locations</p>
+      <span class="ngs-dash-live"><span class="ngs-dash-live-dot"></span> Live</span>
     </div>
-    <div class="ngs-dash-header-meta">
-      <span class="ngs-dash-live"><span class="ngs-dash-live-dot"></span> Live data</span>
-    </div>
+    <p class="ngs-dash-sub">Digitization ops · Bihar</p>
   </header>
 
   <section class="ngs-bento ngs-bento-kpi" aria-label="Key metrics">
     {% for kpi in dashboard_kpis %}
-    <article class="ngs-card ngs-kpi {% if forloop.first %}ngs-kpi-hero{% endif %}">
-      <div class="ngs-kpi-top">
+    <article class="ngs-card ngs-kpi {% if forloop.counter <= 2 %}ngs-kpi-accent{% endif %}" style="--i:{{ forloop.counter0 }}">
+      <div class="ngs-kpi-row">
         <span class="ngs-kpi-icon material-symbols-outlined">{{ kpi.icon }}</span>
-        <span class="ngs-kpi-label">{{ kpi.label }}</span>
+        <div class="ngs-kpi-copy">
+          <span class="ngs-kpi-label">{{ kpi.label }}</span>
+          <p class="ngs-kpi-value">{{ kpi.value }}</p>
+        </div>
       </div>
-      <p class="ngs-kpi-value">{{ kpi.value }}</p>
       <p class="ngs-kpi-hint">{{ kpi.hint }}</p>
     </article>
     {% endfor %}
   </section>
 
   <section class="ngs-bento ngs-bento-charts" aria-label="Analytics">
-    <article class="ngs-card ngs-tile">
+    <article class="ngs-card ngs-tile" style="--i:0">
       <div class="ngs-card-head">
-        <div>
-          <h2 class="ngs-card-title">Workflow pipeline</h2>
-          <p class="ngs-card-desc">Share of reports at each stage</p>
-        </div>
+        <h2 class="ngs-card-title">Workflow</h2>
         <span class="ngs-card-badge">Donut</span>
       </div>
-      <div id="chart-workflow" class="ngs-plot ngs-plot-md"></div>
+      <div id="chart-workflow" class="ngs-plot"></div>
     </article>
 
-    <article class="ngs-card ngs-tile">
+    <article class="ngs-card ngs-tile" style="--i:1">
       <div class="ngs-card-head">
-        <div>
-          <h2 class="ngs-card-title">By location</h2>
-          <p class="ngs-card-desc">Volume share per district</p>
-        </div>
+        <h2 class="ngs-card-title">Locations</h2>
         <span class="ngs-card-badge">Pie</span>
       </div>
-      <div id="chart-locations" class="ngs-plot ngs-plot-md"></div>
+      <div id="chart-locations" class="ngs-plot"></div>
     </article>
 
-    <article class="ngs-card ngs-tile">
+    <article class="ngs-card ngs-tile" style="--i:2">
       <div class="ngs-card-head">
-        <div>
-          <h2 class="ngs-card-title">Top contributors</h2>
-          <p class="ngs-card-desc">Pages processed by employee</p>
-        </div>
+        <h2 class="ngs-card-title">Contributors</h2>
         <span class="ngs-card-badge">Donut</span>
       </div>
-      <div id="chart-employees" class="ngs-plot ngs-plot-md"></div>
+      <div id="chart-employees" class="ngs-plot"></div>
     </article>
 
-    <article class="ngs-card ngs-tile ngs-tile-wide">
+    <article class="ngs-card ngs-tile ngs-tile-line" style="--i:3">
       <div class="ngs-card-head">
-        <div>
-          <h2 class="ngs-card-title">Last 30 days</h2>
-          <p class="ngs-card-desc">Reports &amp; pages trend</p>
-        </div>
+        <h2 class="ngs-card-title">30-day trend</h2>
         <span class="ngs-card-badge">Line</span>
       </div>
-      <div id="chart-timeline" class="ngs-plot ngs-plot-md"></div>
+      <div id="chart-timeline" class="ngs-plot ngs-plot-line"></div>
     </article>
 
-    <article class="ngs-card ngs-tile ngs-tile-wide">
+    <article class="ngs-card ngs-tile ngs-tile-line" style="--i:4">
       <div class="ngs-card-head">
-        <div>
-          <h2 class="ngs-card-title">By archive year</h2>
-          <p class="ngs-card-desc">Reports and pages over years</p>
-        </div>
+        <h2 class="ngs-card-title">By year</h2>
         <span class="ngs-card-badge">Line</span>
       </div>
-      <div id="chart-years" class="ngs-plot ngs-plot-md"></div>
+      <div id="chart-years" class="ngs-plot ngs-plot-line"></div>
     </article>
   </section>
 
@@ -108,9 +92,8 @@
   if (typeof Plotly === "undefined") return;
 
   var PALETTE = [
-    "#22c55e", "#16a34a", "#4ade80", "#15803d", "#86efac",
-    "#059669", "#34d399", "#047857", "#a7f3d0", "#065f46",
-    "#6ee7b7", "#10b981", "#14532d", "#bbf7d0", "#0f766e"
+    "#22c55e", "#4ade80", "#16a34a", "#86efac", "#059669",
+    "#34d399", "#15803d", "#a7f3d0", "#10b981", "#6ee7b7"
   ];
 
   function readData(id) {
@@ -140,39 +123,72 @@
     return {
       paper_bgcolor: "transparent",
       plot_bgcolor: "transparent",
-      font: { family: "Inter, system-ui, sans-serif", color: dark ? "#e5e7eb" : "#374151", size: 11 },
-      margin: { l: 40, r: 16, t: 8, b: 40 },
+      font: { family: "Inter, system-ui, sans-serif", color: dark ? "#d1d5db" : "#4b5563", size: 10 },
+      margin: { l: 28, r: 28, t: 6, b: 28 },
       colorway: PALETTE,
       xaxis: {
-        gridcolor: dark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.05)",
-        zerolinecolor: dark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.07)",
-        tickfont: { color: dark ? "#9ca3af" : "#6b7280", size: 10 },
+        gridcolor: dark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)",
+        zeroline: false,
+        tickfont: { size: 9, color: dark ? "#9ca3af" : "#6b7280" },
+        automargin: true,
       },
       yaxis: {
-        gridcolor: dark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.05)",
-        zerolinecolor: dark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.07)",
-        tickfont: { color: dark ? "#9ca3af" : "#6b7280", size: 10 },
+        gridcolor: dark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)",
+        zeroline: false,
+        tickfont: { size: 9, color: dark ? "#9ca3af" : "#6b7280" },
+        automargin: true,
       },
       legend: {
         orientation: "h",
-        y: -0.08,
-        x: 0.5,
-        xanchor: "center",
-        font: { size: 10, color: dark ? "#9ca3af" : "#6b7280" },
+        y: 1.18,
+        x: 0,
+        xanchor: "left",
+        font: { size: 9, color: dark ? "#9ca3af" : "#6b7280" },
+        bgcolor: "transparent",
       },
       hoverlabel: {
-        bgcolor: dark ? "#111827" : "#ffffff",
+        bgcolor: dark ? "#111827" : "#fff",
         bordercolor: dark ? "#374151" : "#e5e7eb",
-        font: { color: dark ? "#f3f4f6" : "#111827", size: 11 },
+        font: { size: 11, color: dark ? "#f3f4f6" : "#111827" },
       },
     };
   }
 
+  function pieTrace(labels, values, hole) {
+    return {
+      type: "pie",
+      labels: labels,
+      values: values,
+      hole: hole || 0,
+      sort: false,
+      direction: "clockwise",
+      textinfo: "none",
+      hoverinfo: "label+value+percent",
+      hovertemplate: "<b>%{label}</b><br>%{value:,}<br>%{percent}<extra></extra>",
+      marker: {
+        colors: colors(labels.length),
+        line: { width: 1.5, color: isDark() ? "#0f172a" : "#ffffff" },
+      },
+      pull: labels.map(function (l) { return l === "Other" || l === "Pending" ? 0.04 : 0; }),
+    };
+  }
+
   function pieLayout(base) {
+    var dark = isDark();
     return Object.assign({}, base, {
-      margin: { l: 8, r: 8, t: 8, b: 8 },
+      margin: { l: 4, r: 4, t: 2, b: 52 },
       showlegend: true,
-      legend: Object.assign({}, base.legend, { y: -0.05 }),
+      legend: {
+        orientation: "h",
+        x: 0.5,
+        y: -0.12,
+        xanchor: "center",
+        yanchor: "top",
+        font: { size: 8, color: dark ? "#94a3b8" : "#64748b" },
+        bgcolor: "transparent",
+        itemwidth: 28,
+        tracegroupgap: 0,
+      },
     });
   }
 
@@ -180,99 +196,64 @@
     var base = theme();
     var cfg = { responsive: true, displayModeBar: false, displaylogo: false };
 
-    // 1) Workflow — donut
     var workflow = readData("ngs-chart-workflow");
     if (workflow && workflow.labels.length && workflow.values.some(function (v) { return v > 0; })) {
-      Plotly.react("chart-workflow", [{
-        type: "pie",
-        labels: workflow.labels,
-        values: workflow.values,
-        hole: 0.58,
-        textinfo: "percent",
-        textposition: "inside",
-        insidetextfont: { size: 11, color: "#fff" },
-        marker: { colors: colors(workflow.labels.length), line: { width: 2, color: isDark() ? "#0f172a" : "#fff" } },
-        hovertemplate: "%{label}<br>%{value:,} (%{percent})<extra></extra>",
-      }], pieLayout(base), cfg);
+      Plotly.react("chart-workflow", [pieTrace(workflow.labels, workflow.values, 0.62)], pieLayout(base), cfg);
     } else {
-      emptyMsg("chart-workflow", "No report data yet.");
+      emptyMsg("chart-workflow", "No data");
     }
 
-    // 2) Locations — pie
     var locations = readData("ngs-chart-locations");
     if (locations && locations.labels.length) {
-      Plotly.react("chart-locations", [{
-        type: "pie",
-        labels: locations.labels,
-        values: locations.counts,
-        textinfo: "percent",
-        textposition: "inside",
-        insidetextfont: { size: 10, color: "#fff" },
-        marker: { colors: colors(locations.labels.length), line: { width: 2, color: isDark() ? "#0f172a" : "#fff" } },
-        hovertemplate: "%{label}<br>Reports: %{value:,} (%{percent})<extra></extra>",
-      }], pieLayout(base), cfg);
+      Plotly.react("chart-locations", [pieTrace(locations.labels, locations.counts, 0)], pieLayout(base), cfg);
     } else {
-      emptyMsg("chart-locations", "No location data yet.");
+      emptyMsg("chart-locations", "No data");
     }
 
-    // 3) Employees — donut
     var employees = readData("ngs-chart-employees");
     if (employees && employees.labels.length) {
-      Plotly.react("chart-employees", [{
-        type: "pie",
-        labels: employees.labels,
-        values: employees.pages,
-        hole: 0.55,
-        textinfo: "percent",
-        textposition: "inside",
-        insidetextfont: { size: 10, color: "#fff" },
-        marker: { colors: colors(employees.labels.length), line: { width: 2, color: isDark() ? "#0f172a" : "#fff" } },
-        hovertemplate: "%{label}<br>Pages: %{value:,} (%{percent})<extra></extra>",
-      }], pieLayout(base), cfg);
+      Plotly.react("chart-employees", [pieTrace(employees.labels, employees.pages, 0.58)], pieLayout(base), cfg);
     } else {
-      emptyMsg("chart-employees", "No employee data yet.");
+      emptyMsg("chart-employees", "No data");
     }
 
-    // 4) Timeline — line
     var timeline = readData("ngs-chart-timeline");
     if (timeline && timeline.labels.length) {
       Plotly.react("chart-timeline", [
         {
           type: "scatter",
-          mode: "lines+markers",
+          mode: "lines",
           name: "Reports",
           x: timeline.labels,
           y: timeline.counts,
           fill: "tozeroy",
-          fillcolor: "rgba(34,197,94,0.12)",
-          line: { color: "#22c55e", width: 2.5, shape: "spline" },
-          marker: { size: 5 },
+          fillcolor: "rgba(34,197,94,0.14)",
+          line: { color: "#22c55e", width: 2, shape: "spline" },
+          hovertemplate: "%{x}<br>Reports: %{y}<extra></extra>",
         },
         {
           type: "scatter",
-          mode: "lines+markers",
+          mode: "lines",
           name: "Pages",
           x: timeline.labels,
           y: timeline.pages,
           yaxis: "y2",
-          line: { color: "#86efac", width: 2, dash: "dot", shape: "spline" },
-          marker: { size: 4 },
+          line: { color: "#86efac", width: 1.6, dash: "dot", shape: "spline" },
+          hovertemplate: "%{x}<br>Pages: %{y:,}<extra></extra>",
         },
       ], Object.assign({}, base, {
-        legend: Object.assign({}, base.legend, { y: 1.12, x: 0, xanchor: "left" }),
-        yaxis: Object.assign({}, base.yaxis, { title: "" }),
+        margin: { l: 32, r: 36, t: 28, b: 28 },
         yaxis2: {
           overlaying: "y",
           side: "right",
           showgrid: false,
-          tickfont: { color: isDark() ? "#9ca3af" : "#6b7280", size: 10 },
+          tickfont: { size: 9, color: isDark() ? "#9ca3af" : "#6b7280" },
         },
       }), cfg);
     } else {
-      emptyMsg("chart-timeline", "No activity in the last 30 days.");
+      emptyMsg("chart-timeline", "No activity (30d)");
     }
 
-    // 5) Years — line
     var years = readData("ngs-chart-years");
     if (years && years.labels.length) {
       Plotly.react("chart-years", [
@@ -284,8 +265,9 @@
           y: years.counts,
           fill: "tozeroy",
           fillcolor: "rgba(22,163,74,0.12)",
-          line: { color: "#16a34a", width: 2.5, shape: "spline" },
-          marker: { size: 6 },
+          line: { color: "#16a34a", width: 2, shape: "spline" },
+          marker: { size: 4 },
+          hovertemplate: "%{x}<br>Reports: %{y}<extra></extra>",
         },
         {
           type: "scatter",
@@ -294,20 +276,21 @@
           x: years.labels,
           y: years.pages,
           yaxis: "y2",
-          line: { color: "#4ade80", width: 2, dash: "dot", shape: "spline" },
-          marker: { size: 5 },
+          line: { color: "#4ade80", width: 1.6, dash: "dot", shape: "spline" },
+          marker: { size: 3 },
+          hovertemplate: "%{x}<br>Pages: %{y:,}<extra></extra>",
         },
       ], Object.assign({}, base, {
-        legend: Object.assign({}, base.legend, { y: 1.12, x: 0, xanchor: "left" }),
+        margin: { l: 32, r: 36, t: 28, b: 28 },
         yaxis2: {
           overlaying: "y",
           side: "right",
           showgrid: false,
-          tickfont: { color: isDark() ? "#9ca3af" : "#6b7280", size: 10 },
+          tickfont: { size: 9, color: isDark() ? "#9ca3af" : "#6b7280" },
         },
       }), cfg);
     } else {
-      emptyMsg("chart-years", "No year data yet.");
+      emptyMsg("chart-years", "No year data");
     }
   }
 
@@ -321,11 +304,12 @@
   }
 
   renderAll();
+  requestAnimationFrame(resizePlots);
 
   var resizeTimer;
   window.addEventListener("resize", function () {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(resizePlots, 120);
+    resizeTimer = setTimeout(resizePlots, 100);
   });
 
   new MutationObserver(function () { renderAll(); })
