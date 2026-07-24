@@ -38,7 +38,15 @@ def home(request):
 
 
 def about(request):
-    return render(request, 'core/about.html', {'active_nav': 'about'})
+    return render(request, 'core/about.html', {
+        'active_nav': 'about',
+        'trust_items': [
+            ('account_balance', 'Revenue Dept'),
+            ('gavel', 'Judicial Records'),
+            ('local_hospital', 'Health Archives'),
+            ('school', 'Education Board'),
+        ],
+    })
 
 
 def services(request):
@@ -46,7 +54,47 @@ def services(request):
 
 
 def process(request):
-    return render(request, 'core/process.html', {'active_nav': 'process'})
+    return render(request, 'core/process.html', {
+        'active_nav': 'process',
+        'steps': [
+            {
+                'num': '01',
+                'title': 'Document Collection',
+                'desc': 'Secure intake of physical materials. Every batch is logged with a unique identifier for chain-of-custody tracking.',
+                'icon': 'inventory_2',
+                'image': 'https://lh3.googleusercontent.com/aida-public/AB6AXuDfeDmruG-ctQKAlcfOaE-vK4x73qGnBCOJZu3NMSdOye2unDPXnpiONZmvNzn2sdSkb1iK79yb5fQlhnjujLWzxaf7xnOZxd4npTOS7B9XCjjjfdRFEKA8bAVk_1UKvsNkm_tSccGvJYNWxmLf-5k2V7uM6qyEbEZjGPsO-3tztbtvP8iMVitIXN_VUy0Cm4zck62Lhy4-SMrsE_YAtNCV14MCjvHnk4K_UDWZmgkiejqwLj5VtqxnRm-eNlK1j2seOpi4YEdV5G4',
+            },
+            {
+                'num': '02',
+                'title': 'High-Fidelity Scanning',
+                'desc': 'Industrial-grade optical equipment captures documents at archival resolution. Fragile materials use non-destructive flatbed scanners.',
+                'icon': 'document_scanner',
+                'image': 'https://lh3.googleusercontent.com/aida-public/AB6AXuCDWqhgejIs1igG6X6QGBZDOqxS5YMOqrEswnSfKLSSrtKU-vZ3t6bd_5nSkUcCVqLz6gzyivVogAA8t_95grAaI5TM1CKy4sEQBKOY35hkeAukpH1lcv-YiwK9tvAsqlEDsy5jtY9J849rseBf2fY_dkoFLetJ7cILbGTpwirQF-2jaSEF_PbNHIpvnCwXgCGwIu1EQ4UVl0elflLvUwKPggN-nKCepfIprPwHDkbHuDFWYYDeyF3GZOAivY9l3rtfPfYD8SOmhkg',
+            },
+            {
+                'num': '03',
+                'title': 'PDF Creation & OCR',
+                'desc': 'Images convert to PDF/A for long-term preservation. OCR makes text fully searchable.',
+                'icon': 'picture_as_pdf',
+                'image': None,
+                'badge': 'OCR Processing',
+            },
+            {
+                'num': '04',
+                'title': 'Metadata Extraction',
+                'desc': 'Key data points are extracted and validated so documents can be accurately indexed and retrieved.',
+                'icon': 'data_object',
+                'image': 'https://lh3.googleusercontent.com/aida-public/AB6AXuC3BxVwZ0Kokdbwi7l0i3p-Wg7qsCwVLT58qvG-oZ3lomnAGeGKufmPY1s50pfCYiG8ul03seb1KtZSQFoc6MSEPshdEbkNjxnx0I20U9y26Z9ekkhYhsXVu2yAM28jPheOw54enI2emW8l7gTnmxEA1EXgAkhqW5L6Qh9MeXje-8CXnomUyBYvdPAhhbJOU52Y2i2YpkLv7dX7lnX30GL0_WzVgg8nJFy3fduF2UrL4C_d_17zRYm0PuerlXoBhtzuY9OuVBG2sjc',
+            },
+            {
+                'num': '05',
+                'title': 'Secure Portal Upload',
+                'desc': 'Finalized assets and metadata transfer securely to the designated government portal or DMS.',
+                'icon': 'cloud_upload',
+                'image': 'https://lh3.googleusercontent.com/aida-public/AB6AXuBRUi61UufxyOwAE6SI2mVeA_Dccf1GbbER8XHMWiRFEYEuHiQan3XLkROwXRRA3vWCCns2dW6ZeQnFR3ndQlODJFvg3VbQ74U18nRE1MeDcamlz-H5lkW9wBR4YnAlJFrf8nXk4jZK0s7lyxwrR7SiyQ5uT0IPA4jg7ML82ZVj070RJ5C3DTxnHwm-JYy95BVhVxHgCIrxi2rA49K-4xss0Ti1kG8CMjxlzPbGP9d3EwT4uqMRYzL-OG-8rIPqkk1iy1r5yrT97Eo',
+            },
+        ],
+    })
 
 
 def contact(request):

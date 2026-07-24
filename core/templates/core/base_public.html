@@ -6,144 +6,287 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{% block title %}Narasimha Global Service &amp; Solution (NGS){% endblock %}</title>
   <meta name="description" content="{% block meta_description %}Narasimha Global empowers government and businesses with skilled manpower and IT solutions. Document digitization and digital transformation — Patna, Bihar.{% endblock %}" />
-  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Public+Sans:wght@400;600&display=swap" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL@24,400,0&display=swap" rel="stylesheet" />
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            "linen-white": "#FFFFFF",
-            "on-surface": "#0d1c2f",
-            "on-surface-variant": "#46464c",
-            "ink-deep": "#0B1020",
-            "primary": "#000000",
-            "brass-muted": "#C2A56D",
-            "paper-grey": "#F8FAFC",
-            "outline": "#76767d",
-            "outline-variant": "#c7c6cd",
-            "primary-container": "#161b2b",
-            "primary-fixed-dim": "#c1c5dc",
-            "surface-container-low": "#eff4ff",
-            "on-primary-container": "#7f8398",
-          },
-          borderRadius: {
-            DEFAULT: "0.125rem",
-            lg: "0.25rem",
-            xl: "0.5rem",
-          },
-          spacing: {
-            "margin-desktop": "80px",
-            "margin-mobile": "20px",
-            gutter: "32px",
-            "max-width": "1280px",
+            ink: { DEFAULT: "#070B14", soft: "#121826", mid: "#1A2233" },
+            brass: { DEFAULT: "#C2A56D", soft: "#D4BC8A", dim: "rgba(194,165,109,0.15)" },
+            mist: "#F4F6FA",
+            glass: "rgba(255,255,255,0.08)",
           },
           fontFamily: {
-            display: ["Playfair Display", "serif"],
-            body: ["Public Sans", "sans-serif"],
+            display: ["Fraunces", "serif"],
+            sans: ["Manrope", "sans-serif"],
           },
-          fontSize: {
-            "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }],
-            "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }],
-            "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
-            "label-caps": ["12px", { lineHeight: "16px", letterSpacing: "0.08em", fontWeight: "600" }],
-            "headline-sm": ["24px", { lineHeight: "32px", fontWeight: "600" }],
-            "headline-md": ["32px", { lineHeight: "40px", fontWeight: "600" }],
-            "headline-lg": ["40px", { lineHeight: "48px", fontWeight: "600" }],
-            "display-lg-mobile": ["36px", { lineHeight: "44px", letterSpacing: "-0.01em", fontWeight: "700" }],
-            "display-lg": ["56px", { lineHeight: "64px", letterSpacing: "-0.02em", fontWeight: "700" }],
+          maxWidth: { site: "1200px" },
+          boxShadow: {
+            glass: "0 8px 32px rgba(7,11,20,0.12), inset 0 1px 0 rgba(255,255,255,0.35)",
+            "glass-dark": "0 20px 60px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.12)",
+            lift: "0 24px 48px rgba(7,11,20,0.14)",
+          },
+          backdropBlur: { glass: "18px" },
+          keyframes: {
+            floaty: {
+              "0%,100%": { transform: "translateY(0)" },
+              "50%": { transform: "translateY(-12px)" },
+            },
+            shimmer: {
+              "0%": { backgroundPosition: "0% 50%" },
+              "100%": { backgroundPosition: "100% 50%" },
+            },
+            pulseGlow: {
+              "0%,100%": { opacity: "0.45" },
+              "50%": { opacity: "0.85" },
+            },
+            marquee: {
+              "0%": { transform: "translateX(0)" },
+              "100%": { transform: "translateX(-50%)" },
+            },
+          },
+          animation: {
+            floaty: "floaty 7s ease-in-out infinite",
+            shimmer: "shimmer 8s ease infinite",
+            pulseGlow: "pulseGlow 5s ease-in-out infinite",
+            marquee: "marquee 28s linear infinite",
           },
         },
       },
     };
   </script>
   <style>
-    body {
-      background-color: #F8FAFC;
-      color: #0d1c2f;
-      font-family: "Public Sans", sans-serif;
-      -webkit-font-smoothing: antialiased;
+    :root {
+      --ink: #070B14;
+      --brass: #C2A56D;
     }
-    .font-display { font-family: "Playfair Display", serif; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Manrope, sans-serif;
+      color: #0d1c2f;
+      background: #F4F6FA;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    .font-display { font-family: Fraunces, serif; }
     .material-symbols-outlined {
       font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
     }
-    .btn-primary {
-      background: linear-gradient(180deg, #0B1020 0%, #161b2b 100%);
-      border: 1px solid #0B1020;
-      transition: all 0.2s ease-in-out;
+
+    /* Ambient mesh */
+    .page-bg {
+      position: fixed; inset: 0; z-index: -2; pointer-events: none;
+      background:
+        radial-gradient(900px 500px at 10% -10%, rgba(194,165,109,0.18), transparent 55%),
+        radial-gradient(700px 480px at 95% 5%, rgba(56,120,180,0.12), transparent 50%),
+        radial-gradient(600px 400px at 70% 90%, rgba(7,11,20,0.06), transparent 55%),
+        #F4F6FA;
     }
-    .btn-primary:hover { background: #161b2b; }
-    .btn-secondary {
-      border: 1px solid #0B1020;
-      transition: all 0.2s ease-in-out;
+    .noise {
+      position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 180px;
     }
-    .btn-secondary:hover { background-color: rgba(194, 165, 109, 0.05); }
-    .subtle-outline { border: 1px solid rgba(11, 16, 32, 0.1); }
-    .editorial-section { padding: 80px 0; }
-    @media (min-width: 1280px) {
-      .editorial-section { padding: 120px 0; }
+
+    /* Glass surfaces */
+    .glass {
+      background: rgba(255,255,255,0.55);
+      border: 1px solid rgba(255,255,255,0.65);
+      box-shadow: 0 8px 32px rgba(7,11,20,0.08), inset 0 1px 0 rgba(255,255,255,0.7);
+      backdrop-filter: blur(18px) saturate(1.35);
+      -webkit-backdrop-filter: blur(18px) saturate(1.35);
     }
-    .nav-link-active {
-      color: #000;
-      border-bottom: 2px solid #000;
-      opacity: 0.85;
+    .glass-dark {
+      background: rgba(7,11,20,0.55);
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.1);
+      backdrop-filter: blur(20px) saturate(1.2);
+      -webkit-backdrop-filter: blur(20px) saturate(1.2);
     }
+    .glass-panel {
+      background: linear-gradient(145deg, rgba(255,255,255,0.72), rgba(255,255,255,0.38));
+      border: 1px solid rgba(255,255,255,0.7);
+      box-shadow: 0 12px 40px rgba(7,11,20,0.08), inset 0 1px 0 rgba(255,255,255,0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      transition: transform 0.35s cubic-bezier(.22,1,.36,1), box-shadow 0.35s ease, border-color 0.35s ease;
+    }
+    .glass-panel:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 24px 48px rgba(7,11,20,0.12), inset 0 1px 0 rgba(255,255,255,0.9);
+      border-color: rgba(194,165,109,0.45);
+    }
+
+    .bento {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 768px) {
+      .bento { grid-template-columns: repeat(12, 1fr); gap: 1.15rem; }
+      .bento-lg { grid-column: span 7; }
+      .bento-md { grid-column: span 5; }
+      .bento-sm { grid-column: span 4; }
+      .bento-wide { grid-column: span 8; }
+      .bento-full { grid-column: span 12; }
+      .bento-third { grid-column: span 4; }
+      .bento-half { grid-column: span 6; }
+    }
+
+    .btn-solid {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+      padding: 0.9rem 1.5rem;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #070B14, #1A2233);
+      color: #fff;
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      border: 1px solid transparent;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .btn-solid:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(7,11,20,0.28); }
+    .btn-glass {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+      padding: 0.9rem 1.5rem;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      border: 1px solid rgba(255,255,255,0.28);
+      backdrop-filter: blur(12px);
+      transition: background 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+    }
+    .btn-glass:hover { background: rgba(255,255,255,0.2); border-color: rgba(194,165,109,0.6); transform: translateY(-2px); }
+    .btn-outline {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+      padding: 0.9rem 1.5rem;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--ink);
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      border: 1px solid rgba(7,11,20,0.18);
+      transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease;
+    }
+    .btn-outline:hover { border-color: var(--brass); background: rgba(194,165,109,0.08); transform: translateY(-2px); }
+
+    .nav-glass {
+      background: rgba(255,255,255,0.62);
+      border-bottom: 1px solid rgba(255,255,255,0.7);
+      backdrop-filter: blur(20px) saturate(1.4);
+      -webkit-backdrop-filter: blur(20px) saturate(1.4);
+      box-shadow: 0 4px 24px rgba(7,11,20,0.04);
+    }
+    .nav-link {
+      position: relative;
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: rgba(13,28,47,0.62);
+      transition: color 0.2s ease;
+    }
+    .nav-link:hover, .nav-link.is-active { color: var(--ink); }
+    .nav-link.is-active::after {
+      content: "";
+      position: absolute; left: 0; right: 0; bottom: -6px; height: 2px;
+      background: linear-gradient(90deg, var(--brass), transparent);
+      border-radius: 2px;
+    }
+
     .reveal {
       opacity: 0;
-      transform: translateY(16px);
-      transition: opacity 0.6s ease, transform 0.6s ease;
+      transform: translateY(28px);
+      transition: opacity 0.7s cubic-bezier(.22,1,.36,1), transform 0.7s cubic-bezier(.22,1,.36,1);
     }
-    .reveal.visible {
-      opacity: 1;
-      transform: none;
+    .reveal.visible { opacity: 1; transform: none; }
+    .reveal-delay-1 { transition-delay: 0.08s; }
+    .reveal-delay-2 { transition-delay: 0.16s; }
+    .reveal-delay-3 { transition-delay: 0.24s; }
+    .reveal-delay-4 { transition-delay: 0.32s; }
+
+    .orb {
+      position: absolute; border-radius: 50%; filter: blur(60px); pointer-events: none;
+      animation: pulseGlow 6s ease-in-out infinite;
+    }
+
+    .section-pad { padding: 5rem 1.25rem; }
+    @media (min-width: 768px) { .section-pad { padding: 7rem 2.5rem; } }
+
+    .site-wrap { width: 100%; max-width: 1200px; margin-left: auto; margin-right: auto; }
+
+    .label-pill {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      color: #8a7340;
+      background: rgba(194,165,109,0.14);
+      border: 1px solid rgba(194,165,109,0.28);
+    }
+    .label-pill .dot {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--brass);
+      box-shadow: 0 0 0 3px rgba(194,165,109,0.2);
+      animation: pulseGlow 2.4s ease-in-out infinite;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; transition: none; }
+      .animate-floaty, .animate-marquee, .animate-pulseGlow { animation: none !important; }
     }
     {% block extra_css %}{% endblock %}
   </style>
 </head>
-<body class="flex flex-col min-h-screen antialiased">
+<body class="min-h-screen flex flex-col font-sans">
+<div class="page-bg"></div>
+<div class="noise"></div>
+
 {% if not hide_site_nav %}
-<header class="bg-linen-white border-b border-outline-variant w-full h-20 sticky top-0 z-50">
-  <div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop max-w-max-width mx-auto h-full">
-    <a class="font-display text-headline-sm font-bold text-primary" href="{% url 'home' %}">NGS</a>
-    <nav class="hidden md:flex items-center gap-8 h-full font-body text-body-md">
-      <a class="h-full flex items-center {% if active_nav == 'home' %}nav-link-active{% else %}text-on-surface-variant hover:text-primary{% endif %} transition-colors" href="{% url 'home' %}">Home</a>
-      <a class="h-full flex items-center {% if active_nav == 'about' %}nav-link-active{% else %}text-on-surface-variant hover:text-primary{% endif %} transition-colors" href="{% url 'about' %}">About Us</a>
-      <a class="h-full flex items-center {% if active_nav == 'services' %}nav-link-active{% else %}text-on-surface-variant hover:text-primary{% endif %} transition-colors" href="{% url 'services' %}">Services</a>
-      <a class="h-full flex items-center {% if active_nav == 'process' %}nav-link-active{% else %}text-on-surface-variant hover:text-primary{% endif %} transition-colors" href="{% url 'process' %}">Process</a>
-      <a class="h-full flex items-center {% if active_nav == 'contact' %}nav-link-active{% else %}text-on-surface-variant hover:text-primary{% endif %} transition-colors" href="{% url 'contact' %}">Contact Us</a>
+<header class="nav-glass sticky top-0 z-50">
+  <div class="site-wrap flex items-center justify-between h-[72px] px-5 md:px-8">
+    <a href="{% url 'home' %}" class="flex items-center gap-3 group">
+      <span class="w-9 h-9 rounded-xl bg-ink text-white flex items-center justify-center font-display text-sm font-bold shadow-lg shadow-ink/20 group-hover:scale-105 transition-transform">N</span>
+      <span class="font-display text-xl font-bold tracking-tight text-ink">NGS</span>
+    </a>
+    <nav class="hidden lg:flex items-center gap-8">
+      <a class="nav-link {% if active_nav == 'home' %}is-active{% endif %}" href="{% url 'home' %}">Home</a>
+      <a class="nav-link {% if active_nav == 'about' %}is-active{% endif %}" href="{% url 'about' %}">About</a>
+      <a class="nav-link {% if active_nav == 'services' %}is-active{% endif %}" href="{% url 'services' %}">Services</a>
+      <a class="nav-link {% if active_nav == 'process' %}is-active{% endif %}" href="{% url 'process' %}">Process</a>
+      <a class="nav-link {% if active_nav == 'contact' %}is-active{% endif %}" href="{% url 'contact' %}">Contact</a>
     </nav>
-    <div class="hidden md:flex items-center gap-3">
+    <div class="hidden lg:flex items-center gap-3">
       {% if user.is_authenticated %}
-        <a class="btn-secondary text-brass-muted px-6 py-2 text-label-caps uppercase tracking-wider rounded" href="{% url 'logout' %}">Logout</a>
+        <a class="btn-outline !py-2.5 !px-5" href="{% url 'logout' %}">Logout</a>
       {% else %}
-        <a class="btn-secondary text-brass-muted px-6 py-2 text-label-caps uppercase tracking-wider rounded" href="{% url 'login' %}">Login</a>
+        <a class="btn-solid !py-2.5 !px-5" href="{% url 'login' %}">Login</a>
       {% endif %}
     </div>
-    <button id="mobileMenuBtn" type="button" class="md:hidden text-ink-deep p-2" aria-label="Open menu">
+    <button id="mobileMenuBtn" type="button" class="lg:hidden glass rounded-xl p-2.5 text-ink" aria-label="Menu">
       <span class="material-symbols-outlined">menu</span>
     </button>
   </div>
-  <div id="mobileMenu" class="hidden md:hidden border-t border-outline-variant bg-linen-white px-margin-mobile py-4 space-y-1">
-    <a class="block py-3 text-body-md {% if active_nav == 'home' %}text-primary font-semibold{% else %}text-on-surface-variant{% endif %}" href="{% url 'home' %}">Home</a>
-    <a class="block py-3 text-body-md {% if active_nav == 'about' %}text-primary font-semibold{% else %}text-on-surface-variant{% endif %}" href="{% url 'about' %}">About Us</a>
-    <a class="block py-3 text-body-md {% if active_nav == 'services' %}text-primary font-semibold{% else %}text-on-surface-variant{% endif %}" href="{% url 'services' %}">Services</a>
-    <a class="block py-3 text-body-md {% if active_nav == 'process' %}text-primary font-semibold{% else %}text-on-surface-variant{% endif %}" href="{% url 'process' %}">Process</a>
-    <a class="block py-3 text-body-md {% if active_nav == 'contact' %}text-primary font-semibold{% else %}text-on-surface-variant{% endif %}" href="{% url 'contact' %}">Contact Us</a>
+  <div id="mobileMenu" class="hidden lg:hidden border-t border-white/50 px-5 py-4 space-y-1 bg-white/70 backdrop-blur-xl">
+    <a class="block py-3 font-semibold {% if active_nav == 'home' %}text-ink{% else %}text-ink/60{% endif %}" href="{% url 'home' %}">Home</a>
+    <a class="block py-3 font-semibold {% if active_nav == 'about' %}text-ink{% else %}text-ink/60{% endif %}" href="{% url 'about' %}">About</a>
+    <a class="block py-3 font-semibold {% if active_nav == 'services' %}text-ink{% else %}text-ink/60{% endif %}" href="{% url 'services' %}">Services</a>
+    <a class="block py-3 font-semibold {% if active_nav == 'process' %}text-ink{% else %}text-ink/60{% endif %}" href="{% url 'process' %}">Process</a>
+    <a class="block py-3 font-semibold {% if active_nav == 'contact' %}text-ink{% else %}text-ink/60{% endif %}" href="{% url 'contact' %}">Contact</a>
     {% if user.is_authenticated %}
-      <a class="block py-3 text-body-md text-brass-muted" href="{% url 'logout' %}">Logout</a>
+      <a class="block py-3 font-semibold text-brass" href="{% url 'logout' %}">Logout</a>
     {% else %}
-      <a class="block py-3 text-body-md text-brass-muted" href="{% url 'login' %}">Login</a>
+      <a class="block py-3 font-semibold text-brass" href="{% url 'login' %}">Login</a>
     {% endif %}
   </div>
 </header>
 {% endif %}
 
 {% if messages %}
-<div class="px-margin-mobile md:px-margin-desktop max-w-max-width mx-auto w-full pt-4 space-y-2">
+<div class="site-wrap px-5 md:px-8 pt-4 space-y-2 w-full">
   {% for message in messages %}
-  <div class="border px-4 py-3 text-body-sm {% if message.tags == 'error' %}border-red-300 bg-red-50 text-red-800{% else %}border-outline-variant bg-linen-white text-on-surface{% endif %}">
+  <div class="glass rounded-2xl px-4 py-3 text-sm {% if message.tags == 'error' %}!border-red-200 text-red-800{% else %}text-ink{% endif %}">
     {{ message }}
   </div>
   {% endfor %}
@@ -154,29 +297,42 @@
   {% block content %}{% endblock %}
 </main>
 
-<footer class="bg-linen-white border-t border-outline-variant w-full py-16 mt-auto">
-  <div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-mobile md:px-margin-desktop max-w-max-width mx-auto">
-    <div class="md:col-span-2">
-      <div class="font-display text-headline-sm font-bold text-primary mb-4">NGS</div>
-      <p class="text-body-sm text-on-surface-variant max-w-md mb-4">
-        Narasimha Global Service &amp; Solution Pvt. Ltd. — document digitization, manpower supply, and IT solutions for institutional excellence from Patna, Bihar.
-      </p>
-      <p class="text-body-sm text-on-surface-variant">© {% now "Y" %} Narasimha Global Service &amp; Solution (NGS). All rights reserved.</p>
+<footer class="relative mt-auto overflow-hidden">
+  <div class="absolute inset-0 bg-ink"></div>
+  <div class="absolute -top-24 left-1/4 w-72 h-72 rounded-full bg-brass/20 blur-3xl"></div>
+  <div class="absolute bottom-0 right-0 w-80 h-80 rounded-full bg-sky-500/10 blur-3xl"></div>
+  <div class="relative site-wrap px-5 md:px-8 py-16 md:py-20">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-10">
+      <div class="md:col-span-5">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="w-10 h-10 rounded-xl bg-white/10 border border-white/15 text-white flex items-center justify-center font-display font-bold">N</span>
+          <span class="font-display text-2xl text-white font-bold">NGS</span>
+        </div>
+        <p class="text-white/55 text-sm leading-relaxed max-w-md">
+          Narasimha Global Service &amp; Solution Pvt. Ltd. — digitization, manpower, and IT for institutional excellence across Bihar.
+        </p>
+      </div>
+      <div class="md:col-span-3">
+        <p class="text-[11px] font-bold tracking-[0.14em] uppercase text-brass mb-4">Explore</p>
+        <ul class="space-y-3 text-sm text-white/65">
+          <li><a class="hover:text-white transition-colors" href="{% url 'home' %}">Home</a></li>
+          <li><a class="hover:text-white transition-colors" href="{% url 'about' %}">About</a></li>
+          <li><a class="hover:text-white transition-colors" href="{% url 'services' %}">Services</a></li>
+        </ul>
+      </div>
+      <div class="md:col-span-4">
+        <p class="text-[11px] font-bold tracking-[0.14em] uppercase text-brass mb-4">Connect</p>
+        <ul class="space-y-3 text-sm text-white/65">
+          <li><a class="hover:text-white transition-colors" href="{% url 'process' %}">Process</a></li>
+          <li><a class="hover:text-white transition-colors" href="{% url 'contact' %}">Contact</a></li>
+          <li><a class="hover:text-white transition-colors" href="mailto:info@narasimhaglobal.com">info@narasimhaglobal.com</a></li>
+          <li><a class="hover:text-white transition-colors" href="tel:+919341554887">+91 9341554887</a></li>
+        </ul>
+      </div>
     </div>
-    <div>
-      <h4 class="text-label-caps text-ink-deep uppercase mb-4">Navigation</h4>
-      <ul class="space-y-3 text-body-sm">
-        <li><a class="text-on-surface-variant hover:text-primary hover:underline" href="{% url 'home' %}">Home</a></li>
-        <li><a class="text-on-surface-variant hover:text-primary hover:underline" href="{% url 'about' %}">About Us</a></li>
-        <li><a class="text-on-surface-variant hover:text-primary hover:underline" href="{% url 'services' %}">Services</a></li>
-      </ul>
-    </div>
-    <div>
-      <h4 class="text-label-caps text-ink-deep uppercase mb-4">&nbsp;</h4>
-      <ul class="space-y-3 text-body-sm">
-        <li><a class="text-on-surface-variant hover:text-primary hover:underline" href="{% url 'process' %}">Process</a></li>
-        <li><a class="text-on-surface-variant hover:text-primary hover:underline" href="{% url 'contact' %}">Contact Us</a></li>
-      </ul>
+    <div class="mt-12 pt-6 border-t border-white/10 flex flex-col md:flex-row gap-3 justify-between text-xs text-white/40">
+      <p>© {% now "Y" %} Narasimha Global Service &amp; Solution (NGS). All rights reserved.</p>
+      <p>Patna, Bihar, India</p>
     </div>
   </div>
 </footer>
@@ -195,7 +351,7 @@
   if (reveals.length && 'IntersectionObserver' in window) {
     const io = new IntersectionObserver((entries) => {
       entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add('visible'); });
-    }, { threshold: 0.12 });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
     reveals.forEach((el) => io.observe(el));
   } else {
     reveals.forEach((el) => el.classList.add('visible'));
