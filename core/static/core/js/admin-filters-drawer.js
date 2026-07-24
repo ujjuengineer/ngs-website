@@ -101,9 +101,28 @@
         setTimeout(openDrawer, 60);
     }
 
+    // Close any open <details class="ngs-dr-export"> menu when clicking outside
+    // or pressing Escape — mirrors the earlier Alpine dropdown UX.
+    function bindNativeDetailsAutoClose() {
+        document.addEventListener("click", function (evt) {
+            document.querySelectorAll("details.ngs-dr-export[open]").forEach(function (el) {
+                if (!el.contains(evt.target)) {
+                    el.removeAttribute("open");
+                }
+            });
+        });
+        document.addEventListener("keydown", function (evt) {
+            if (evt.key !== "Escape") return;
+            document.querySelectorAll("details.ngs-dr-export[open]").forEach(function (el) {
+                el.removeAttribute("open");
+            });
+        });
+    }
+
     ready(function () {
         hideDefaultFilterTriggers();
         bindAutoSubmit();
         maybeReopenDrawer();
+        bindNativeDetailsAutoClose();
     });
 })();

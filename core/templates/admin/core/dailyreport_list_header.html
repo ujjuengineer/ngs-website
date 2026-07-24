@@ -7,7 +7,8 @@
       <h1 class="ngs-dr-title">Daily Reports</h1>
       <p class="ngs-dr-sub">
         Volumes logged across Bihar districts &middot;
-        <strong>{{ dr_total|default:"0" }}</strong> currently visible
+        <strong>{{ dr_total|default:"0" }}</strong>
+        {% if dr_active_filters %}matching your filters{% else %}total{% endif %}
       </p>
     </div>
     <div class="ngs-dr-hero-cta">
@@ -24,28 +25,22 @@
         <span class="ngs-dr-btn-count">{{ dr_active_filters }}</span>
         {% endif %}
       </button>
-      <div class="ngs-dr-export" x-data="{ exportOpen: false }" x-on:click.outside="exportOpen = false" x-on:keydown.escape.window="exportOpen = false">
-        <button
-          type="button"
-          class="ngs-dr-btn ngs-dr-btn-ghost"
-          x-on:click="exportOpen = !exportOpen"
-          :aria-expanded="exportOpen"
-          aria-haspopup="menu"
-        >
+      <details class="ngs-dr-export">
+        <summary class="ngs-dr-btn ngs-dr-btn-ghost" aria-haspopup="menu">
           <span class="material-symbols-outlined">download</span>
           <span class="ngs-dr-btn-label">{% trans "Export" %}</span>
           <span class="material-symbols-outlined ngs-dr-btn-caret">expand_more</span>
-        </button>
-        <div class="ngs-dr-menu" x-show="exportOpen" x-transition x-cloak role="menu">
+        </summary>
+        <div class="ngs-dr-menu" role="menu">
           <p class="ngs-dr-menu-title">{% trans "Download visible rows" %}</p>
-          <a class="ngs-dr-menu-item" href="{{ dr_export_csv_url }}" role="menuitem">
+          <a class="ngs-dr-menu-item" href="{% firstof dr_export_csv_url '/admin/core/dailyreport/export/csv/' %}" role="menuitem">
             <span class="material-symbols-outlined">description</span>
             <span>
               <strong>CSV</strong>
               <span class="ngs-dr-menu-hint">Universal spreadsheet · UTF-8</span>
             </span>
           </a>
-          <a class="ngs-dr-menu-item" href="{{ dr_export_xlsx_url }}" role="menuitem">
+          <a class="ngs-dr-menu-item" href="{% firstof dr_export_xlsx_url '/admin/core/dailyreport/export/xlsx/' %}" role="menuitem">
             <span class="material-symbols-outlined">grid_on</span>
             <span>
               <strong>Excel</strong>
@@ -56,13 +51,54 @@
             {% if dr_active_filters %}Applies your {{ dr_active_filters }} active filter{{ dr_active_filters|pluralize }}{% else %}All {{ dr_total|default:"0" }} report{{ dr_total|pluralize }}{% endif %}
           </p>
         </div>
-      </div>
+      </details>
       <a class="ngs-dr-btn ngs-dr-btn-primary" href="{{ dr_add_url }}">
         <span class="material-symbols-outlined">add</span>
         {% trans "New report" %}
       </a>
     </div>
   </header>
+
+  {% if dr_range_presets %}
+  <div class="ngs-dr-range" role="tablist" aria-label="Date range">
+    <span class="ngs-dr-range-label">
+      <span class="material-symbols-outlined">event</span>
+      Range
+    </span>
+    <div class="ngs-dr-range-row">
+      {% for preset in dr_range_presets %}
+      <a
+        class="ngs-dr-range-chip {% if preset.active %}is-active{% endif %}"
+        href="{{ preset.url }}"
+        role="tab"
+        aria-selected="{{ preset.active|yesno:'true,false' }}"
+      >{{ preset.label }}</a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if dr_active_filter_chips %}
+  <div class="ngs-dr-active-bar" role="region" aria-label="Active filters">
+    <span class="ngs-dr-active-label">
+      <span class="material-symbols-outlined">filter_alt</span>
+      Active
+    </span>
+    <div class="ngs-dr-active-row">
+      {% for chip in dr_active_filter_chips %}
+      <a class="ngs-dr-active-chip" href="{{ chip.remove_url }}" title="Remove this filter">
+        <span class="ngs-dr-active-field">{{ chip.field }}</span>
+        <span class="ngs-dr-active-value">{{ chip.value }}</span>
+        <span class="ngs-dr-active-x material-symbols-outlined" aria-hidden="true">close</span>
+      </a>
+      {% endfor %}
+    </div>
+    <a class="ngs-dr-clear-all" href="{{ dr_clear_url }}">
+      <span class="material-symbols-outlined">refresh</span>
+      Clear all
+    </a>
+  </div>
+  {% endif %}
 
   {% if dr_kpis %}
   <div class="ngs-dr-kpi-strip">
@@ -84,7 +120,7 @@
     <span class="ngs-dr-chips-label">By district</span>
     <div class="ngs-dr-chips-row">
       {% for chip in dr_district_chips %}
-      <a class="ngs-dr-chip" href="?district={{ chip.code }}" style="--i:{{ forloop.counter0 }}">
+      <a class="ngs-dr-chip {% if request.GET.district__exact == chip.code %}is-active{% endif %}" href="?district__exact={{ chip.code }}" style="--i:{{ forloop.counter0 }}">
         <span class="ngs-dr-chip-name">{{ chip.label }}</span>
         <span class="ngs-dr-chip-count">{{ chip.count }}</span>
         <span class="ngs-dr-chip-pct">{{ chip.pct }}%</span>
@@ -114,6 +150,32 @@
         <p class="ngs-dr-stage-meta">{{ stage.done }} completed</p>
       </div>
       {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if dr_total == 0 %}
+  <div class="ngs-dr-empty" role="status">
+    <span class="ngs-dr-empty-icon material-symbols-outlined">inbox</span>
+    <div class="ngs-dr-empty-copy">
+      <p class="ngs-dr-empty-title">
+        {% if dr_active_filters %}No reports match your filters{% else %}No reports yet{% endif %}
+      </p>
+      <p class="ngs-dr-empty-hint">
+        {% if dr_active_filters %}Try widening the date range or clearing filters to see more.{% else %}Start by adding your first daily report entry.{% endif %}
+      </p>
+    </div>
+    <div class="ngs-dr-empty-cta">
+      {% if dr_active_filters %}
+      <a class="ngs-dr-btn ngs-dr-btn-ghost" href="{{ dr_clear_url }}">
+        <span class="material-symbols-outlined">refresh</span>
+        Clear filters
+      </a>
+      {% endif %}
+      <a class="ngs-dr-btn ngs-dr-btn-primary" href="{{ dr_add_url }}">
+        <span class="material-symbols-outlined">add</span>
+        {% trans "New report" %}
+      </a>
     </div>
   </div>
   {% endif %}
