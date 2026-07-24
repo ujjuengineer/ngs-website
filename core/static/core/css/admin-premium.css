@@ -202,11 +202,11 @@ html, body {
 }
 
 .dark .ngs-admin-dashboard {
-    --ngs-card-bg: #0b1220;
-    --ngs-card-border: rgba(255, 255, 255, 0.07);
-    --ngs-muted: #94a3b8;
-    --ngs-text: #f1f5f9;
-    --ngs-accent-soft: rgba(34, 197, 94, 0.14);
+    --ngs-card-bg: #0f172a;
+    --ngs-card-border: rgba(255, 255, 255, 0.1);
+    --ngs-muted: #e2e8f0;
+    --ngs-text: #ffffff;
+    --ngs-accent-soft: rgba(34, 197, 94, 0.16);
 }
 
 .ngs-dash-dense {
@@ -226,21 +226,125 @@ html, body {
 .ngs-dash-header-left {
     display: flex;
     align-items: center;
-    gap: 0.65rem;
+    gap: 0.75rem;
 }
 
 .ngs-dash-title {
     margin: 0;
     font-size: 1.2rem;
-    font-weight: 700;
+    font-weight: 800;
     color: var(--ngs-text);
     letter-spacing: -0.02em;
 }
 
 .ngs-dash-sub {
-    margin: 0;
-    font-size: 0.72rem;
+    margin: 0.15rem 0 0;
+    font-size: 0.78rem;
     color: var(--ngs-muted);
+}
+
+.ngs-dash-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+}
+
+.ngs-dash-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.4rem 0.7rem;
+    border-radius: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-decoration: none;
+    color: var(--ngs-text);
+    background: var(--ngs-card-bg);
+    border: 1px solid var(--ngs-card-border);
+}
+
+.ngs-dash-action .material-symbols-outlined {
+    font-size: 1rem;
+    color: var(--ngs-accent);
+}
+
+.ngs-dash-action:hover {
+    border-color: rgba(34, 197, 94, 0.45);
+    color: var(--ngs-text);
+}
+
+.ngs-dash-action-primary {
+    color: #fff;
+    background: linear-gradient(135deg, #16a34a, #15803d);
+    border-color: transparent;
+}
+
+.ngs-dash-action-primary .material-symbols-outlined {
+    color: #fff;
+}
+
+.ngs-dash-action-primary:hover {
+    color: #fff;
+}
+
+.ngs-dash-districts {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0 0 0.75rem;
+    padding: 0.45rem 0.6rem;
+    border-radius: var(--ngs-radius);
+    background: var(--ngs-card-bg);
+    border: 1px solid var(--ngs-card-border);
+}
+
+.ngs-dash-districts-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ngs-muted);
+    margin-right: 0.25rem;
+}
+
+.ngs-dash-district-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.28rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    text-decoration: none;
+    color: var(--ngs-text);
+    background: var(--ngs-accent-soft);
+    border: 1px solid rgba(34, 197, 94, 0.28);
+}
+
+.ngs-dash-district-chip strong {
+    font-weight: 700;
+}
+
+.ngs-dash-district-chip span {
+    font-weight: 800;
+    color: var(--ngs-accent);
+    font-variant-numeric: tabular-nums;
+}
+
+.ngs-dash-district-chip:hover {
+    border-color: rgba(34, 197, 94, 0.5);
+    color: var(--ngs-text);
+}
+
+a.ngs-kpi {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+a.ngs-kpi:hover {
+    color: inherit;
 }
 
 .ngs-dash-live {

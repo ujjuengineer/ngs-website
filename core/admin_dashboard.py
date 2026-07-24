@@ -3,6 +3,7 @@
 from datetime import timedelta
 
 from django.db.models import Count, Sum
+from django.urls import reverse
 from django.utils import timezone
 
 from .models import CompanyCertificate, ContactMessage, DailyReport
@@ -104,44 +105,65 @@ def dashboard_callback(request, context):
     done_meta = reports.filter(metadata=True).count()
     completion_pct = round((done_meta / total_reports) * 100) if total_reports else 0
 
+    reports_url = reverse("admin:core_dailyreport_changelist")
+    inbox_url = reverse("admin:core_contactmessage_changelist")
+
+    district_links = [
+        {
+            "label": district_labels.get(row["district"], row["district"].title()),
+            "count": row["count"],
+            "url": f"{reports_url}?district__exact={row['district']}",
+        }
+        for row in district_rows
+    ]
+
     context.update(
         {
+            "dashboard_reports_url": reports_url,
+            "dashboard_inbox_url": inbox_url,
+            "dashboard_district_links": district_links,
             "dashboard_kpis": [
                 {
                     "label": "Reports",
                     "value": _fmt_int(total_reports),
                     "hint": "volumes",
                     "icon": "description",
+                    "url": reports_url,
                 },
                 {
                     "label": "Pages",
                     "value": _fmt_int(total_pages),
                     "hint": "processed",
                     "icon": "menu_book",
+                    "url": reports_url,
                 },
                 {
                     "label": "Deeds",
                     "value": _fmt_int(total_deeds),
                     "hint": "recorded",
                     "icon": "folder_open",
+                    "url": reports_url,
                 },
                 {
                     "label": "Districts",
                     "value": _fmt_int(active_districts),
                     "hint": "active",
                     "icon": "location_on",
+                    "url": reports_url,
                 },
                 {
                     "label": "Complete",
                     "value": f"{completion_pct}%",
                     "hint": "to metadata",
                     "icon": "task_alt",
+                    "url": f"{reports_url}?metadata__exact=1",
                 },
                 {
                     "label": "Inbox",
                     "value": _fmt_int(unread_messages),
                     "hint": f"{total_certificates} certs",
                     "icon": "mail",
+                    "url": inbox_url,
                 },
             ],
             "chart_workflow": {

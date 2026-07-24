@@ -16,15 +16,35 @@
 
   <header class="ngs-dash-header">
     <div class="ngs-dash-header-left">
-      <h1 class="ngs-dash-title">Dashboard</h1>
+      <div>
+        <h1 class="ngs-dash-title">Dashboard</h1>
+        <p class="ngs-dash-sub">Digitization ops · Bihar</p>
+      </div>
       <span class="ngs-dash-live"><span class="ngs-dash-live-dot"></span> Live</span>
     </div>
-    <p class="ngs-dash-sub">Digitization ops · Bihar</p>
+    <div class="ngs-dash-actions">
+      {% if dashboard_inbox_url %}
+      <a class="ngs-dash-action" href="{{ dashboard_inbox_url }}">
+        <span class="material-symbols-outlined">mail</span>
+        Inbox
+      </a>
+      {% endif %}
+      {% if dashboard_reports_url %}
+      <a class="ngs-dash-action ngs-dash-action-primary" href="{{ dashboard_reports_url }}">
+        <span class="material-symbols-outlined">description</span>
+        Daily Reports
+      </a>
+      {% endif %}
+    </div>
   </header>
 
   <section class="ngs-bento ngs-bento-kpi" aria-label="Key metrics">
     {% for kpi in dashboard_kpis %}
-    <article class="ngs-card ngs-kpi {% if forloop.counter <= 2 %}ngs-kpi-accent{% endif %}" style="--i:{{ forloop.counter0 }}">
+    <a
+      class="ngs-card ngs-kpi {% if forloop.counter <= 2 %}ngs-kpi-accent{% endif %}"
+      style="--i:{{ forloop.counter0 }}"
+      href="{% firstof kpi.url dashboard_reports_url '#' %}"
+    >
       <div class="ngs-kpi-row">
         <span class="ngs-kpi-icon material-symbols-outlined">{{ kpi.icon }}</span>
         <div class="ngs-kpi-copy">
@@ -33,15 +53,28 @@
         </div>
       </div>
       <p class="ngs-kpi-hint">{{ kpi.hint }}</p>
-    </article>
+    </a>
+    {% empty %}
+    <p class="ngs-empty">No metrics yet</p>
     {% endfor %}
   </section>
+
+  {% if dashboard_district_links %}
+  <div class="ngs-dash-districts" aria-label="Districts">
+    <span class="ngs-dash-districts-label">Districts</span>
+    {% for d in dashboard_district_links %}
+    <a class="ngs-dash-district-chip" href="{{ d.url }}">
+      <strong>{{ d.label }}</strong>
+      <span>{{ d.count }}</span>
+    </a>
+    {% endfor %}
+  </div>
+  {% endif %}
 
   <section class="ngs-bento ngs-bento-charts" aria-label="Analytics">
     <article class="ngs-card ngs-tile" style="--i:0">
       <div class="ngs-card-head">
         <h2 class="ngs-card-title">Workflow</h2>
-        <span class="ngs-card-badge">Donut</span>
       </div>
       <div id="chart-workflow" class="ngs-plot"></div>
     </article>
@@ -49,7 +82,6 @@
     <article class="ngs-card ngs-tile" style="--i:1">
       <div class="ngs-card-head">
         <h2 class="ngs-card-title">Districts</h2>
-        <span class="ngs-card-badge">Donut</span>
       </div>
       <div id="chart-districts" class="ngs-plot"></div>
     </article>
@@ -57,7 +89,6 @@
     <article class="ngs-card ngs-tile" style="--i:2">
       <div class="ngs-card-head">
         <h2 class="ngs-card-title">Contributors</h2>
-        <span class="ngs-card-badge">Donut</span>
       </div>
       <div id="chart-employees" class="ngs-plot"></div>
     </article>
@@ -65,7 +96,6 @@
     <article class="ngs-card ngs-tile ngs-tile-line" style="--i:3">
       <div class="ngs-card-head">
         <h2 class="ngs-card-title">30-day trend</h2>
-        <span class="ngs-card-badge">Line</span>
       </div>
       <div id="chart-timeline" class="ngs-plot ngs-plot-line"></div>
     </article>
@@ -73,7 +103,6 @@
     <article class="ngs-card ngs-tile ngs-tile-line" style="--i:4">
       <div class="ngs-card-head">
         <h2 class="ngs-card-title">By year</h2>
-        <span class="ngs-card-badge">Line</span>
       </div>
       <div id="chart-years" class="ngs-plot ngs-plot-line"></div>
     </article>
@@ -120,22 +149,24 @@
 
   function theme() {
     var dark = isDark();
+    var ink = dark ? "#ffffff" : "#111827";
+    var mute = dark ? "#e2e8f0" : "#64748b";
     return {
       paper_bgcolor: "transparent",
       plot_bgcolor: "transparent",
-      font: { family: "Inter, system-ui, sans-serif", color: dark ? "#d1d5db" : "#4b5563", size: 10 },
+      font: { family: "Inter, system-ui, sans-serif", color: ink, size: 11 },
       margin: { l: 28, r: 28, t: 6, b: 28 },
       colorway: PALETTE,
       xaxis: {
-        gridcolor: dark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)",
+        gridcolor: dark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)",
         zeroline: false,
-        tickfont: { size: 9, color: dark ? "#9ca3af" : "#6b7280" },
+        tickfont: { size: 10, color: mute },
         automargin: true,
       },
       yaxis: {
-        gridcolor: dark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)",
+        gridcolor: dark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)",
         zeroline: false,
-        tickfont: { size: 9, color: dark ? "#9ca3af" : "#6b7280" },
+        tickfont: { size: 10, color: mute },
         automargin: true,
       },
       legend: {
@@ -143,13 +174,13 @@
         y: 1.18,
         x: 0,
         xanchor: "left",
-        font: { size: 9, color: dark ? "#9ca3af" : "#6b7280" },
+        font: { size: 10, color: mute },
         bgcolor: "transparent",
       },
       hoverlabel: {
-        bgcolor: dark ? "#111827" : "#fff",
-        bordercolor: dark ? "#374151" : "#e5e7eb",
-        font: { size: 11, color: dark ? "#f3f4f6" : "#111827" },
+        bgcolor: dark ? "#0f172a" : "#fff",
+        bordercolor: dark ? "#334155" : "#e5e7eb",
+        font: { size: 12, color: dark ? "#ffffff" : "#111827" },
       },
     };
   }
@@ -184,7 +215,7 @@
         y: -0.12,
         xanchor: "center",
         yanchor: "top",
-        font: { size: 8, color: dark ? "#94a3b8" : "#64748b" },
+        font: { size: 10, color: dark ? "#ffffff" : "#334155" },
         bgcolor: "transparent",
         itemwidth: 28,
         tracegroupgap: 0,
@@ -195,6 +226,7 @@
   function renderAll() {
     var base = theme();
     var cfg = { responsive: true, displayModeBar: false, displaylogo: false };
+    var mute = isDark() ? "#e2e8f0" : "#64748b";
 
     var workflow = readData("ngs-chart-workflow");
     if (workflow && workflow.labels.length && workflow.values.some(function (v) { return v > 0; })) {
@@ -247,7 +279,7 @@
           overlaying: "y",
           side: "right",
           showgrid: false,
-          tickfont: { size: 9, color: isDark() ? "#9ca3af" : "#6b7280" },
+          tickfont: { size: 10, color: mute },
         },
       }), cfg);
     } else {
@@ -286,7 +318,7 @@
           overlaying: "y",
           side: "right",
           showgrid: false,
-          tickfont: { size: 9, color: isDark() ? "#9ca3af" : "#6b7280" },
+          tickfont: { size: 10, color: mute },
         },
       }), cfg);
     } else {

@@ -67,6 +67,7 @@ LOCATION_TO_DISTRICT = {
     "JHANJHARPUR": "DARBHANGA", "JAINAGAR": "DARBHANGA", "KHAJAULI": "DARBHANGA",
     "SAMASTIPUR": "DARBHANGA", "ROSARA": "DARBHANGA",
     "DALSINGHSARAI": "DARBHANGA", "KISHANPUR": "DARBHANGA",
+    "MADHUBANI": "DARBHANGA",
 }
 
 
@@ -90,7 +91,8 @@ class DailyReport(models.Model):
         ('JAINAGAR', 'Jainagar'),
         ('SAMASTIPUR', 'Samastipur'),
         ('KAMTAUL', 'Kamtaul'),
-        ('KHAJAULI', 'Khajauli')
+        ('KHAJAULI', 'Khajauli'),
+        ('MADHUBANI', 'Madhubani'),
     ]
 
     DISTRICT_CHOICES = DISTRICT_CHOICES
